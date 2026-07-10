@@ -1,9 +1,8 @@
 import 'package:get/get.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:teamomarket/routes/app_pages.dart';
-import 'package:teamomarket/routes/app_routes.dart';
-
-import 'services/network_controller.dart';
+import 'app/routes/app_pages.dart';
+import 'app/routes/app_routes.dart';
+import 'app/services/network_controller.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -42,7 +41,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get.put(NetworkController(), permanent: true);
+    Get.put(NetworkController(), permanent: true);
     // Get.put(AuthController(), permanent: true);
     return GetMaterialApp(
       navigatorKey: navigatorKey,

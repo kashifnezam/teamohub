@@ -41,6 +41,7 @@ dependencies:
   quickalert: ^1.1.0 #Alert Popup when success or failure
   carousel_slider: ^5.1.1
   smooth_page_indicator: ^1.2.1
+  photo_view: ^0.15.0
 
 dev_dependencies:
   flutter_test:
