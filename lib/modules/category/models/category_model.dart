@@ -15,11 +15,13 @@ class CategoryModel {
   /// Featured category on Home
   final bool isFeatured;
 
+  final bool hasSubCategories;
+
   /// Hide/Show category
   final bool isActive;
 
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   const CategoryModel({
     required this.id,
@@ -29,8 +31,9 @@ class CategoryModel {
     this.color,
     this.isFeatured = false,
     this.isActive = true,
-    required this.createdAt,
-    required this.updatedAt,
+    this.hasSubCategories = false,
+    this.createdAt = null,
+    this.updatedAt = null,
   });
 
   CategoryModel copyWith({
@@ -66,8 +69,8 @@ class CategoryModel {
       'color': color,
       'isFeatured': isFeatured,
       'isActive': isActive,
-      'createdAt': createdAt.millisecondsSinceEpoch,
-      'updatedAt': updatedAt.millisecondsSinceEpoch,
+      'createdAt': createdAt?.millisecondsSinceEpoch ?? null,
+      'updatedAt': updatedAt?.millisecondsSinceEpoch ?? null,
     };
   }
 
@@ -109,103 +112,3 @@ class CategoryModel {
   @override
   int get hashCode => id.hashCode;
 }
-
-
-final now = DateTime.now();
-
-final List<CategoryModel> categories = [
-  CategoryModel(
-    id: "1",
-    title: "Cars",
-    image: "assets/categories/car.png",
-    order: 1,
-    color: "#EF4444",
-    isFeatured: true,
-    createdAt: now,
-    updatedAt: now,
-  ),
-  CategoryModel(
-    id: "2",
-    title: "Mobiles",
-    image: "assets/categories/mobile.png",
-    order: 2,
-    color: "#3B82F6",
-    isFeatured: true,
-    createdAt: now,
-    updatedAt: now,
-  ),
-  CategoryModel(
-    id: "3",
-    title: "Property",
-    image: "assets/categories/property.png",
-    order: 3,
-    color: "#10B981",
-    isFeatured: true,
-    createdAt: now,
-    updatedAt: now,
-  ),
-  CategoryModel(
-    id: "4",
-    title: "Fashion",
-    image: "assets/categories/fashion.png",
-    order: 4,
-    color: "#EC4899",
-    createdAt: now,
-    updatedAt: now,
-  ),
-  CategoryModel(
-    id: "5",
-    title: "Jobs",
-    image: "assets/categories/jobs.png",
-    order: 5,
-    color: "#F59E0B",
-    createdAt: now,
-    updatedAt: now,
-  ),
-  CategoryModel(
-    id: "6",
-    title: "Bikes",
-    image: "assets/categories/bikes.png",
-    order: 6,
-    color: "#6366F1",
-    createdAt: now,
-    updatedAt: now,
-  ),
-  CategoryModel(
-    id: "7",
-    title: "Furniture",
-    image: "assets/categories/furniture.png",
-    order: 7,
-    color: "#8B5CF6",
-    createdAt: now,
-    updatedAt: now,
-  ),
-  CategoryModel(
-    id: "8",
-    title: "Services",
-    image: "assets/categories/service.png",
-    order: 8,
-    color: "#06B6D4",
-    createdAt: now,
-    updatedAt: now,
-  ),
-  CategoryModel(
-    id: "9",
-    title: "Electronics",
-    image: "assets/categories/electronics.png",
-    order: 9,
-    color: "#14B8A6",
-    createdAt: now,
-    updatedAt: now,
-  ),
-
-  CategoryModel(
-    id: "11",
-    title: "Pets",
-    image: "assets/categories/pets.png",
-    order: 11,
-    color: "#A855F7",
-    createdAt: now,
-    updatedAt: now,
-  ),
-];

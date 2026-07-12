@@ -1,7 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:teamomarket/app/constants/app_constants.dart';
+
 import '../../../app/routes/app_routes.dart';
+import '../../../app/services/device_info.dart';
+import '../../../app/utils/offline_data.dart';
 import '../../../app/widgets/custom_widget.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -12,12 +16,10 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  static const MethodChannel _channel =
-  MethodChannel('com.kashif.location_service');
-
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initApp();
     });
@@ -25,64 +27,45 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<void> _initApp() async {
     try {
-      final user = "FirebaseAuth.instance.currentUser";
+      final user = FirebaseAuth.instance.currentUser;
 
-      /// 1️⃣ Not logged in → go login
-      if (user != null) {
+      /// 1️⃣ Version check
+      // final updates = await FirebaseApi.getVersionUpdate();
+      //
+      // if (updates != null && (updates["expire"] ?? false)) {
+      //   CustomAlert.errorAlert(
+      //     "Please update your app to get the latest features.",
+      //     title: "Update App",
+      //   );
+      //   return;
+      // }
+
+      /// 2️⃣ Offline storage + device info
+      final offlineData = OfflineData();
+      await offlineData.init();
+      await DeviceInfo.getDetails();
+
+      /// 3️⃣ Not logged in
+      if (user == null) {
         Get.offAllNamed(Routes.login);
         return;
       }
 
-      /// 2️⃣ Version check
-     /* final updates = await FirebaseApi.getVersionUpdate();
-      if (updates != null && (updates["expire"] ?? false)) {
-        CustomAlert.errorAlert(
-          "Please update your app to get latest features",
-          title: "Update App",
-        );
-        return;
-      }*/
-
-      /// 3️⃣ Offline storage + device info
-    /*  final offlineData = OfflineData();
-      await offlineData.init();
-      await DeviceInfo.getDetails();
-
+      /// 4️⃣ Store user id
       await offlineData.storeObject("uid", user.uid);
-      await offlineData.refreshUserData(user.uid);*/
+      await offlineData.refreshUserData(user.uid);
 
-      /// 4️⃣ Mobile-only location checks
-      /*if (!kIsWeb && userInfo?["role"] == null) {
-        final locAlways = await Permission.locationAlways.isGranted;
-        final gpsOn = await Geolocator.isLocationServiceEnabled();
-        final bool consentAccepted =
-            await offlineData.getBool("location_disclosure_accepted") ?? false;
-
-        if (!consentAccepted || !locAlways || !gpsOn) {
-          Get.offAllNamed(Routes.locationDisclosure);
-          return;
-        }
-
-        try {
-          await _channel.invokeMethod('startLocationUpdates');
-        } on PlatformException catch (e) {
-          AppConstants.log.e("Location service error: $e");
-        }
-      }*/
-
+      AppConstants.log.i(await offlineData.getUserDetails());
       /// 5️⃣ Refresh Firebase token
-      // await FirebaseAuth.instance.currentUser?.getIdToken(true);
+      await user.getIdToken(true);
 
-      /// 6️⃣ Navigate to root dashboard
-      /// Middleware will handle role + platform
       if (!mounted) return;
-      Get.offAllNamed(Routes.login);
 
-      /// 7️⃣ Cleanup old records (non-blocking)
-      // FirebaseTprApi.cleanupOldRecords(user.uid);
+      /// 6️⃣ Navigate to app
+      Get.offAllNamed(Routes.appEntry);
     } catch (e, s) {
-      /*AppConstants.log.e("Splash init error: $e");
-      AppConstants.log.e(s);*/
+      debugPrint("Splash Error: $e");
+      debugPrintStack(stackTrace: s);
       Get.offAllNamed(Routes.login);
     }
   }
@@ -92,10 +75,14 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       body: Column(
         children: [
-          Expanded(
-            child: Image(
-              height: 250,
-              image: AssetImage("assets/logo/splash_logo.png"),
+          const Expanded(
+            child: Center(
+              child: Image(
+                image: AssetImage(
+                  "assets/logo/splash_logo.png",
+                ),
+                height: 260,
+              ),
             ),
           ),
           CustomWidget.buildCircularProgressIndicator(),

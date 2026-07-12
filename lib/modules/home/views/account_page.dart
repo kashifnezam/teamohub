@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../app/utils/app_colors.dart';
+import '../../auth/controllers/auth_controller.dart';
+import '../../auth/services/auth_service.dart';
 
 class AccountPage extends GetView<ProfileController> {
-  const AccountPage({super.key});
+  AccountPage({super.key});
+  AuthController authController = Get.put(AuthController());
 
   @override
   Widget build(BuildContext context) {
     Get.put(ProfileController());
-
     return Scaffold(
       backgroundColor: const Color(0xffF7F8FA),
       appBar: AppBar(
@@ -150,7 +152,7 @@ class AccountPage extends GetView<ProfileController> {
             title: "Logout",
             textColor: Colors.red,
             iconColor: Colors.red,
-            onTap: controller.logout,
+            onTap: authController.logout,
           ),
 
           const SizedBox(height: 30),
@@ -234,7 +236,6 @@ class ProfileController extends GetxController {
 
   void privacyPolicy() {}
 
-  void logout() {
-    // Show logout dialog
+  Future<void> logout() async {
   }
 }

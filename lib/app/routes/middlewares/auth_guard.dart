@@ -1,11 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../utils/custom_alert.dart';
 import '../app_routes.dart';
 
 class AuthGuard extends GetMiddleware {
   @override
   RouteSettings? redirect(String? route) {
-   /* final user = FirebaseAuth.instance.currentUser;
+    final user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
       Future.microtask(() {
@@ -16,8 +18,8 @@ class AuthGuard extends GetMiddleware {
       });
 
       return const RouteSettings(name: Routes.login);
-    }*/
+    }
 
-    return  const RouteSettings(name: Routes.login);
+    return null;
   }
 }

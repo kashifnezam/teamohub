@@ -4,6 +4,7 @@ import 'package:teamomarket/modules/home/widgets/image_category.dart';
 import '../../product/widgets/post_card.dart';
 import '../../product/repositories/dummy_products.dart';
 import '../../category/models/category_model.dart';
+import '../../category/repositories/category_list.dart';
 import '../widgets/home_banner_slider.dart';
 
 class HomePage extends StatelessWidget {

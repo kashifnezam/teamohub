@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 class UserModel {
-  final String id;
+  final String uid;
   final String name;
   final String email;
   final String phone;
@@ -24,7 +24,7 @@ class UserModel {
   final DateTime updatedAt;
 
   const UserModel({
-    required this.id,
+    required this.uid,
     required this.name,
     required this.email,
     required this.phone,
@@ -61,7 +61,7 @@ class UserModel {
     DateTime? updatedAt,
   }) {
     return UserModel(
-      id: id ?? this.id,
+      uid: id ?? this.uid,
       name: name ?? this.name,
       email: email ?? this.email,
       phone: phone ?? this.phone,
@@ -82,7 +82,7 @@ class UserModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
+      'id': uid,
       'name': name,
       'email': email,
       'phone': phone,
@@ -103,7 +103,7 @@ class UserModel {
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
     return UserModel(
-      id: map['id'] ?? '',
+      uid: map['id'] ?? '',
       name: map['name'] ?? '',
       email: map['email'] ?? '',
       phone: map['phone'] ?? '',
@@ -133,7 +133,7 @@ class UserModel {
 
   @override
   String toString() {
-    return 'UserModel(id: $id, name: $name, email: $email, role: $role)';
+    return 'UserModel(id: $uid, name: $name, email: $email, role: $role)';
   }
 
   @override
@@ -141,9 +141,9 @@ class UserModel {
     return identical(this, other) ||
         other is UserModel &&
             runtimeType == other.runtimeType &&
-            other.id == id;
+            other.uid == uid;
   }
 
   @override
-  int get hashCode => id.hashCode;
+  int get hashCode => uid.hashCode;
 }

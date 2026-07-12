@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:teamomarket/app/routes/app_routes.dart';
 
 import '../../../app/utils/app_colors.dart';
 import '../../../../modules/home/views/account_page.dart';
-import '../../../../modules/home/views/categories_page.dart';
-import 'chats_page.dart';
+import '../../category/views/categories_page.dart';
+import '../../chat/views/chats_page.dart';
 import 'home_page.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -16,10 +18,10 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int currentIndex = 0;
 
-  final pages = const [
-    HomePage(),
-    ChatsPage(),
-    CategoriesPage(),
+  final pages = [
+    const HomePage(),
+    const ChatsPage(),
+    const ChatsPage(),
     AccountPage(),
   ];
 
@@ -54,7 +56,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
             GestureDetector(
               onTap: () {
-                // Sell
+                Get.toNamed(Routes.categories);
               },
               child: Container(
                 width: 50,
