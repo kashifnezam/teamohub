@@ -1,11 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
 import 'package:teamomarket/modules/home/views/dashboard_screen.dart';
+import 'package:teamomarket/modules/product/views/product_preview_page.dart';
 import '../../modules/auth/views/login_screen.dart';
 import '../../modules/auth/views/signup_view.dart';
 import '../../modules/category/bindings/category_binding.dart';
 import '../../modules/category/views/categories_page.dart';
 import '../../modules/category/views/sub_category_page.dart';
+import '../../modules/location/bindings/location_binding.dart';
+import '../../modules/location/views/location_picker_page.dart';
+import '../../modules/product/views/add_product_page.dart';
 import '../../modules/splash/views/splashscreen.dart';
 import 'app_routes.dart';
 import 'middlewares/auth_guard.dart';
@@ -57,10 +61,22 @@ class AppPages {
       page: () => const SubCategoryPage(),
     ),
     //
-    // GetPage(
-    //   name: Routes.addProduct,
-    //   page: () => const AddProductPage(),
-    //   binding: ProductBinding(),
-    // ),
+    GetPage(
+      name: Routes.addProduct,
+      page: () => AddProductPage(),
+      // binding: ProductBinding(),
+    ),
+
+    GetPage(
+      name: Routes.productPreview,
+      page: () => ProductPreviewPage(),
+      // binding: ProductBinding(),
+    ),
+
+    GetPage(
+      name: Routes.locationPicker,
+      page: () => LocationPickerPage(),
+      binding: LocationBinding(),
+    ),
   ];
 }

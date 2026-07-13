@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../product/arguments/add_product_arguments.dart';
 import '../controllers/category_controller.dart';
 import '../../../app/routes/app_routes.dart';
 
@@ -63,9 +64,9 @@ class CategoriesPage extends GetView<CategoryController> {
 
                   Get.toNamed(
                     Routes.addProduct,
-                    arguments: {
-                      'category': category,
-                    },
+                    arguments: AddProductArguments(
+                      category: category,
+                    ),
                   );
                 }
               },

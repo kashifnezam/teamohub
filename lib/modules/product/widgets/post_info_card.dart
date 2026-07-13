@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../app/utils/app_colors.dart';
-import '../../../../../modules/product/models/post_model.dart';
+import '../../../../../modules/product/models/product_model.dart';
 
 class PostInfoCard extends StatelessWidget {
   final ProductModel post;

@@ -5,17 +5,22 @@ import 'package:photo_view/photo_view_gallery.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../../app/utils/app_colors.dart';
+import '../models/product_image_model.dart';
 
 class ImageViewerPage extends StatefulWidget {
-  final List<String> images;
+  final List<ProductImageModel> images;
   final int initialIndex;
   final String heroTag;
+
+  /// Hide favourite/share while previewing
+  final bool isPreview;
 
   const ImageViewerPage({
     super.key,
     required this.images,
     this.initialIndex = 0,
     required this.heroTag,
+    this.isPreview = false,
   });
 
   @override
@@ -45,42 +50,50 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
       body: Stack(
         children: [
 
-          //---------------------------------------
-          // Images
-          //---------------------------------------
+          //--------------------------------------------------
+          // Gallery
+          //--------------------------------------------------
 
           PhotoViewGallery.builder(
             pageController: _controller,
             itemCount: widget.images.length,
 
-            builder: (context, index) {
+            builder: (_, index) {
+
+              final image = widget.images[index];
 
               return PhotoViewGalleryPageOptions(
-                imageProvider: NetworkImage(
-                  widget.images[index],
-                ),
+                imageProvider: image.file != null
+                    ? FileImage(image.file!)
+                    : NetworkImage(image.url!)
+                as ImageProvider,
+
                 heroAttributes: PhotoViewHeroAttributes(
                   tag: "${widget.heroTag}$index",
                 ),
+
                 minScale: PhotoViewComputedScale.contained,
-                maxScale: PhotoViewComputedScale.covered * 4,
+
+                maxScale:
+                PhotoViewComputedScale.covered * 4,
               );
             },
+
+            loadingBuilder: (_, __) =>
+            const Center(
+              child: CircularProgressIndicator(),
+            ),
 
             onPageChanged: (index) {
               setState(() {
                 currentIndex = index;
               });
             },
-
-            loadingBuilder: (_, __) => const Center(
-              child: CircularProgressIndicator(),
-            ),
           ),
 
-          //---------------------------------------
-          // Top Buttons
-          //---------------------------------------
+          //--------------------------------------------------
+          // Top Bar
+          //--------------------------------------------------
 
           SafeArea(
             child: Padding(
@@ -95,28 +108,33 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
 
                   const Spacer(),
 
-                  _circleButton(
-                    Icons.favorite_border,
-                        () {},
-                  ),
+                  if (!widget.isPreview) ...[
 
-                  const SizedBox(width: 10),
+                    _circleButton(
+                      Icons.favorite_border,
+                          () {},
+                    ),
 
-                  _circleButton(
-                    Icons.share_outlined,
-                        () {},
-                  ),
+                    const SizedBox(width: 10),
+
+                    _circleButton(
+                      Icons.share_outlined,
+                          () {},
+                    ),
+
+                  ],
 
                 ],
               ),
             ),
           ),
 
-          //---------------------------------------
+          //--------------------------------------------------
           // Indicator
-          //---------------------------------------
+          //--------------------------------------------------
 
           if (widget.images.length > 1)
+
             Positioned(
               bottom: 30,
               left: 0,
@@ -126,15 +144,16 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
                   activeIndex: currentIndex,
                   count: widget.images.length,
                   effect: WormEffect(
-                    activeDotColor: AppColors.primary,
-                    dotColor: Colors.white38,
+                    activeDotColor:
+                    AppColors.primary,
+                    dotColor:
+                    Colors.white38,
                     dotHeight: 8,
                     dotWidth: 8,
                   ),
                 ),
               ),
             ),
-
         ],
       ),
     );

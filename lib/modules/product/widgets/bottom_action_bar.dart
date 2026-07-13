@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../app/utils/app_colors.dart';
-import '../models/post_model.dart';
+import '../models/product_model.dart';
 
 class BottomActionBar extends StatelessWidget {
   final ProductModel post;

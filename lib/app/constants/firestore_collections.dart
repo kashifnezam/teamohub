@@ -22,4 +22,8 @@ class FirestoreCollections {
   static const notifications = 'notifications';
 
   static const banners = 'banners';
+
+  static const countries = "countries";
+  static const states = "states";
+  static const cities = "cities";
 }

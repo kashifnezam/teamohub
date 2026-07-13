@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/post_model.dart';
+import '../models/product_model.dart';
 
 class DescriptionCard extends StatelessWidget {
   final ProductModel post;

@@ -1,19 +1,34 @@
 import 'package:flutter/material.dart';
 
-import '../models/post_model.dart';
+import '../models/product_image_model.dart';
+import '../models/product_model.dart';
 import '../widgets/bottom_action_bar.dart';
 import '../widgets/description_card.dart';
 import '../widgets/post_image_slider.dart';
 import '../widgets/post_info_card.dart';
+import '../widgets/preview_bottom_bar.dart';
 import '../widgets/seller_card.dart';
 
 class PostDetailsPage extends StatelessWidget {
-  final ProductModel post;
+  /// Existing product (published)
+  final ProductModel? post;
+
+  /// Preview images
+  final List<ProductImageModel>? previewImages;
+
+  /// Preview mode
+  final bool isPreview;
 
   const PostDetailsPage({
     super.key,
-    required this.post,
-  });
+    this.post,
+    this.previewImages,
+    this.isPreview = false,
+  }) : assert(
+  (isPreview && previewImages != null && post != null) ||
+      (!isPreview && post != null),
+  'Preview requires previewImages and post.',
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -22,15 +37,23 @@ class PostDetailsPage extends StatelessWidget {
 
       body: CustomScrollView(
         slivers: [
-
           //------------------------------------------------
-          // Image Slider
+          // Images
           //------------------------------------------------
 
           SliverToBoxAdapter(
             child: PostImageSlider(
-              images: post.images,
+              images: isPreview
+                  ? previewImages!
+                  : post!.images
+                  .map(
+                    (url) => ProductImageModel(
+                  url: url,
+                ),
+              )
+                  .toList(),
               post: post,
+              isPreview: isPreview,
             ),
           ),
 
@@ -40,7 +63,7 @@ class PostDetailsPage extends StatelessWidget {
 
           SliverToBoxAdapter(
             child: PostInfoCard(
-              post: post,
+              post: post!,
             ),
           ),
 
@@ -50,7 +73,7 @@ class PostDetailsPage extends StatelessWidget {
 
           SliverToBoxAdapter(
             child: DescriptionCard(
-             post: post,
+              post: post!,
             ),
           ),
 
@@ -58,29 +81,16 @@ class PostDetailsPage extends StatelessWidget {
           // Seller
           //------------------------------------------------
 
-          SliverToBoxAdapter(
-            child: SellerCard(
-              userId: post.sellerId,
+          if (!isPreview)
+            SliverToBoxAdapter(
+              child: SellerCard(
+                userId: post!.sellerId,
+              ),
             ),
-          ),
 
           //------------------------------------------------
-          // Safety Tips
+          // Bottom spacing
           //------------------------------------------------
-
-        /*  const SliverToBoxAdapter(
-            child: SafetyTips(),
-          ),
-*/
-          //------------------------------------------------
-          // Similar Products
-          //------------------------------------------------
-
-         /* SliverToBoxAdapter(
-            child: SimilarProducts(
-              categoryId: post.categoryId,
-            ),
-          ),*/
 
           const SliverPadding(
             padding: EdgeInsets.only(bottom: 100),
@@ -88,8 +98,14 @@ class PostDetailsPage extends StatelessWidget {
         ],
       ),
 
-      bottomNavigationBar: BottomActionBar(
-        post: post,
+      //------------------------------------------------
+      // Bottom Bar
+      //------------------------------------------------
+
+      bottomNavigationBar: isPreview
+          ? const PreviewBottomBar()
+          : BottomActionBar(
+        post: post!,
       ),
     );
   }

@@ -4,17 +4,24 @@ import 'package:get/get.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../../app/utils/app_colors.dart';
-import '../../../../../modules/product/models/post_model.dart';
+import '../../../../../modules/product/models/product_model.dart';
+import '../models/product_image_model.dart';
 import '../views/image_viewer_page.dart';
 
 class PostImageSlider extends StatefulWidget {
-  final List<String> images;
-  final ProductModel post;
+  final List<ProductImageModel> images;
+
+  /// Null while previewing
+  final ProductModel? post;
+
+  /// Preview Mode
+  final bool isPreview;
 
   const PostImageSlider({
     super.key,
     required this.images,
-    required this.post,
+    this.post,
+    this.isPreview = false,
   });
 
   @override
@@ -55,18 +62,14 @@ class _PostImageSliderState extends State<PostImageSlider> {
                       () => ImageViewerPage(
                     images: widget.images,
                     initialIndex: index,
-                    heroTag: widget.post.id,
+                    heroTag: widget.post?.id ?? "preview",
                   ),
                 );
               },
               child: Hero(
-                tag: "${widget.post.id}$index",
-                child: Image.network(
-                  widget.images[index],
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              ),
+                tag: "${widget.post?.id ?? 'preview'}$index",
+                child: _buildImage(widget.images[index]),
+              )
             );
           },
           options: CarouselOptions(
@@ -145,7 +148,7 @@ class _PostImageSliderState extends State<PostImageSlider> {
         // NEW Badge
         //------------------------------------------------
 
-        if (widget.post.isNew)
+        if (!widget.isPreview && widget.post!.isNew)
           Positioned(
             left: 12,
             top: 80,
@@ -159,7 +162,7 @@ class _PostImageSliderState extends State<PostImageSlider> {
         // Featured
         //------------------------------------------------
 
-        if (widget.post.isFeatured)
+        if (!widget.isPreview && widget.post!.isFeatured)
           Positioned(
             left: 12,
             bottom: 18,
@@ -173,7 +176,7 @@ class _PostImageSliderState extends State<PostImageSlider> {
         // Verified
         //------------------------------------------------
 
-        if (widget.post.isVerified)
+        if (!widget.isPreview && widget.post!.isVerified)
           Positioned(
             right: 12,
             bottom: 18,
@@ -235,6 +238,28 @@ class _PostImageSliderState extends State<PostImageSlider> {
           ),
 
       ],
+    );
+  }
+
+  Widget _buildImage(ProductImageModel image) {
+    if (image.file != null) {
+      return Image.file(
+        image.file!,
+        fit: BoxFit.cover,
+        width: double.infinity,
+      );
+    }
+
+    return Image.network(
+      image.url!,
+      fit: BoxFit.cover,
+      width: double.infinity,
+      errorBuilder: (_, __, ___) {
+        return Container(
+          color: Colors.grey.shade200,
+          child: const Icon(Icons.broken_image),
+        );
+      },
     );
   }
 

@@ -1,4 +1,4 @@
-import '../models/post_model.dart';
+import '../models/product_model.dart';
 
 final now = DateTime.now();
 
@@ -46,7 +46,7 @@ final List<ProductModel> dummyProducts = [
     publishedAt: now,
     allowComments: true,
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now, sellerName: '', sellerPhoto: '',
   ),
 
   /// 2
@@ -84,7 +84,7 @@ final List<ProductModel> dummyProducts = [
     chats: 41,
     publishedAt: now,
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now, sellerName: '', sellerPhoto: '',
   ),
 
   /// 3
@@ -117,7 +117,7 @@ final List<ProductModel> dummyProducts = [
     chats: 17,
     publishedAt: now,
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now, sellerName: '', sellerPhoto: '',
   ),
 
   /// 4
@@ -154,7 +154,7 @@ final List<ProductModel> dummyProducts = [
     chats: 56,
     publishedAt: now,
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now, sellerName: '', sellerPhoto: '',
   ),
 
   /// 5
@@ -190,7 +190,7 @@ final List<ProductModel> dummyProducts = [
     chats: 29,
     publishedAt: now,
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now, sellerName: '', sellerPhoto: '',
   ),
   /// 6
   ProductModel(
@@ -224,7 +224,7 @@ final List<ProductModel> dummyProducts = [
     chats: 11,
     publishedAt: now,
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now, sellerName: '', sellerPhoto: '',
   ),
 
   /// 7
@@ -261,7 +261,7 @@ final List<ProductModel> dummyProducts = [
     chats: 62,
     publishedAt: now,
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now, sellerName: '', sellerPhoto: '',
   ),
 
   /// 8
@@ -296,7 +296,7 @@ final List<ProductModel> dummyProducts = [
     chats: 35,
     publishedAt: now,
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now, sellerName: '', sellerPhoto: '',
   ),
 
   /// 9
@@ -331,7 +331,7 @@ final List<ProductModel> dummyProducts = [
     chats: 49,
     publishedAt: now,
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now, sellerName: '', sellerPhoto: '',
   ),
 
   /// 10
@@ -366,7 +366,7 @@ final List<ProductModel> dummyProducts = [
     chats: 16,
     publishedAt: now,
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now, sellerName: '', sellerPhoto: '',
   ),
   /// 11
   ProductModel(
@@ -398,7 +398,7 @@ final List<ProductModel> dummyProducts = [
     chats: 91,
     publishedAt: now,
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now, sellerName: '', sellerPhoto: '',
   ),
 
   /// 12
@@ -432,7 +432,7 @@ final List<ProductModel> dummyProducts = [
     chats: 102,
     publishedAt: now,
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now, sellerName: '', sellerPhoto: '',
   ),
 
   /// 13
@@ -463,7 +463,7 @@ final List<ProductModel> dummyProducts = [
     chats: 22,
     publishedAt: now,
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now, sellerName: '', sellerPhoto: '',
   ),
 
   /// 14
@@ -494,7 +494,7 @@ final List<ProductModel> dummyProducts = [
     chats: 43,
     publishedAt: now,
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now, sellerName: '', sellerPhoto: '',
   ),
 
   /// 15
@@ -525,7 +525,7 @@ final List<ProductModel> dummyProducts = [
     chats: 14,
     publishedAt: now,
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now, sellerName: '', sellerPhoto: '',
   ),
 
   /// 16
@@ -556,7 +556,7 @@ final List<ProductModel> dummyProducts = [
     chats: 19,
     publishedAt: now,
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now, sellerName: '', sellerPhoto: '',
   ),
 
   /// 17
@@ -585,7 +585,7 @@ final List<ProductModel> dummyProducts = [
     chats: 5,
     publishedAt: now,
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now, sellerName: '', sellerPhoto: '',
   ),
 
   /// 18
@@ -616,7 +616,7 @@ final List<ProductModel> dummyProducts = [
     chats: 9,
     publishedAt: now,
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now, sellerName: '', sellerPhoto: '',
   ),
 
   /// 19
@@ -647,7 +647,7 @@ final List<ProductModel> dummyProducts = [
     chats: 13,
     publishedAt: now,
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now, sellerName: '', sellerPhoto: '',
   ),
 
   /// 20
@@ -679,6 +679,6 @@ final List<ProductModel> dummyProducts = [
     chats: 48,
     publishedAt: now,
     createdAt: now,
-    updatedAt: now,
+    updatedAt: now, sellerName: '', sellerPhoto: '',
   ),
 ];

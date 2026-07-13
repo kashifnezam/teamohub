@@ -1,22 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:teamomarket/modules/product/controllers/product_controller.dart';
 
-import '../arguments/add_product_arguments.dart';
 import '../../category/controllers/category_controller.dart';
+import '../arguments/add_product_arguments.dart';
+import '../widgets/add_photos_card.dart';
+import '../widgets/basic_information_card.dart';
+import '../widgets/bottom_continue_bar.dart';
+import '../widgets/dynamic_fields_card.dart';
+import '../widgets/location_card.dart';
 
 class AddProductPage extends GetView<CategoryController> {
-  const AddProductPage({super.key});
-
+  AddProductPage({super.key});
+  final ProductController productController = Get.put(ProductController());
   @override
   Widget build(BuildContext context) {
     final AddProductArguments args = Get.arguments;
 
+    productController.initialize(
+      category: args.category,
+      subCategory: args.subCategory,
+    );
+
     return Scaffold(
+      backgroundColor: const Color(0xffF7F8FA),
+
       appBar: AppBar(
-        title: Text(
-          "Sell ${args.subCategory?.name ?? args.category.title}",
+        elevation: 0,
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        title: Column(
+          children: [
+            Text(
+              "Sell ${args.subCategory?.name ?? args.category.title}",
+              style: const TextStyle(
+                fontWeight: FontWeight.w700,
+                fontSize: 18,
+              ),
+            ),
+            Text(
+              args.category.title,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey.shade600,
+              ),
+            ),
+          ],
         ),
       ),
+
+      bottomNavigationBar: const BottomContinueBar(),
+
       body: Obx(() {
         if (controller.isFieldLoading.value) {
           return const Center(
@@ -24,83 +59,37 @@ class AddProductPage extends GetView<CategoryController> {
           );
         }
 
-        return ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
+        return Form(
+          key: productController.formKey,
+          child: ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
 
-            /// Dynamic Fields
-            ...controller.fields.map(
-                  (field) => Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: _buildField(field),
+              /// Photos
+              const AddPhotosCard(),
+
+              const SizedBox(height: 18),
+
+              /// Basic Information
+              const BasicInformationCard(),
+
+              const SizedBox(height: 18),
+
+              /// Category Specific Fields
+              DynamicFieldsCard(
+                fields: controller.fields,
               ),
-            ),
 
-            const SizedBox(height: 24),
+              const SizedBox(height: 18),
 
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text("Continue"),
-            ),
-          ],
+              /// Location
+              const LocationCard(),
+
+              const SizedBox(height: 100),
+            ],
+          ),
         );
       }),
     );
-  }
-
-  Widget _buildField(dynamic field) {
-    switch (field.type) {
-      case "text":
-        return TextField(
-          decoration: InputDecoration(
-            labelText: field.label,
-            hintText: field.hint,
-          ),
-        );
-
-      case "textarea":
-        return TextField(
-          maxLines: 4,
-          decoration: InputDecoration(
-            labelText: field.label,
-            hintText: field.hint,
-          ),
-        );
-
-      case "number":
-        return TextField(
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            labelText: field.label,
-            hintText: field.hint,
-          ),
-        );
-
-      case "dropdown":
-        return DropdownButtonFormField<String>(
-          decoration: InputDecoration(
-            labelText: field.label,
-          ),
-          items: field.options
-              .map<DropdownMenuItem<String>>(
-                (e) => DropdownMenuItem(
-              value: e,
-              child: Text(e),
-            ),
-          )
-              .toList(),
-          onChanged: (_) {},
-        );
-
-      case "checkbox":
-        return CheckboxListTile(
-          value: false,
-          onChanged: (_) {},
-          title: Text(field.label),
-        );
-
-      default:
-        return const SizedBox.shrink();
-    }
   }
 }

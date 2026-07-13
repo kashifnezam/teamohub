@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teamomarket/modules/product/views/post_details_page.dart';
 import '../../../app/utils/app_colors.dart';
-import '../models/post_model.dart';
+import '../models/product_model.dart';
 
 class PostCard extends StatelessWidget {
   final ProductModel post;

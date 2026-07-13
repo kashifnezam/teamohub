@@ -31,6 +31,7 @@ abstract class Routes {
   static const editProduct = '/edit-product';
   static const productDetails = '/product-details';
   static const myProducts = '/my-products';
+  static const productPreview = '/product-preview';
 
   // ---------------- Chat ----------------
 
@@ -57,4 +58,8 @@ abstract class Routes {
   // ---------------- Settings ----------------
 
   static const settings = '/settings';
+
+  // ---------------- Location ----------------
+
+  static const locationPicker = "/location-picker";
 }

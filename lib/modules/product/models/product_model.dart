@@ -34,7 +34,8 @@ enum ProductStatus {
 class ProductModel {
   /// Unique Product ID
   final String id;
-
+  final String sellerName;
+  final String sellerPhoto;
   /// Basic Information
   final String title;
   final String description;
@@ -138,6 +139,8 @@ class ProductModel {
 
   const ProductModel({
     required this.id,
+    required this.sellerName,
+    required this.sellerPhoto,
     required this.title,
     required this.description,
     required this.price,
@@ -192,6 +195,8 @@ class ProductModel {
 
   ProductModel copyWith({
     String? id,
+    String? sellerName,
+    String? sellerPhoto,
     String? title,
     String? description,
     double? price,
@@ -229,6 +234,8 @@ class ProductModel {
   }) {
     return ProductModel(
       id: id ?? this.id,
+      sellerName: sellerName ?? this.sellerName,
+      sellerPhoto: sellerPhoto ?? this.sellerPhoto,
       title: title ?? this.title,
       description: description ?? this.description,
       price: price ?? this.price,
@@ -322,6 +329,8 @@ class ProductModel {
   factory ProductModel.fromMap(Map<String, dynamic> map) {
     return ProductModel(
       id: map['id'] ?? '',
+      sellerName: map['sellerName'] ?? '',
+      sellerPhoto: map['sellerPhoto'] ?? '',
       title: map['title'] ?? '',
       description: map['description'] ?? '',
       price: (map['price'] ?? 0).toDouble(),

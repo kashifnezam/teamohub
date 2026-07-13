@@ -181,4 +181,46 @@ class LocationUtils {
       'deviceId': DeviceInfo.deviceId,
     });
   }
+
+  static Future<LatLng?> getSingleLocation({
+    Function(String)? onError,
+  }) async {
+    try {
+      bool serviceEnabled =
+      await Geolocator.isLocationServiceEnabled();
+
+      if (!serviceEnabled) {
+        onError?.call("Location services are disabled.");
+        return null;
+      }
+
+      LocationPermission permission =
+      await Geolocator.checkPermission();
+
+      if (permission == LocationPermission.denied) {
+        permission =
+        await Geolocator.requestPermission();
+      }
+
+      if (permission == LocationPermission.denied ||
+          permission ==
+              LocationPermission.deniedForever) {
+        onError?.call("Location permission denied.");
+        return null;
+      }
+
+      final position =
+      await Geolocator.getCurrentPosition(
+        locationSettings: LocationSettings(accuracy: LocationAccuracy.best),
+      );
+
+      return LatLng(
+        position.latitude,
+        position.longitude,
+      );
+    } catch (e) {
+      onError?.call(e.toString());
+      return null;
+    }
+  }
 }
