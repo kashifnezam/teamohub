@@ -74,8 +74,7 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
 
                 minScale: PhotoViewComputedScale.contained,
 
-                maxScale:
-                PhotoViewComputedScale.covered * 4,
+                maxScale: PhotoViewComputedScale.covered * 4,
               );
             },
 

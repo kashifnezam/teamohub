@@ -1,153 +1,168 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:teamomarket/modules/product/controllers/product_controller.dart';
 
+import '../../product/controllers/product_controller.dart';
 import '../controllers/location_controller.dart';
 import '../models/location_result.dart';
-import '../widgets/area_text_field.dart';
-import '../widgets/city_dropdown.dart';
-import '../widgets/country_dropdown.dart';
-import '../widgets/state_dropdown.dart';
+import '../models/state_model.dart';
+import '../widgets/current_location_tile.dart';
+import '../widgets/empty_location.dart';
+import '../widgets/loading_location.dart';
+import '../widgets/location_tile.dart';
+import '../widgets/recent_section.dart';
+import '../widgets/search_box.dart';
+import '../widgets/section_header.dart';
+import 'district_list_page.dart';
 
-class LocationPickerPage extends GetView<LocationController> {
-   LocationPickerPage({super.key});
-   final ProductController productController = Get.find<ProductController>();
+class LocationPickerPage extends StatelessWidget {
+  LocationPickerPage({super.key});
+
+  final LocationController controller = Get.put(LocationController());
+
+  final ProductController productController = Get.find<ProductController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffF7F8FA),
+      backgroundColor: Colors.white,
 
       appBar: AppBar(
         elevation: 0,
+        scrolledUnderElevation: 0,
         backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        centerTitle: true,
         title: const Text(
           "Select Location",
-          style: TextStyle(
-            fontWeight: FontWeight.w700,
-          ),
         ),
       ),
 
-      bottomNavigationBar: SafeArea(
-        minimum: const EdgeInsets.all(16),
-        child: FilledButton(
-          onPressed: () {
-            if (!controller.isLocationSelected) {
-              Get.snackbar(
-                "Location Required",
-                "Please select Country, State and City.",
-              );
-              return;
-            }
+      body: Column(
+        children: [
 
-            Get.back(
-              result: LocationResult(
-                country: controller.selectedCountry.value!.name,
-                state: controller.selectedState.value!.name,
-                city: controller.selectedCity.value!.name,
-                area: controller.areaController.text.trim(),
-              ),
-            );
+          SearchBox(
+            controller:
+            controller.stateSearchController,
+            hintText: "Search state",
+            onChanged: controller.filterStates,
+            onClear: controller.clearStateSearch,
+          ),
+
+          Expanded(
+            child: Obx(
+                  () =>
+                  AnimatedSwitcher(
+                    duration: const Duration(
+                      milliseconds: 250,
+                    ),
+                    transitionBuilder:
+                        (child, animation) {
+                      return FadeTransition(
+                        opacity: animation,
+                        child: child,
+                      );
+                    },
+                    child: _buildBody(),
+                  ),
+            ),
+          ),
+
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBody() {
+    if (controller.loadingStates.value) {
+      return const LoadingLocation();
+    }
+
+    if (!controller.hasStates) {
+      return const EmptyLocation();
+    }
+
+    return ListView(
+      key: const ValueKey("state_list"),
+
+      children: [
+
+        CurrentLocationTile(
+          onTap: () async {
+            await productController.useCurrentLocation();
+
+            Get.back();
           },
-          style: FilledButton.styleFrom(
-            minimumSize: const Size.fromHeight(56),
-          ),
-          child: const Text(
-            "Save Location",
-          ),
         ),
+
+        if (controller.recentLocations.isNotEmpty)
+
+          RecentSection(
+            locations:
+            controller.recentLocations,
+            onTap: _onRecentTap,
+          ),
+
+        const SectionHeader(
+          title: "States",
+        ),
+
+        ...controller.filteredStates.map(
+          _buildStateTile,
+        ),
+
+      ],
+    );
+  }
+
+  Widget _buildStateTile(StateModel state,) {
+    return LocationTile(
+      title: state.name,
+      icon: Icons.location_on_outlined,
+      showChevron: true,
+      onTap: () => _openDistrictPage(state),
+    );
+  }
+
+  //----------------------------------------------------------
+// Recent Location
+//----------------------------------------------------------
+
+  void _onRecentTap(LocationResult location,) {
+    controller.selectedCountry.value = location.country;
+    controller.selectedState.value = location.state;
+    controller.selectedCity.value = location.city;
+
+    productController.setLocation(
+      countryValue: location.country.name,
+      stateValue: location.state.name,
+      cityValue: location.city.name,
+      latitudeValue: location.city.latitude ?? 0,
+      longitudeValue: location.city.longitude ?? 0,
+    );
+
+    Get.back(
+      result: location,
+    );
+  }
+
+  //----------------------------------------------------------
+// Open District Page
+//----------------------------------------------------------
+
+  Future<void> _openDistrictPage(
+      StateModel state,
+      ) async {
+
+    controller.selectState(state);
+
+    final LocationResult? result = await Get.to<LocationResult>(
+          () => DistrictListPage(
+        country: controller.selectedCountry.value!,
+        state: state,
       ),
+    );
 
-      body:  ListView(
-          padding: const EdgeInsets.all(18),
-          children: [
-
-            //--------------------------------------------------
-            // Header
-            //--------------------------------------------------
-
-            Text(
-              "Where is your product located?",
-              style: Theme.of(context)
-                  .textTheme
-                  .titleMedium
-                  ?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-
-            const SizedBox(height: 6),
-
-            Text(
-              "This helps nearby buyers discover your listing.",
-              style: TextStyle(
-                color: Colors.grey.shade600,
-              ),
-            ),
-
-            const SizedBox(height: 28),
-
-            //--------------------------------------------------
-            // Country
-            //--------------------------------------------------
-
-            const CountryDropdown(),
-
-            const SizedBox(height: 18),
-
-            //--------------------------------------------------
-            // State
-            //--------------------------------------------------
-
-            const StateDropdown(),
-
-            const SizedBox(height: 18),
-
-            //--------------------------------------------------
-            // City
-            //--------------------------------------------------
-
-            const CityDropdown(),
-
-            const SizedBox(height: 18),
-
-            //--------------------------------------------------
-            // Area
-            //--------------------------------------------------
-
-            const AreaTextField(),
-
-            const SizedBox(height: 24),
-
-            //--------------------------------------------------
-            // GPS
-            //--------------------------------------------------
-
-            OutlinedButton.icon(
-              onPressed: productController.useCurrentLocation,
-              icon: const Icon(
-                Icons.my_location,
-              ),
-              label: const Text(
-                "Use Current Location",
-              ),
-            ),
-
-            const SizedBox(height: 18),
-
-            Text(
-              "Your exact address is never shown publicly.",
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 12,
-              ),
-            ),
-
-            const SizedBox(height: 40),
-          ],
-        ),
-      );
+    if (result != null) {
+      Get.back(result: result);
+    }
   }
 }
+

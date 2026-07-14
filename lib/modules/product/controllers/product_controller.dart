@@ -4,11 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:teamomarket/app/constants/app_constants.dart';
 
 import '../../../app/routes/app_routes.dart';
+import '../../../app/utils/custom_alert.dart';
 import '../../../app/utils/location_utils.dart';
 import '../../category/models/category_model.dart';
 import '../../category/models/sub_category_model.dart';
+import '../../location/models/location_result.dart';
 import '../models/product_image_model.dart';
 import '../models/product_model.dart';
 
@@ -27,6 +30,7 @@ class ProductController extends GetxController {
   final ImagePicker _picker = ImagePicker();
   static const int maxImages = 20;
   final RxList<ProductImageModel> images = <ProductImageModel>[].obs;
+  final Rxn<LocationResult> selectedLocation = Rxn<LocationResult>();
 
   final RxString country = ''.obs;
   final RxString state = ''.obs;
@@ -39,15 +43,9 @@ class ProductController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxBool imagesError = false.obs;
   final RxBool locationError = false.obs;
-
-  bool get hasImages =>
-      images.isNotEmpty;
-
-  bool get canAddMoreImages =>
-      images.length < maxImages;
-
-  int get imageCount =>
-      images.length;
+  bool get hasImages => images.isNotEmpty;
+  bool get canAddMoreImages => images.length < maxImages;
+  int get imageCount => images.length;
 
   ProductImageModel? get coverImage {
     try {
@@ -87,6 +85,24 @@ class ProductController extends GetxController {
 
   Future<void> pickLocation() async {
     await useCurrentLocation();
+  }
+
+  void setLocationResult(
+      LocationResult location,
+      ) {
+    selectedLocation.value = location;
+
+    country.value = location.country.name;
+
+    state.value = location.state.name;
+
+    city.value = location.city.name;
+
+    latitude.value =
+        location.city.latitude ?? 0;
+
+    longitude.value =
+        location.city.longitude ?? 0;
   }
 
   Future<void> useCurrentLocation() async {
@@ -214,8 +230,8 @@ class ProductController extends GetxController {
     area.value = areaValue ?? "";
     address.value = addressValue ?? "";
 
-    latitude.value = latitudeValue!;
-    longitude.value = longitudeValue!;
+    latitude.value = latitudeValue ?? 0;
+    longitude.value = longitudeValue ?? 0;
 
     areaController.text = area.value;
 
@@ -246,8 +262,8 @@ class ProductController extends GetxController {
       final remaining = maxImages - images.length;
 
       if (remaining <= 0) {
-        Get.snackbar(
-          "Maximum Reached",
+        CustomAlert.infoAlert(
+          title: "Maximum Reached",
           "You can upload up to $maxImages photos.",
         );
         return;
@@ -266,8 +282,8 @@ class ProductController extends GetxController {
       imagesError.value = false;
 
     } catch (e) {
-      Get.snackbar(
-        "Error",
+      CustomAlert.errorAlert(
+        title: "Error",
         "Unable to select images.",
       );
     }
@@ -278,8 +294,8 @@ class ProductController extends GetxController {
 
   bool validateForm() {
     if (images.isEmpty) {
-      Get.snackbar(
-        "Photos Required",
+      CustomAlert.infoAlert(
+        title: "Photos Required",
         "Please upload at least one photo.",
       );
       return false;
@@ -291,8 +307,8 @@ class ProductController extends GetxController {
       return false;
     }
     if (city.value.isEmpty) {
-      Get.snackbar(
-        "Location Required",
+      CustomAlert.infoAlert(
+        title: "Location Required",
         "Please select a location.",
       );
       return false;
@@ -323,6 +339,7 @@ class ProductController extends GetxController {
   /// ---------------------------------------
 
   Future<void> publishProduct() async {
+    print("========================");
 
     if (!validateForm()) {
       return;
@@ -331,6 +348,7 @@ class ProductController extends GetxController {
     try {
 
       isLoading.value = true;
+AppConstants.log.i(buildProductModel().attributes);
 
       // TODO
 
@@ -340,19 +358,19 @@ class ProductController extends GetxController {
 
       // Save to Firestore
 
-      Get.back();
+      // Get.back();
 
-      Get.snackbar(
-        "Success",
+      CustomAlert.successAlert(
+        title: "Success",
         "Product published successfully.",
       );
 
-      clearForm();
+      // clearForm();
 
     } catch (e) {
 
-      Get.snackbar(
-        "Error",
+      CustomAlert.errorAlert(
+       title: "Error",
         e.toString(),
       );
 
@@ -364,51 +382,50 @@ class ProductController extends GetxController {
 
   }
 
+  String conditionText(ProductCondition condition) {
+    switch (condition) {
+      case ProductCondition.newProduct:
+        return "New";
+      case ProductCondition.likeNew:
+        return "Like New";
+      case ProductCondition.good:
+        return "Good";
+      case ProductCondition.fair:
+        return "Fair";
+      case ProductCondition.poor:
+        return "Poor";
+    }
+  }
+
   ProductModel buildProductModel() {
     final now = DateTime.now();
 
     return ProductModel(
       id: "",
-
       title: titleController.text.trim(),
-
       description: descriptionController.text.trim(),
-
       price: double.tryParse(
         priceController.text.trim(),
       ) ??
           0,
 
       categoryId: selectedCategory!.id,
-
+      categoryName: selectedCategory!.name,
       subCategoryId: selectedSubCategory?.id,
-
+      subCategoryName: selectedSubCategory?.name,
       sellerId: "", // TODO: Replace with logged-in user's id
-
       agentId: null,
-
       images: const [], // Images are uploaded during publish()
-
       attributes: Map<String, dynamic>.from(attributes),
-
       country: country.value,
-
       state: state.value,
-
       city: city.value,
-
-      area: area.value.isEmpty ? null : area.value,
-
+      area: areaController.text.isEmpty ? null : areaController.text,
       address: address.value.isEmpty ? null : address.value,
-
       latitude: latitude.value,
-
       longitude: longitude.value,
-
       createdAt: now,
-
       updatedAt: now,
-
       publishedAt: now,
       sellerName: '',
       sellerPhoto: '',

@@ -58,19 +58,18 @@ class AppPages {
 
     GetPage(
       name: Routes.subCategories,
-      page: () => const SubCategoryPage(),
+      page: () => SubCategoryPage(),
+      binding: CategoryBinding(),
     ),
     //
     GetPage(
       name: Routes.addProduct,
       page: () => AddProductPage(),
-      // binding: ProductBinding(),
     ),
 
     GetPage(
       name: Routes.productPreview,
       page: () => ProductPreviewPage(),
-      // binding: ProductBinding(),
     ),
 
     GetPage(

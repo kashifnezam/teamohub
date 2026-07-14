@@ -148,7 +148,7 @@ class _PostImageSliderState extends State<PostImageSlider> {
         // NEW Badge
         //------------------------------------------------
 
-        if (!widget.isPreview && widget.post!.isNew)
+        if (widget.post != null && widget.post?.attributes["condition"]?.toString().toLowerCase() == "new")
           Positioned(
             left: 12,
             top: 80,
@@ -157,7 +157,6 @@ class _PostImageSliderState extends State<PostImageSlider> {
               Colors.green,
             ),
           ),
-
         //------------------------------------------------
         // Featured
         //------------------------------------------------
@@ -245,7 +244,7 @@ class _PostImageSliderState extends State<PostImageSlider> {
     if (image.file != null) {
       return Image.file(
         image.file!,
-        fit: BoxFit.cover,
+        fit: BoxFit.contain,
         width: double.infinity,
       );
     }

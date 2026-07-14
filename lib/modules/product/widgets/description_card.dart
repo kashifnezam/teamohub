@@ -3,14 +3,18 @@ import '../models/product_model.dart';
 
 class DescriptionCard extends StatelessWidget {
   final ProductModel post;
+  /// Preview mode
+  final bool isPreview;
 
   const DescriptionCard({
     super.key,
     required this.post,
+    required this.isPreview,
   });
 
   @override
   Widget build(BuildContext context) {
+    final condition = post.attributes["condition"] as ProductCondition?;
     return Card(
       margin: const EdgeInsets.fromLTRB(12, 12, 12, 0),
       elevation: 0.5,
@@ -65,18 +69,20 @@ class DescriptionCard extends StatelessWidget {
 
             _detailTile(
               "Category",
-              post.categoryId,
+              post.categoryName ?? "--",
             ),
 
             _detailTile(
               "Sub Category",
-              post.subCategoryId.toString(),
+              post.subCategoryName ?? "--",
             ),
 
+
+          if (condition != null)
             _detailTile(
-              "Condition",
-              post.condition.name,
-            ),
+            "Condition",
+            _conditionText(condition),
+          ),
 
             _detailTile(
               "Price Type",
@@ -90,18 +96,44 @@ class DescriptionCard extends StatelessWidget {
               post.type.name.toUpperCase(),
             ),
 
+            if(!isPreview)
             _detailTile(
               "Status",
               post.status.name.toUpperCase(),
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 15),
+
+            const Divider(),
+
+            const SizedBox(height: 15),
+
+            if (post.attributes.isNotEmpty) ...[
+              const SizedBox(height: 10),
+
+              const Text(
+                "Additional Details",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              ...post.attributes.entries.map(
+                    (entry) => _detailTile(
+                  _formatKey(entry.key),
+                  entry.value?.toString() ?? "--",
+                ),
+              ),
+            ],
 
             if (post.isVerified)
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(.08),
+                  color: Colors.green.withValues(alpha: .08),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: Colors.green.shade300,
@@ -171,5 +203,32 @@ class DescriptionCard extends StatelessWidget {
         ],
       ),
     );
+  }
+  String _formatKey(String key) {
+    return key
+        .replaceAll('_', ' ')
+        .split(' ')
+        .map(
+          (word) => word.isEmpty
+          ? word
+          : '${word[0].toUpperCase()}${word.substring(1)}',
+    )
+        .join(' ');
+  }
+  String _conditionText(ProductCondition? condition) {
+    switch (condition) {
+      case ProductCondition.newProduct:
+        return "New";
+      case ProductCondition.likeNew:
+        return "Like New";
+      case ProductCondition.good:
+        return "Good";
+      case ProductCondition.fair:
+        return "Fair";
+      case ProductCondition.poor:
+        return "Poor";
+      case null:
+        return "--";
+    }
   }
 }

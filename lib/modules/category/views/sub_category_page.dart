@@ -8,11 +8,11 @@ import '../models/category_model.dart';
 import '../models/sub_category_model.dart';
 
 class SubCategoryPage extends GetView<CategoryController> {
-  const SubCategoryPage({super.key});
+  SubCategoryPage({super.key});
+  final CategoryModel category = Get.arguments;
 
   @override
   Widget build(BuildContext context) {
-    final CategoryModel category = Get.arguments;
 
     return Scaffold(
       backgroundColor: const Color(0xffF8F9FC),
@@ -21,7 +21,7 @@ class SubCategoryPage extends GetView<CategoryController> {
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         title: Text(
-          category.title,
+          category.name,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
           ),

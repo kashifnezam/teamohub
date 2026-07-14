@@ -14,6 +14,7 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final condition = post.attributes["condition"] as ProductCondition?;
     return Card(
       elevation: 1,
       margin: EdgeInsets.zero,
@@ -48,7 +49,7 @@ class PostCard extends StatelessWidget {
                   ),
                 ),
 
-                if (post.isNew)
+                if (post.attributes.isNotEmpty && post.attributes["condition"] == ProductCondition.newProduct)
                   Positioned(
                     top: 8,
                     left: 8,
@@ -126,23 +127,23 @@ class PostCard extends StatelessWidget {
                       ),
 
                       const Spacer(),
-
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 6,
-                          vertical: 2,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade100,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Text(
-                          post.condition.name,
-                          style: const TextStyle(
-                            fontSize: 10,
+                      if (condition != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade100,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            _conditionText(condition),
+                            style: const TextStyle(
+                              fontSize: 10,
+                            ),
                           ),
                         ),
-                      ),
 
                     ],
                   ),
@@ -219,27 +220,41 @@ class PostCard extends StatelessWidget {
       ),
     );
   }
-}
-Widget _badge(
-    String text,
-    Color color,
-    ) {
-  return Container(
-    padding: const EdgeInsets.symmetric(
-      horizontal: 8,
-      vertical: 4,
-    ),
-    decoration: BoxDecoration(
-      color: color,
-      borderRadius: BorderRadius.circular(20),
-    ),
-    child: Text(
-      text,
-      style: const TextStyle(
-        color: Colors.white,
-        fontSize: 10,
-        fontWeight: FontWeight.bold,
+  String _conditionText(ProductCondition condition) {
+    switch (condition) {
+      case ProductCondition.newProduct:
+        return "New";
+      case ProductCondition.likeNew:
+        return "Like New";
+      case ProductCondition.good:
+        return "Good";
+      case ProductCondition.fair:
+        return "Fair";
+      case ProductCondition.poor:
+        return "Poor";
+    }
+  }
+  Widget _badge(
+      String text,
+      Color color,
+      ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 8,
+        vertical: 4,
       ),
-    ),
-  );
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
 }

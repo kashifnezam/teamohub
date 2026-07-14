@@ -221,7 +221,7 @@ class HomePage extends StatelessWidget {
                           width: itemWidth,
                           child: ImageCategory(
                             image: category.image,
-                            title: category.title,
+                            title: category.name,
                           ),
                         ),
                       )

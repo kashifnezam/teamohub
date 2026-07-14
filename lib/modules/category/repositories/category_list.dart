@@ -5,7 +5,7 @@ final now = DateTime.now();
 final List<CategoryModel> categories = [
   CategoryModel(
     id: "cars",
-    title: "Cars",
+    name: "Cars",
     image: "assets/categories/car.png",
     order: 1,
     color: "#EF4444",
@@ -16,7 +16,7 @@ final List<CategoryModel> categories = [
   ),
   CategoryModel(
     id: "mobiles",
-    title: "Mobiles",
+    name: "Mobiles",
     image: "assets/categories/mobile.png",
     order: 2,
     color: "#3B82F6",
@@ -27,7 +27,7 @@ final List<CategoryModel> categories = [
   ),
   CategoryModel(
     id: "property",
-    title: "Property",
+    name: "Property",
     image: "assets/categories/property.png",
     order: 3,
     color: "#10B981",
@@ -38,7 +38,7 @@ final List<CategoryModel> categories = [
   ),
   CategoryModel(
     id: "fashion",
-    title: "Fashion",
+    name: "Fashion",
     image: "assets/categories/fashion.png",
     order: 4,
     color: "#EC4899",
@@ -48,7 +48,7 @@ final List<CategoryModel> categories = [
   ),
   CategoryModel(
     id: "jobs",
-    title: "Jobs",
+    name: "Jobs",
     image: "assets/categories/jobs.png",
     order: 5,
     color: "#F59E0B",
@@ -58,7 +58,7 @@ final List<CategoryModel> categories = [
   ),
   CategoryModel(
     id: "bikes",
-    title: "Bikes",
+    name: "Bikes",
     image: "assets/categories/bikes.png",
     order: 6,
     color: "#6366F1",
@@ -68,7 +68,7 @@ final List<CategoryModel> categories = [
   ),
   CategoryModel(
     id: "furniture",
-    title: "Furniture",
+    name: "Furniture",
     image: "assets/categories/furniture.png",
     order: 7,
     color: "#8B5CF6",
@@ -78,7 +78,7 @@ final List<CategoryModel> categories = [
   ),
   CategoryModel(
     id: "services",
-    title: "Services",
+    name: "Services",
     image: "assets/categories/service.png",
     order: 8,
     color: "#06B6D4",
@@ -88,7 +88,7 @@ final List<CategoryModel> categories = [
   ),
   CategoryModel(
     id: "electronics",
-    title: "Electronics",
+    name: "Electronics",
     image: "assets/categories/electronics.png",
     order: 9,
     color: "#14B8A6",
@@ -98,7 +98,7 @@ final List<CategoryModel> categories = [
   ),
   CategoryModel(
     id: "pets",
-    title: "Pets",
+    name: "Pets",
     image: "assets/categories/pets.png",
     order: 10,
     color: "#A855F7",

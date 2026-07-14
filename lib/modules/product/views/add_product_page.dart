@@ -13,9 +13,10 @@ import '../widgets/location_card.dart';
 class AddProductPage extends GetView<CategoryController> {
   AddProductPage({super.key});
   final ProductController productController = Get.put(ProductController());
+  final AddProductArguments args = Get.arguments;
   @override
   Widget build(BuildContext context) {
-    final AddProductArguments args = Get.arguments;
+
 
     productController.initialize(
       category: args.category,
@@ -33,14 +34,14 @@ class AddProductPage extends GetView<CategoryController> {
         title: Column(
           children: [
             Text(
-              "Sell ${args.subCategory?.name ?? args.category.title}",
+              "Sell ${args.subCategory?.name ?? args.category.name}",
               style: const TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 18,
               ),
             ),
             Text(
-              args.category.title,
+              args.category.name,
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.grey.shade600,
@@ -85,7 +86,7 @@ class AddProductPage extends GetView<CategoryController> {
               /// Location
               const LocationCard(),
 
-              const SizedBox(height: 100),
+              const SizedBox(height: 20),
             ],
           ),
         );

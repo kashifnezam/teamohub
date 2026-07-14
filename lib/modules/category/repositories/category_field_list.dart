@@ -185,6 +185,16 @@ final List<CategoryFieldModel> categoryFields = [
     order: 4,
   ),
 
+  CategoryFieldModel(
+    id: 'property_condition',
+    categoryId: 'property',
+    key: 'condition',
+    label: 'Condition',
+    type: 'dropdown',
+    options: ['New', 'Like New', 'Good', 'Fair'],
+    order: 5,
+  ),
+
   // ===========================
   // Fashion
   // ===========================
@@ -280,6 +290,18 @@ final List<CategoryFieldModel> categoryFields = [
     type: 'number',
     order: 3,
   ),
+
+  CategoryFieldModel(
+    id: 'bike_condition',
+    categoryId: 'bikes',
+    key: 'condition',
+    label: 'Condition',
+    type: 'dropdown',
+    options: ['New', 'Used'],
+    order: 4,
+  ),
+
+
 
   // ===========================
   // Furniture

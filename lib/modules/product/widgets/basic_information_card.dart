@@ -114,6 +114,7 @@ class BasicInformationCard extends GetView<ProductController> {
               minLines: 5,
               maxLength: 1000,
               decoration: InputDecoration(
+                errorMaxLines: 2,
                 labelText: "Description *",
                 hintText:
                 "Describe the product, its condition, features, accessories, warranty, purchase date, and reason for selling.",

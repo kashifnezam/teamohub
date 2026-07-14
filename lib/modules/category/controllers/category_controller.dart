@@ -14,14 +14,9 @@ class CategoryController extends GetxController {
   final RxBool isSubCategoryLoading = false.obs;
   final RxBool isFieldLoading = false.obs;
 
-  final RxList<CategoryModel> categories =
-      <CategoryModel>[].obs;
-
-  final RxList<SubCategoryModel> subCategories =
-      <SubCategoryModel>[].obs;
-
-  final RxList<CategoryFieldModel> fields =
-      <CategoryFieldModel>[].obs;
+  final RxList<CategoryModel> categories = <CategoryModel>[].obs;
+  final RxList<SubCategoryModel> subCategories = <SubCategoryModel>[].obs;
+  final RxList<CategoryFieldModel> fields = <CategoryFieldModel>[].obs;
 
   @override
   void onInit() {

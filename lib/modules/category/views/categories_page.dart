@@ -101,7 +101,7 @@ class CategoriesPage extends GetView<CategoryController> {
                         horizontal: 6,
                       ),
                       child: Text(
-                        category.title,
+                        category.name,
                         textAlign: TextAlign.center,
                         maxLines: 2,
                         style: const TextStyle(

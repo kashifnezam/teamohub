@@ -8,12 +8,13 @@ class LocationBinding extends Bindings {
   void dependencies() {
     Get.lazyPut<LocationRepository>(
           () => LocationRepository(),
+      fenix: true,
     );
 
     Get.lazyPut<LocationController>(
           () => LocationController(
-        Get.find<LocationRepository>(),
       ),
+      fenix: true,
     );
   }
 }

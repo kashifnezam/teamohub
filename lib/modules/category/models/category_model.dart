@@ -2,7 +2,7 @@ import 'dart:convert';
 
 class CategoryModel {
   final String id;
-  final String title;
+  final String name;
   final String image;
 
   /// Display order
@@ -25,7 +25,7 @@ class CategoryModel {
 
   const CategoryModel({
     required this.id,
-    required this.title,
+    required this.name,
     required this.image,
     required this.order,
     this.color,
@@ -49,7 +49,7 @@ class CategoryModel {
   }) {
     return CategoryModel(
       id: id ?? this.id,
-      title: name ?? this.title,
+      name: name ?? this.name,
       image: image ?? this.image,
       order: order ?? this.order,
       color: color ?? this.color,
@@ -63,7 +63,7 @@ class CategoryModel {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'name': title,
+      'name': name,
       'image': image,
       'order': order,
       'color': color,
@@ -77,7 +77,7 @@ class CategoryModel {
   factory CategoryModel.fromMap(Map<String, dynamic> map) {
     return CategoryModel(
       id: map['id'] ?? '',
-      title: map['name'] ?? '',
+      name: map['name'] ?? '',
       image: map['image'] ?? '',
       order: map['order'] ?? 0,
       color: map['color'],
@@ -99,7 +99,7 @@ class CategoryModel {
 
   @override
   String toString() {
-    return 'CategoryModel(id: $id, name: $title)';
+    return 'CategoryModel(id: $id, name: $name)';
   }
 
   @override

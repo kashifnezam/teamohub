@@ -74,6 +74,7 @@ class PostDetailsPage extends StatelessWidget {
           SliverToBoxAdapter(
             child: DescriptionCard(
               post: post!,
+              isPreview: isPreview,
             ),
           ),
 
@@ -93,7 +94,7 @@ class PostDetailsPage extends StatelessWidget {
           //------------------------------------------------
 
           const SliverPadding(
-            padding: EdgeInsets.only(bottom: 100),
+            padding: EdgeInsets.only(bottom: 10),
           ),
         ],
       ),

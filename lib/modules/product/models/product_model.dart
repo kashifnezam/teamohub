@@ -46,7 +46,9 @@ class ProductModel {
 
   /// Category
   final String categoryId;
+  final String? categoryName;
   final String? subCategoryId;
+  final String? subCategoryName;
 
   /// Seller
   final String sellerId;
@@ -67,8 +69,8 @@ class ProductModel {
   /// }
   final Map<String, dynamic> attributes;
 
-  /// Product Condition
-  final ProductCondition condition;
+  // /// Product Condition
+  // final ProductCondition condition;
 
   /// Country
   final String country;
@@ -99,7 +101,7 @@ class ProductModel {
   final bool isFeatured;
 
   /// Newly Added Badge
-  final bool isNew;
+  // final bool isNew;
 
   /// Verified Seller/Product
   final bool isVerified;
@@ -148,7 +150,9 @@ class ProductModel {
     this.type = ProductType.sell,
 
     required this.categoryId,
+    this.categoryName,
     this.subCategoryId,
+    this.subCategoryName,
 
     required this.sellerId,
     this.agentId,
@@ -156,7 +160,7 @@ class ProductModel {
     this.images = const [],
     this.attributes = const {},
 
-    this.condition = ProductCondition.good,
+    // this.condition = ProductCondition.good,
 
     required this.country,
     required this.state,
@@ -172,7 +176,7 @@ class ProductModel {
 
     this.isNegotiable = false,
     this.isFeatured = false,
-    this.isNew = false,
+    // this.isNew = false,
     this.isVerified = false,
     this.isUrgent = false,
 
@@ -202,7 +206,9 @@ class ProductModel {
     double? price,
     ProductType? type,
     String? categoryId,
+    String? categoryName,
     String? subCategoryId,
+    String? subCategoryName,
     String? sellerId,
     String? agentId,
     List<String>? images,
@@ -241,12 +247,14 @@ class ProductModel {
       price: price ?? this.price,
       type: type ?? this.type,
       categoryId: categoryId ?? this.categoryId,
+      categoryName: categoryName ?? this.categoryName,
       subCategoryId: subCategoryId ?? this.subCategoryId,
+      subCategoryName: subCategoryName ?? this.subCategoryName,
       sellerId: sellerId ?? this.sellerId,
       agentId: agentId ?? this.agentId,
       images: images ?? this.images,
       attributes: attributes ?? this.attributes,
-      condition: condition ?? this.condition,
+      // condition: condition ?? this.condition,
       country: country ?? this.country,
       state: state ?? this.state,
       city: city ?? this.city,
@@ -257,7 +265,7 @@ class ProductModel {
       status: status ?? this.status,
       isNegotiable: isNegotiable ?? this.isNegotiable,
       isFeatured: isFeatured ?? this.isFeatured,
-      isNew: isNew ?? this.isNew,
+      // isNew: isNew ?? this.isNew,
       isVerified: isVerified ?? this.isVerified,
       isUrgent: isUrgent ?? this.isUrgent,
       views: views ?? this.views,
@@ -283,7 +291,9 @@ class ProductModel {
       'type': type.name,
 
       'categoryId': categoryId,
+      'categoryName': categoryName,
       'subCategoryId': subCategoryId,
+      'subCategoryName': subCategoryName,
 
       'sellerId': sellerId,
       'agentId': agentId,
@@ -291,7 +301,7 @@ class ProductModel {
       'images': images,
       'attributes': attributes,
 
-      'condition': condition.name,
+      // 'condition': condition.name,
 
       'country': country,
       'state': state,
@@ -306,7 +316,7 @@ class ProductModel {
 
       'isNegotiable': isNegotiable,
       'isFeatured': isFeatured,
-      'isNew': isNew,
+      // 'isNew': isNew,
       'isVerified': isVerified,
       'isUrgent': isUrgent,
 
@@ -341,7 +351,9 @@ class ProductModel {
       ),
 
       categoryId: map['categoryId'] ?? '',
+      categoryName: map['categoryName'] ?? '',
       subCategoryId: map['subCategoryId'],
+      subCategoryName: map['subCategoryName'] ?? '',
 
       sellerId: map['sellerId'] ?? '',
       agentId: map['agentId'],
@@ -352,10 +364,10 @@ class ProductModel {
         map['attributes'] ?? const {},
       ),
 
-      condition: ProductCondition.values.firstWhere(
-            (e) => e.name == map['condition'],
-        orElse: () => ProductCondition.good,
-      ),
+      // condition: ProductCondition.values.firstWhere(
+      //       (e) => e.name == map['condition'],
+      //   orElse: () => ProductCondition.good,
+      // ),
 
       country: map['country'] ?? '',
       state: map['state'] ?? '',
@@ -373,7 +385,7 @@ class ProductModel {
 
       isNegotiable: map['isNegotiable'] ?? false,
       isFeatured: map['isFeatured'] ?? false,
-      isNew: map['isNew'] ?? false,
+      // isNew: map['isNew'] ?? false,
       isVerified: map['isVerified'] ?? false,
       isUrgent: map['isUrgent'] ?? false,
 
@@ -436,7 +448,6 @@ ProductModel(
   title: $title,
   price: $price,
   type: ${type.name},
-  condition: ${condition.name},
   status: ${status.name},
   city: $city
 )

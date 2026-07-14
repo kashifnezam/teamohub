@@ -43,7 +43,9 @@ class PostInfoCard extends StatelessWidget {
                   ),
                 ),
 
-                _conditionChip(post.condition),
+                _conditionChip(
+                  post.attributes["condition"] as ProductCondition?,
+                ),
 
               ],
             ),
@@ -122,7 +124,11 @@ class PostInfoCard extends StatelessWidget {
 
                 Expanded(
                   child: Text(
-                    "${post.area}, ${post.city}",
+                    [
+                      if (post.area?.trim().isNotEmpty ?? false) post.area,
+                      post.city,
+                      post.state,
+                    ].join(", "),
                     style: const TextStyle(
                       fontWeight: FontWeight.w600,
                     ),
@@ -170,51 +176,6 @@ class PostInfoCard extends StatelessWidget {
       ),
     );
   }
-
-  Widget _conditionChip(ProductCondition condition) {
-    Color color;
-
-    switch (condition) {
-      case ProductCondition.newProduct:
-        color = Colors.green;
-        break;
-
-      case ProductCondition.likeNew:
-        color = Colors.blue;
-        break;
-
-      case ProductCondition.good:
-        color = Colors.orange;
-        break;
-
-      case ProductCondition.fair:
-        color = Colors.deepOrange;
-        break;
-
-      case ProductCondition.poor:
-        color = Colors.red;
-        break;
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-        vertical: 6,
-      ),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(30),
-      ),
-      child: Text(
-        condition.name, // Uses your extension
-        style: TextStyle(
-          color: color,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-
   Widget _chip(
       IconData icon,
       String text,
@@ -294,5 +255,42 @@ class PostInfoCard extends StatelessWidget {
     }
 
     return "${date.day}/${date.month}/${date.year}";
+  }
+
+  String _conditionText(ProductCondition? condition) {
+    switch (condition) {
+      case ProductCondition.newProduct:
+        return "New";
+      case ProductCondition.likeNew:
+        return "Like New";
+      case ProductCondition.good:
+        return "Good";
+      case ProductCondition.fair:
+        return "Fair";
+      case ProductCondition.poor:
+        return "Poor";
+      case null:
+        return "--";
+    }
+  }
+  Widget _conditionChip(ProductCondition? condition) {
+    if (condition == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 6,
+        vertical: 2,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        _conditionText(condition),
+        style: const TextStyle(fontSize: 10),
+      ),
+    );
   }
 }

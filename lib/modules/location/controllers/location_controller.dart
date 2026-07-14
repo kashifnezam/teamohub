@@ -4,13 +4,14 @@ import 'package:get/get.dart';
 import '../../../app/services/location_api_service.dart';
 import '../models/city_model.dart';
 import '../models/country_model.dart';
+import '../models/location_result.dart';
 import '../models/state_model.dart';
 import '../repositories/location_repository.dart';
+import '../services/recent_location_service.dart';
 
 class LocationController extends GetxController {
-  final LocationRepository _repository;
   final TextEditingController areaController = TextEditingController();
-  LocationController(this._repository);
+  LocationController();
 
   //----------------------------------------------------------
   // Loading
@@ -27,6 +28,48 @@ class LocationController extends GetxController {
   final RxList<CountryModel> countries = <CountryModel>[].obs;
   final RxList<StateModel> states = <StateModel>[].obs;
   final RxList<CityModel> cities = <CityModel>[].obs;
+
+  //----------------------------------------------------------
+// Filtered Lists
+//----------------------------------------------------------
+
+  final RxList<StateModel> filteredStates = <StateModel>[].obs;
+  final RxList<CityModel> filteredCities = <CityModel>[].obs;
+
+//----------------------------------------------------------
+// Recent Locations
+//----------------------------------------------------------
+
+  final RxList<LocationResult> recentLocations = <LocationResult>[].obs;
+
+//----------------------------------------------------------
+// Search
+//----------------------------------------------------------
+
+  final RxBool stateSearching = false.obs;
+  final RxBool citySearching = false.obs;
+
+  final TextEditingController stateSearchController = TextEditingController();
+  final TextEditingController districtSearchController = TextEditingController();
+
+//----------------------------------------------------------
+// Loading
+//----------------------------------------------------------
+
+  final RxBool loadingStates = false.obs;
+  final RxBool loadingCities = false.obs;
+
+//----------------------------------------------------------
+// City Cache
+//----------------------------------------------------------
+
+  final Map<String, List<CityModel>> _cityCache = {};
+
+//----------------------------------------------------------
+// Recent Service
+//----------------------------------------------------------
+
+  final RecentLocationService _recentService = RecentLocationService.instance;
 
   //----------------------------------------------------------
   // Selected
@@ -47,7 +90,73 @@ class LocationController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    loadCountries();
+    selectedCountry.value = CountryModel(id: "in", name: "India", code: "123", phoneCode: "-", flag: "ind");
+    loadStates("India");
+    loadRecent();
+  }
+
+  bool get hasRecentLocations => recentLocations.isNotEmpty;
+  bool get hasStates => filteredStates.isNotEmpty;
+  bool get hasCities => filteredCities.isNotEmpty;
+  bool get isSearching => stateSearching.value || citySearching.value;
+
+  Future<void> saveRecent(
+      LocationResult result,
+      ) async {
+    
+    await _recentService.saveRecent(result);
+
+    loadRecent();
+  }
+
+  void loadRecent() {
+    recentLocations.assignAll(
+      _recentService.getRecent(),
+    );
+  }
+
+  //----------------------------------------------------------
+  // Filter States
+  //----------------------------------------------------------
+
+  void filterStates(String keyword) {
+    final query = keyword.trim().toLowerCase();
+
+    if (query.isEmpty) {
+      stateSearching.value = false;
+      filteredStates.assignAll(states);
+      return;
+    }
+
+    stateSearching.value = true;
+
+    filteredStates.assignAll(
+      states.where(
+            (state) => state.name.toLowerCase().contains(query),
+      ),
+    );
+  }
+
+  //----------------------------------------------------------
+// Filter Cities
+//----------------------------------------------------------
+
+  void filterCities(String keyword) {
+    final query = keyword.trim().toLowerCase();
+
+    if (query.isEmpty) {
+      citySearching.value = false;
+      filteredCities.assignAll(cities);
+      return;
+    }
+
+    citySearching.value = true;
+
+    filteredCities.assignAll(
+      cities.where(
+            (city) => city.name.toLowerCase().contains(query),
+      ),
+    );
   }
 
   //----------------------------------------------------------
@@ -81,13 +190,16 @@ class LocationController extends GetxController {
       ) async {
 
     try {
-
+      loadingStates.value = true;
       final result = await _service.getStates(country);
 
       states.assignAll(result);
+      filteredStates.assignAll(result);
+
+      loadingStates.value = false;
 
     } catch (e) {
-
+      loadingStates.value = false;
       Get.snackbar(
         "Error",
         "Unable to load states.",
@@ -106,25 +218,39 @@ class LocationController extends GetxController {
       String state,
       ) async {
 
+    final cacheKey = "$country-$state";
+    loadingCities.value = true;
+    if (_cityCache.containsKey(cacheKey)) {
+      cities.assignAll(_cityCache[cacheKey]!);
+      filteredCities.assignAll(_cityCache[cacheKey]!);
+      loadingCities.value = false;
+      return;
+    }
+
     try {
 
-      final result =
-      await _service.getCities(
+      final result = await _service.getCities(
         country,
         state,
       );
 
+      _cityCache[cacheKey] = result;
+
       cities.assignAll(result);
+      filteredCities.assignAll(result);
 
     } catch (e) {
-print(e);
+
       Get.snackbar(
         "Error",
         "Unable to load cities.",
       );
 
-    }
+    } finally {
 
+      loadingCities.value = false;
+
+    }
   }
 
   //----------------------------------------------------------
@@ -155,22 +281,26 @@ print(e);
   // State Selected
   //----------------------------------------------------------
 
-  Future<void> selectState(
-      StateModel state,
-      ) async {
-    selectedState.value = state;
+  Future<void> selectState( StateModel state) async {
+    loadingCities.value = true;
 
+    selectedState.value = state;
     selectedCity.value = null;
 
-    cities.clear();
+    final cacheKey = "${selectedCountry.value!.name}-${state.name}";
 
-    await loadCities(selectedCountry.value!.name, state.name);
+    if (_cityCache.containsKey(cacheKey)) {
 
-    if (cities.isNotEmpty) {
-      selectCity(
-        cities.first,
-      );
+      cities.assignAll(_cityCache[cacheKey]!);
+      filteredCities.assignAll(_cityCache[cacheKey]!);
+      loadingCities.value = false;
+      return;
     }
+
+    await loadCities(
+      selectedCountry.value!.name,
+      state.name,
+    );
   }
 
   //----------------------------------------------------------
@@ -216,13 +346,87 @@ print(e);
         selectedCity.value != null;
   }
 
+  //----------------------------------------------------------
+// Current Result
+//----------------------------------------------------------
+
+  LocationResult? getLocationResult() {
+
+    if (!isLocationSelected) {
+      return null;
+    }
+
+    return LocationResult(
+      country: selectedCountry.value!,
+      state: selectedState.value!,
+      city: selectedCity.value!,
+    );
+
+  }
 
 
   //----------------------------------------------------------
   // Reset
   //----------------------------------------------------------
 
+  void clearStateSearch() {
+    stateSearchController.clear();
+
+    filteredStates.assignAll(states);
+
+    stateSearching.value = false;
+  }
+  void clearCitySearch() {
+    districtSearchController.clear();
+
+    filteredCities.assignAll(cities);
+
+    citySearching.value = false;
+  }
+
+  void clearSearch() {
+
+    stateSearchController.clear();
+    districtSearchController.clear();
+
+    filteredStates.assignAll(states);
+    filteredCities.assignAll(cities);
+
+    citySearching.value = false;
+    stateSearching.value = false;
+
+  }
+
+  //----------------------------------------------------------
+  // Remove Recent
+  //----------------------------------------------------------
+
+  Future<void> removeRecent(
+      LocationResult location,
+      ) async {
+
+    await _recentService.remove(location);
+
+    loadRecent();
+  }
+
+  //----------------------------------------------------------
+  // Clear Recent
+  //----------------------------------------------------------
+
+  Future<void> clearRecent() async {
+
+    await _recentService.clear();
+
+    recentLocations.clear();
+
+  }
+//----------------------------------------------------------
+// Reset
+//----------------------------------------------------------
+
   void clear() {
+
     selectedCountry.value = null;
     selectedState.value = null;
     selectedCity.value = null;
@@ -231,12 +435,15 @@ print(e);
     states.clear();
     cities.clear();
 
-    area.value = "";
-  }
+    filteredStates.clear();
+    filteredCities.clear();
 
-  @override
-  void onClose() {
-    areaController.dispose();
-    super.onClose();
+    stateSearchController.clear();
+    districtSearchController.clear();
+
+    stateSearching.value = false;
+    citySearching.value = false;
+    area.value = "";
+
   }
 }
