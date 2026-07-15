@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 /// ===============================
 /// Product Type
@@ -34,8 +33,8 @@ enum ProductStatus {
 class ProductModel {
   /// Unique Product ID
   final String id;
-  final String sellerName;
-  final String sellerPhoto;
+  final String? sellerName;
+  final String? sellerPhoto;
   /// Basic Information
   final String title;
   final String description;
@@ -141,8 +140,8 @@ class ProductModel {
 
   const ProductModel({
     required this.id,
-    required this.sellerName,
-    required this.sellerPhoto,
+    this.sellerName,
+    this.sellerPhoto,
     required this.title,
     required this.description,
     required this.price,
@@ -224,7 +223,6 @@ class ProductModel {
     ProductStatus? status,
     bool? isNegotiable,
     bool? isFeatured,
-    bool? isNew,
     bool? isVerified,
     bool? isUrgent,
     int? views,
@@ -339,8 +337,8 @@ class ProductModel {
   factory ProductModel.fromMap(Map<String, dynamic> map) {
     return ProductModel(
       id: map['id'] ?? '',
-      sellerName: map['sellerName'] ?? '',
-      sellerPhoto: map['sellerPhoto'] ?? '',
+      sellerName: map['sellerName'],
+      sellerPhoto: map['sellerPhoto'],
       title: map['title'] ?? '',
       description: map['description'] ?? '',
       price: (map['price'] ?? 0).toDouble(),
@@ -414,11 +412,10 @@ class ProductModel {
       ),
     );
   }  /// Convert to JSON
-  String toJson() => json.encode(toMap());
+  Map<String, dynamic> toJson() => toMap();
 
   /// Create from JSON
-  factory ProductModel.fromJson(String source) =>
-      ProductModel.fromMap(json.decode(source));
+  factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel.fromMap(json);
 
   /// -------------------------
   /// Computed Getters

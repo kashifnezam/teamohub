@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:photo_view/photo_view.dart';
@@ -65,9 +66,7 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
               return PhotoViewGalleryPageOptions(
                 imageProvider: image.file != null
                     ? FileImage(image.file!)
-                    : NetworkImage(image.url!)
-                as ImageProvider,
-
+                    : CachedNetworkImageProvider(image.url!),
                 heroAttributes: PhotoViewHeroAttributes(
                   tag: "${widget.heroTag}$index",
                 ),

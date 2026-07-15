@@ -58,6 +58,8 @@ dependencies:
   get_storage: ^2.1.1
   image_picker: ^1.1.2 #Pick image from gallary / camera
   cached_network_image: ^3.4.1 #Image will be stored in cache
+  path_provider: ^2.1.6
+
   http: ^1.2.1
   shimmer: ^3.0.0 #preloading effect
   file_picker: ^10.3.10

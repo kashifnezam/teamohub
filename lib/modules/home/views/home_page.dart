@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:teamomarket/app/utils/app_colors.dart';
 import 'package:teamomarket/modules/home/widgets/image_category.dart';
 import '../../product/widgets/post_card.dart';
 import '../../product/repositories/dummy_products.dart';
 import '../../category/models/category_model.dart';
 import '../../category/repositories/category_list.dart';
+import '../../product/widgets/post_card_shimmer.dart';
+import '../controllers/home_controller.dart';
 import '../widgets/home_banner_slider.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends GetView<HomeController> {
   const HomePage({super.key});
 
   @override
@@ -132,7 +135,7 @@ class HomePage extends StatelessWidget {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(.1),
+                          color: AppColors.primary.withValues(alpha: .1),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: const Row(
@@ -168,108 +171,143 @@ class HomePage extends StatelessWidget {
 
         /// IMPORTANT
         Expanded(
-          child: ListView(
-            padding: const EdgeInsets.only(bottom: 20),
-            children: [
+          child: RefreshIndicator(
+            color: AppColors.primary,
+            onRefresh: () async {
+              await controller.fetchProducts();
+            },
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.only(bottom: 20),
+              children: [
 
-              //----------------------------------
-              // Banner
-              //----------------------------------
+                //----------------------------------
+                // Banner
+                //----------------------------------
 
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10),
-                child: HomeBannerSlider(
-                  images: [
-                    "assets/images/banner1.png",
-                    "assets/images/banner2.png",
-                    "assets/images/banner3.png",
-                    "assets/images/banner4.png",
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 20),
-
-              //----------------------------------
-              // Categories
-              //----------------------------------
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: LayoutBuilder(
-                  builder: (context, constraints) {
-
-                    const itemWidth = 60.0;
-
-                    final itemsPerRow =
-                    (constraints.maxWidth / itemWidth)
-                        .floor()
-                        .clamp(3, 6);
-
-                    final spacing = itemsPerRow > 1
-                        ? (constraints.maxWidth -
-                        (itemsPerRow * itemWidth)) /
-                        (itemsPerRow - 1)
-                        : 0.0;
-
-                    return Wrap(
-                      spacing: spacing,
-                      runSpacing: 10,
-                      children: categories
-                          .map(
-                            (category) => SizedBox(
-                          width: itemWidth,
-                          child: ImageCategory(
-                            image: category.image,
-                            title: category.name,
-                          ),
-                        ),
-                      )
-                          .toList(),
-                    );
-                  },
-                ),
-              ),
-
-              const SizedBox(height: 25),
-
-              //----------------------------------
-              // Latest Posts
-              //----------------------------------
-
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 12),
-                child: Text(
-                  "Latest Listings",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: HomeBannerSlider(
+                    images: [
+                      "assets/images/banner1.png",
+                      "assets/images/banner2.png",
+                      "assets/images/banner3.png",
+                      "assets/images/banner4.png",
+                    ],
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 10),
+                const SizedBox(height: 20),
 
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                itemCount: dummyProducts.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 8,
-                  mainAxisSpacing: 8,
-                  childAspectRatio: 0.61,
+                //----------------------------------
+                // Categories
+                //----------------------------------
+
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+
+                      const itemWidth = 65.0;
+
+                      final itemsPerRow =
+                      (constraints.maxWidth / itemWidth)
+                          .floor()
+                          .clamp(3, 6);
+
+                      final spacing = itemsPerRow > 1
+                          ? (constraints.maxWidth -
+                          (itemsPerRow * itemWidth)) /
+                          (itemsPerRow - 1)
+                          : 0.0;
+
+                      return Wrap(
+                        spacing: spacing,
+                        runSpacing: 10,
+                        children: categories
+                            .map(
+                              (category) => SizedBox(
+                            width: itemWidth,
+                            child: ImageCategory(
+                              image: category.image,
+                              title: category.name,
+                            ),
+                          ),
+                        )
+                            .toList(),
+                      );
+                    },
+                  ),
                 ),
-                itemBuilder: (context, index) {
-                  return PostCard(
-                    post: dummyProducts[index],
 
+                const SizedBox(height: 25),
+
+                //----------------------------------
+                // Latest Posts
+                //----------------------------------
+
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  child: Text(
+                    "Latest Listings",
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                Obx(() {
+                  if (controller.isLoading.value) {
+                    return GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      itemCount: 6,
+                      gridDelegate:
+                      const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 8,
+                        mainAxisSpacing: 8,
+                        childAspectRatio: 0.61,
+                      ),
+                      itemBuilder: (_, __) => const PostCardShimmer(),
+                    );
+                  }
+
+                  if (controller.products.isEmpty) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(40),
+                        child: Text("No products found"),
+                      ),
+                    );
+                  }
+
+                  return GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    itemCount: controller.products.length,
+                    gridDelegate:
+                    const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 8,
+                      mainAxisSpacing: 8,
+                      childAspectRatio: 0.61,
+                    ),
+                    itemBuilder: (context, index) {
+                      return PostCard(
+                        post: controller.products[index],
+                      );
+                    },
                   );
-                },
-              )
+                })
 
-            ],
+              ],
+            ),
           ),
         ),
 

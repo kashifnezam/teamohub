@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
+import 'package:teamomarket/modules/home/bindings/dashboard_binding.dart';
 import 'package:teamomarket/modules/home/views/dashboard_screen.dart';
 import 'package:teamomarket/modules/product/views/product_preview_page.dart';
 import '../../modules/auth/views/login_screen.dart';
@@ -7,6 +8,9 @@ import '../../modules/auth/views/signup_view.dart';
 import '../../modules/category/bindings/category_binding.dart';
 import '../../modules/category/views/categories_page.dart';
 import '../../modules/category/views/sub_category_page.dart';
+import '../../modules/chat/bindings/chat_binding.dart';
+import '../../modules/chat/views/chat_list_page.dart';
+import '../../modules/chat/views/chats_page.dart';
 import '../../modules/location/bindings/location_binding.dart';
 import '../../modules/location/views/location_picker_page.dart';
 import '../../modules/product/views/add_product_page.dart';
@@ -47,6 +51,7 @@ class AppPages {
     GetPage(
       name: Routes.dashboard,
       page: () =>  DashboardScreen(),
+      binding: DashboardBinding(),
     ),
 
 
@@ -76,6 +81,18 @@ class AppPages {
       name: Routes.locationPicker,
       page: () => LocationPickerPage(),
       binding: LocationBinding(),
+    ),
+
+    GetPage(
+      name: Routes.chats,
+      page: () => const ChatListPage(),
+      binding: ChatBinding(),
+    ),
+
+    GetPage(
+      name: Routes.chat,
+      page: () => const ChatPage(),
+      binding: ChatBinding(),
     ),
   ];
 }

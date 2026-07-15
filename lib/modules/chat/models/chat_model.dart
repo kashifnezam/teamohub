@@ -1,33 +1,27 @@
-import 'dart:convert';
+import 'message_model.dart';
 
 class ChatModel {
   final String id;
 
-  /// Product
   final String productId;
+  final String productTitle;
+  final String productImage;
 
-  /// Participants
-  final String buyerId;
   final String sellerId;
+  final String sellerName;
+  final String? sellerPhoto;
 
-  /// Optional Agent
-  final String? agentId;
+  final String buyerId;
+  final String buyerName;
+  final String? buyerPhoto;
 
-  /// Last Message Preview
   final String lastMessage;
+  final MessageType lastMessageType;
+  final DateTime lastMessageTime;
 
-  /// Last Message Sender
-  final String lastMessageSenderId;
+  final int unreadCount;
 
-  /// Last Message Time
-  final DateTime lastMessageAt;
-
-  /// Unread Counts
-  final int buyerUnreadCount;
-  final int sellerUnreadCount;
-
-  /// Active / Archived / Blocked
-  final String status;
+  final bool isProductAvailable;
 
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -35,116 +29,66 @@ class ChatModel {
   const ChatModel({
     required this.id,
     required this.productId,
-    required this.buyerId,
+    required this.productTitle,
+    required this.productImage,
     required this.sellerId,
-    this.agentId,
-    this.lastMessage = '',
-    this.lastMessageSenderId = '',
-    required this.lastMessageAt,
-    this.buyerUnreadCount = 0,
-    this.sellerUnreadCount = 0,
-    this.status = 'active',
+    required this.sellerName,
+    this.sellerPhoto,
+    required this.buyerId,
+    required this.buyerName,
+    this.buyerPhoto,
+    required this.lastMessage,
+    this.lastMessageType = MessageType.text,
+    required this.lastMessageTime,
+    this.unreadCount = 0,
+    this.isProductAvailable = true,
     required this.createdAt,
     required this.updatedAt,
   });
 
   ChatModel copyWith({
-    String? id,
-    String? productId,
-    String? buyerId,
-    String? sellerId,
-    String? agentId,
     String? lastMessage,
-    String? lastMessageSenderId,
-    DateTime? lastMessageAt,
-    int? buyerUnreadCount,
-    int? sellerUnreadCount,
-    String? status,
-    DateTime? createdAt,
+    MessageType? lastMessageType,
+    DateTime? lastMessageTime,
+    int? unreadCount,
+    bool? isProductAvailable,
     DateTime? updatedAt,
   }) {
     return ChatModel(
-      id: id ?? this.id,
-      productId: productId ?? this.productId,
-      buyerId: buyerId ?? this.buyerId,
-      sellerId: sellerId ?? this.sellerId,
-      agentId: agentId ?? this.agentId,
+      id: id,
+      productId: productId,
+      productTitle: productTitle,
+      productImage: productImage,
+      sellerId: sellerId,
+      sellerName: sellerName,
+      sellerPhoto: sellerPhoto,
+      buyerId: buyerId,
+      buyerName: buyerName,
+      buyerPhoto: buyerPhoto,
       lastMessage: lastMessage ?? this.lastMessage,
-      lastMessageSenderId:
-      lastMessageSenderId ?? this.lastMessageSenderId,
-      lastMessageAt: lastMessageAt ?? this.lastMessageAt,
-      buyerUnreadCount:
-      buyerUnreadCount ?? this.buyerUnreadCount,
-      sellerUnreadCount:
-      sellerUnreadCount ?? this.sellerUnreadCount,
-      status: status ?? this.status,
-      createdAt: createdAt ?? this.createdAt,
+      lastMessageType: lastMessageType ?? this.lastMessageType,
+      lastMessageTime: lastMessageTime ?? this.lastMessageTime,
+      unreadCount: unreadCount ?? this.unreadCount,
+      isProductAvailable:
+      isProductAvailable ?? this.isProductAvailable,
+      createdAt: createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'productId': productId,
-      'buyerId': buyerId,
-      'sellerId': sellerId,
-      'agentId': agentId,
-      'lastMessage': lastMessage,
-      'lastMessageSenderId': lastMessageSenderId,
-      'lastMessageAt': lastMessageAt.millisecondsSinceEpoch,
-      'buyerUnreadCount': buyerUnreadCount,
-      'sellerUnreadCount': sellerUnreadCount,
-      'status': status,
-      'createdAt': createdAt.millisecondsSinceEpoch,
-      'updatedAt': updatedAt.millisecondsSinceEpoch,
-    };
-  }
-
-  factory ChatModel.fromMap(Map<String, dynamic> map) {
-    return ChatModel(
-      id: map['id'] ?? '',
-      productId: map['productId'] ?? '',
-      buyerId: map['buyerId'] ?? '',
-      sellerId: map['sellerId'] ?? '',
-      agentId: map['agentId'],
-      lastMessage: map['lastMessage'] ?? '',
-      lastMessageSenderId:
-      map['lastMessageSenderId'] ?? '',
-      lastMessageAt: DateTime.fromMillisecondsSinceEpoch(
-        map['lastMessageAt'] ?? 0,
-      ),
-      buyerUnreadCount:
-      map['buyerUnreadCount'] ?? 0,
-      sellerUnreadCount:
-      map['sellerUnreadCount'] ?? 0,
-      status: map['status'] ?? 'active',
-      createdAt: DateTime.fromMillisecondsSinceEpoch(
-        map['createdAt'] ?? 0,
-      ),
-      updatedAt: DateTime.fromMillisecondsSinceEpoch(
-        map['updatedAt'] ?? 0,
-      ),
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory ChatModel.fromJson(String source) =>
-      ChatModel.fromMap(json.decode(source));
-
   @override
   String toString() {
-    return 'ChatModel(id: $id)';
+    return '''
+ChatModel(
+  id: $id,
+  sellerName: $sellerName,
+  productTitle: $productTitle,
+  lastMessage: $lastMessage,
+  productId: $productId,
+  productImage: $productImage,
+  sellerId: $sellerId,
+  sellerPhoto: $sellerPhoto,
+)
+''';
   }
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-          other is ChatModel &&
-              runtimeType == other.runtimeType &&
-              other.id == id;
-
-  @override
-  int get hashCode => id.hashCode;
 }

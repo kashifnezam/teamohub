@@ -44,7 +44,7 @@ class PostInfoCard extends StatelessWidget {
                 ),
 
                 _conditionChip(
-                  post.attributes["condition"] as ProductCondition?,
+                  post.attributes["condition"] as String?,
                 ),
 
               ],
@@ -257,24 +257,14 @@ class PostInfoCard extends StatelessWidget {
     return "${date.day}/${date.month}/${date.year}";
   }
 
-  String _conditionText(ProductCondition? condition) {
-    switch (condition) {
-      case ProductCondition.newProduct:
-        return "New";
-      case ProductCondition.likeNew:
-        return "Like New";
-      case ProductCondition.good:
-        return "Good";
-      case ProductCondition.fair:
-        return "Fair";
-      case ProductCondition.poor:
-        return "Poor";
-      case null:
-        return "--";
-    }
+  String _conditionText(String value) {
+    return value
+        .split('_')
+        .map((e) => e[0].toUpperCase() + e.substring(1))
+        .join(' ');
   }
-  Widget _conditionChip(ProductCondition? condition) {
-    if (condition == null) {
+  Widget _conditionChip(String? condition) {
+    if (condition == null || condition.isEmpty) {
       return const SizedBox.shrink();
     }
 
@@ -292,5 +282,4 @@ class PostInfoCard extends StatelessWidget {
         style: const TextStyle(fontSize: 10),
       ),
     );
-  }
-}
+  }}

@@ -5,6 +5,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../../app/utils/app_colors.dart';
 import '../../../../../modules/product/models/product_model.dart';
+import '../../../app/widgets/custom_widget.dart';
 import '../models/product_image_model.dart';
 import '../views/image_viewer_page.dart';
 
@@ -96,10 +97,10 @@ class _PostImageSliderState extends State<PostImageSlider> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(.35),
+                    Colors.black.withValues(alpha: .35),
                     Colors.transparent,
                     Colors.transparent,
-                    Colors.black.withOpacity(.15),
+                    Colors.black.withValues(alpha: .15),
                   ],
                 ),
               ),
@@ -148,15 +149,20 @@ class _PostImageSliderState extends State<PostImageSlider> {
         // NEW Badge
         //------------------------------------------------
 
-        if (widget.post != null && widget.post?.attributes["condition"]?.toString().toLowerCase() == "new")
+        if (widget.post!.attributes["condition"] == "new")
           Positioned(
-            left: 12,
-            top: 80,
-            child: _badge(
-              "NEW",
-              Colors.green,
+            bottom: 18,
+            left: 0,
+            right: 0,
+            child: Align(
+              alignment: Alignment.center,
+              child: _badge(
+                "NEW",
+                Colors.green,
+              ),
             ),
           ),
+
         //------------------------------------------------
         // Featured
         //------------------------------------------------
@@ -249,17 +255,7 @@ class _PostImageSliderState extends State<PostImageSlider> {
       );
     }
 
-    return Image.network(
-      image.url!,
-      fit: BoxFit.cover,
-      width: double.infinity,
-      errorBuilder: (_, __, ___) {
-        return Container(
-          color: Colors.grey.shade200,
-          child: const Icon(Icons.broken_image),
-        );
-      },
-    );
+    return CustomWidget.getImage(image.url!, shape: BoxShape.rectangle);
   }
 
   Widget _circleButton({

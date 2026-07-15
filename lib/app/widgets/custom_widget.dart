@@ -1,5 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 
 class CustomWidget {
   static Widget buildCircularProgressIndicator() {
@@ -38,9 +42,7 @@ class CustomWidget {
         false; // Return false if the dialog is dismissed without a choice.
   }
 
-
-
-/*  static Future<String> imagePickFrom({String source = "gallary"}) async {
+  static Future<String> imagePickFrom({String source = "gallary"}) async {
     try {
       XFile? file;
 
@@ -66,12 +68,12 @@ class CustomWidget {
     }
   }
 
-  static CachedNetworkImage getImage(String imageUrl) {
+  static CachedNetworkImage getImage(String imageUrl, {BoxShape shape = BoxShape.circle} ) {
     return CachedNetworkImage(
       imageUrl: imageUrl,
       imageBuilder: (context, imageProvider) => Container(
         decoration: BoxDecoration(
-          shape: BoxShape.circle,
+          shape: shape,
           image: DecorationImage(
             image: imageProvider,
             fit: BoxFit.cover,
@@ -98,5 +100,5 @@ class CustomWidget {
     );
 
     return result?.path ?? filePath;
-  }*/
+  }
 }

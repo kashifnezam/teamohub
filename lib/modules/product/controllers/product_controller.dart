@@ -5,15 +5,20 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:teamomarket/app/constants/app_constants.dart';
+import 'package:teamomarket/app/services/device_info.dart';
+import 'package:teamomarket/app/utils/offline_data.dart';
 
 import '../../../app/routes/app_routes.dart';
 import '../../../app/utils/custom_alert.dart';
 import '../../../app/utils/location_utils.dart';
+import '../../../app/widgets/custom_widget.dart';
 import '../../category/models/category_model.dart';
 import '../../category/models/sub_category_model.dart';
 import '../../location/models/location_result.dart';
 import '../models/product_image_model.dart';
 import '../models/product_model.dart';
+import '../services/product_repository.dart';
+import '../services/storage_service.dart';
 
 class ProductController extends GetxController {
 
@@ -46,6 +51,9 @@ class ProductController extends GetxController {
   bool get hasImages => images.isNotEmpty;
   bool get canAddMoreImages => images.length < maxImages;
   int get imageCount => images.length;
+
+  final StorageService _storageService = StorageService();
+  final ProductRepository _repository = ProductRepository();
 
   ProductImageModel? get coverImage {
     try {
@@ -103,6 +111,27 @@ class ProductController extends GetxController {
 
     longitude.value =
         location.city.longitude ?? 0;
+  }
+
+  Future<List<String>> uploadImages({
+    required String productId,
+    required String catogaryName,
+    required List<String> imagePaths,
+  }) async {
+
+    final futures = imagePaths.map((path) async {
+
+      final compressed = await CustomWidget.compressImage(path);
+
+      return await _storageService.uploadProductImage(
+        productId: productId,
+        imagePath: compressed,
+        catogaryName: catogaryName,
+      );
+
+    });
+
+    return await Future.wait(futures);
   }
 
   Future<void> useCurrentLocation() async {
@@ -339,61 +368,59 @@ class ProductController extends GetxController {
   /// ---------------------------------------
 
   Future<void> publishProduct() async {
-    print("========================");
-
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     try {
-
       isLoading.value = true;
-AppConstants.log.i(buildProductModel().attributes);
 
-      // TODO
+      final productId = _repository.generateProductId();
 
+      ProductModel product = buildProductModel().copyWith(
+        id: productId,
+      );
+
+      //---------------------------------------
       // Upload Images
+      //---------------------------------------
 
-      // Create ProductModel
+      final imageUrls = await uploadImages(
+        productId: productId,
+        catogaryName: product.categoryName!,
+        imagePaths: images
+            .where((image) => image.file != null)
+            .map((image) => image.file!.path)
+            .toList(),
+      );
 
-      // Save to Firestore
+      //---------------------------------------
+      // Update Product
+      //---------------------------------------
 
-      // Get.back();
+      product = product.copyWith(
+        images: imageUrls,
+      );
+
+      //---------------------------------------
+      // Upload Product
+      //---------------------------------------
+
+      await _repository.createProduct(product);
 
       CustomAlert.successAlert(
         title: "Success",
         "Product published successfully.",
       );
 
-      // clearForm();
+      // Get.back(result: true);
 
+      //clearForm();
     } catch (e) {
-
       CustomAlert.errorAlert(
-       title: "Error",
+        title: "Error",
         e.toString(),
       );
-
     } finally {
-
       isLoading.value = false;
-
-    }
-
-  }
-
-  String conditionText(ProductCondition condition) {
-    switch (condition) {
-      case ProductCondition.newProduct:
-        return "New";
-      case ProductCondition.likeNew:
-        return "Like New";
-      case ProductCondition.good:
-        return "Good";
-      case ProductCondition.fair:
-        return "Fair";
-      case ProductCondition.poor:
-        return "Poor";
     }
   }
 
@@ -404,17 +431,14 @@ AppConstants.log.i(buildProductModel().attributes);
       id: "",
       title: titleController.text.trim(),
       description: descriptionController.text.trim(),
-      price: double.tryParse(
-        priceController.text.trim(),
-      ) ??
-          0,
-
+      price: double.tryParse(priceController.text.trim()) ?? 0,
       categoryId: selectedCategory!.id,
       categoryName: selectedCategory!.name,
       subCategoryId: selectedSubCategory?.id,
       subCategoryName: selectedSubCategory?.name,
-      sellerId: "", // TODO: Replace with logged-in user's id
-      agentId: null,
+      sellerId: DeviceInfo.userUID!,
+      sellerName: userInfo?['name'],
+      sellerPhoto: userInfo?["photo"],
       images: const [], // Images are uploaded during publish()
       attributes: Map<String, dynamic>.from(attributes),
       country: country.value,
@@ -427,8 +451,6 @@ AppConstants.log.i(buildProductModel().attributes);
       createdAt: now,
       updatedAt: now,
       publishedAt: now,
-      sellerName: '',
-      sellerPhoto: '',
     );
   }
   /// ---------------------------------------

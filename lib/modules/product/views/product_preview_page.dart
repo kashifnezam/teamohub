@@ -13,7 +13,7 @@ class ProductPreviewPage extends GetView<ProductController> {
       final product = controller.buildProductModel();
 
       return PostDetailsPage(
-        post: product,
+        product: product,
         previewImages: controller.images,
         isPreview: true,
       );

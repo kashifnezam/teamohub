@@ -4,8 +4,7 @@ import 'package:teamomarket/app/routes/app_routes.dart';
 
 import '../../../app/utils/app_colors.dart';
 import '../../../../modules/home/views/account_page.dart';
-import '../../category/views/categories_page.dart';
-import '../../chat/views/chats_page.dart';
+import '../../chat/views/chat_list_page.dart';
 import 'home_page.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -20,8 +19,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   final pages = [
     const HomePage(),
-    const ChatsPage(),
-    const ChatsPage(),
+    const ChatListPage(),
+    const ChatListPage(),
     AccountPage(),
   ];
 

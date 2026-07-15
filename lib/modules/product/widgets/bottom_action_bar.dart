@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:teamomarket/modules/chat/controllers/chat_controller.dart';
 
 import '../../../app/utils/app_colors.dart';
 import '../models/product_model.dart';
 
 class BottomActionBar extends StatelessWidget {
-  final ProductModel post;
-
-  const BottomActionBar({
+  final ProductModel product;
+  final ChatController chatController = Get.put(ChatController());
+  BottomActionBar({
     super.key,
-    required this.post,
+    required this.product,
   });
 
   @override
@@ -61,7 +63,7 @@ class BottomActionBar extends StatelessWidget {
                 height: 52,
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    // Open Chat
+                    chatController.openChat(product);
                   },
                   style: ElevatedButton.styleFrom(
                     elevation: 0,

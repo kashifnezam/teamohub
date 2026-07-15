@@ -11,7 +11,7 @@ import '../widgets/seller_card.dart';
 
 class PostDetailsPage extends StatelessWidget {
   /// Existing product (published)
-  final ProductModel? post;
+  final ProductModel? product;
 
   /// Preview images
   final List<ProductImageModel>? previewImages;
@@ -21,12 +21,12 @@ class PostDetailsPage extends StatelessWidget {
 
   const PostDetailsPage({
     super.key,
-    this.post,
+    this.product,
     this.previewImages,
     this.isPreview = false,
   }) : assert(
-  (isPreview && previewImages != null && post != null) ||
-      (!isPreview && post != null),
+  (isPreview && previewImages != null && product != null) ||
+      (!isPreview && product != null),
   'Preview requires previewImages and post.',
   );
 
@@ -45,14 +45,14 @@ class PostDetailsPage extends StatelessWidget {
             child: PostImageSlider(
               images: isPreview
                   ? previewImages!
-                  : post!.images
+                  : product!.images
                   .map(
                     (url) => ProductImageModel(
                   url: url,
                 ),
               )
                   .toList(),
-              post: post,
+              post: product,
               isPreview: isPreview,
             ),
           ),
@@ -63,7 +63,7 @@ class PostDetailsPage extends StatelessWidget {
 
           SliverToBoxAdapter(
             child: PostInfoCard(
-              post: post!,
+              post: product!,
             ),
           ),
 
@@ -73,7 +73,7 @@ class PostDetailsPage extends StatelessWidget {
 
           SliverToBoxAdapter(
             child: DescriptionCard(
-              post: post!,
+              post: product!,
               isPreview: isPreview,
             ),
           ),
@@ -85,7 +85,7 @@ class PostDetailsPage extends StatelessWidget {
           if (!isPreview)
             SliverToBoxAdapter(
               child: SellerCard(
-                userId: post!.sellerId,
+                userId: product!.sellerId,
               ),
             ),
 
@@ -106,7 +106,7 @@ class PostDetailsPage extends StatelessWidget {
       bottomNavigationBar: isPreview
           ? const PreviewBottomBar()
           : BottomActionBar(
-        post: post!,
+        product: product!,
       ),
     );
   }

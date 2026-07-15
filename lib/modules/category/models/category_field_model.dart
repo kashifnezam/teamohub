@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'field_option_model.dart';
+
 class CategoryFieldModel {
   final String id;
 
@@ -50,7 +52,7 @@ class CategoryFieldModel {
   final int order;
 
   /// Dropdown / Radio Options
-  final List<String> options;
+  final List<FieldOption> options;
 
   /// Validation
   final int? minLength;
@@ -92,7 +94,7 @@ class CategoryFieldModel {
     bool? isRequired,
     bool? isActive,
     int? order,
-    List<String>? options,
+    List<FieldOption>? options,
     int? minLength,
     int? maxLength,
     double? minValue,
@@ -133,7 +135,7 @@ class CategoryFieldModel {
       'isRequired': isRequired,
       'isActive': isActive,
       'order': order,
-      'options': options,
+      'options': options.map((e) => e.toMap()).toList(),
       'minLength': minLength,
       'maxLength': maxLength,
       'minValue': minValue,
@@ -155,7 +157,7 @@ class CategoryFieldModel {
       isRequired: map['isRequired'] ?? false,
       isActive: map['isActive'] ?? true,
       order: map['order'] ?? 0,
-      options: List<String>.from(map['options'] ?? const []),
+      options: (map['options'] as List? ?? []).map((e) => FieldOption.fromMap(e)).toList(),
       minLength: map['minLength'],
       maxLength: map['maxLength'],
       minValue: map['minValue']?.toDouble(),
@@ -164,9 +166,7 @@ class CategoryFieldModel {
   }
 
   String toJson() => json.encode(toMap());
-
-  factory CategoryFieldModel.fromJson(String source) =>
-      CategoryFieldModel.fromMap(json.decode(source));
+  factory CategoryFieldModel.fromJson(String source) => CategoryFieldModel.fromMap(json.decode(source));
 
   @override
   String toString() {

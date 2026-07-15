@@ -14,7 +14,7 @@ class DescriptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final condition = post.attributes["condition"] as ProductCondition?;
+    final condition = post.attributes["condition"];
     return Card(
       margin: const EdgeInsets.fromLTRB(12, 12, 12, 0),
       elevation: 0.5,
@@ -81,7 +81,7 @@ class DescriptionCard extends StatelessWidget {
           if (condition != null)
             _detailTile(
             "Condition",
-            _conditionText(condition),
+            condition,
           ),
 
             _detailTile(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:teamomarket/app/widgets/custom_widget.dart';
 import 'package:teamomarket/modules/product/views/post_details_page.dart';
 import '../../../app/utils/app_colors.dart';
 import '../models/product_model.dart';
@@ -14,7 +15,7 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final condition = post.attributes["condition"] as ProductCondition?;
+    final condition = post.attributes["condition"];
     return Card(
       elevation: 1,
       margin: EdgeInsets.zero,
@@ -25,7 +26,7 @@ class PostCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {
-          Get.to(()=> PostDetailsPage(post: post));
+          Get.to(()=> PostDetailsPage(product: post));
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,13 +44,10 @@ class PostCard extends StatelessWidget {
                     color: Colors.grey.shade200,
                     child: const Icon(Icons.image, size: 40),
                   )
-                      : Image.network(
-                    post.images.first,
-                    fit: BoxFit.cover,
-                  ),
+                      : CustomWidget.getImage(post.images.first, shape: BoxShape.rectangle),
                 ),
 
-                if (post.attributes.isNotEmpty && post.attributes["condition"] == ProductCondition.newProduct)
+                if (post.attributes["condition"] == "new")
                   Positioned(
                     top: 8,
                     left: 8,
@@ -138,7 +136,7 @@ class PostCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
-                            _conditionText(condition),
+                            condition,
                             style: const TextStyle(
                               fontSize: 10,
                             ),
@@ -219,20 +217,6 @@ class PostCard extends StatelessWidget {
         ),
       ),
     );
-  }
-  String _conditionText(ProductCondition condition) {
-    switch (condition) {
-      case ProductCondition.newProduct:
-        return "New";
-      case ProductCondition.likeNew:
-        return "Like New";
-      case ProductCondition.good:
-        return "Good";
-      case ProductCondition.fair:
-        return "Fair";
-      case ProductCondition.poor:
-        return "Poor";
-    }
   }
   Widget _badge(
       String text,

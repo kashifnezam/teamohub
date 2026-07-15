@@ -91,16 +91,14 @@ class DynamicFieldWidget extends GetView<ProductController> {
   Widget _dropdownField() {
     return Obx(() {
       return DropdownButtonFormField<String>(
-        value: controller.getAttribute(field.key),
+        initialValue: controller.getAttribute(field.key),
         decoration: _decoration(),
-        items: field.options
-            .map(
-              (item) => DropdownMenuItem(
-            value: item,
-            child: Text(item),
-          ),
-        )
-            .toList(),
+        items: field.options.map((option) {
+          return DropdownMenuItem<String>(
+            value: option.id,
+            child: Text(option.label),
+          );
+        }).toList(),
         validator: (value) {
           if (field.isRequired && value == null) {
             return "${field.label} is required";
