@@ -46,3 +46,4 @@ app.*.map.json
 
 
 pubspec.lock
+/android/build/reports/problems/problems-report.html
