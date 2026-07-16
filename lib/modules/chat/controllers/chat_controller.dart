@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
+import 'package:teamomarket/app/constants/app_constants.dart';
+import 'package:teamomarket/app/utils/offline_data.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../app/utils/custom_alert.dart';
 import '../../product/models/product_model.dart';
 import '../models/chat_model.dart';
 import '../models/message_model.dart';
@@ -10,119 +13,201 @@ import '../repositories/chat_repository.dart';
 class ChatController extends GetxController {
   final ChatRepository _repository = ChatRepository();
 
+  StreamSubscription<List<ChatModel>>? _chatSubscription;
+  StreamSubscription<List<MessageModel>>? _messageSubscription;
+
   final RxList<ChatModel> chats = <ChatModel>[].obs;
   final RxList<MessageModel> messages = <MessageModel>[].obs;
-
+  final Rxn<ChatModel> currentChat = Rxn<ChatModel>();
   final RxBool isChatsLoading = false.obs;
   final RxBool isMessagesLoading = false.obs;
 
   final TextEditingController messageController = TextEditingController();
+  final ScrollController scrollController = ScrollController();
+  StreamSubscription<ChatModel>? _currentChatSubscription;
 
   String? currentChatId;
 
   @override
   void onInit() {
     super.onInit();
-    fetchChats();
+    listenChats();
   }
 
-  @override
-  void onClose() {
-    messageController.dispose();
-    super.onClose();
-  }
+  String get currentUserId => userInfo?['id'] ?? '';
 
   //--------------------------------------------------------------------------
   // Chats
   //--------------------------------------------------------------------------
+  void listenChat(String chatId) {
+    _currentChatSubscription?.cancel();
 
-  Future<void> fetchChats() async {
+    _currentChatSubscription =
+        _repository.streamChat(chatId).listen(
+              (chat) {
+            currentChat.value = chat;
+          },
+          onError: (e) {
+            CustomAlert.errorAlert(
+              title: "Error",
+              e.toString(),
+            );
+          },
+        );
+  }
+
+  void listenChats() {
     isChatsLoading.value = true;
+    _chatSubscription?.cancel();
 
-    chats.assignAll(await _repository.getChats());
-
-    isChatsLoading.value = false;
+    _chatSubscription = _repository.streamChats().listen(
+          (data) {
+        chats.assignAll(data);
+        isChatsLoading.value = false;
+      },
+      onError: (e) {
+        isChatsLoading.value = false;
+        CustomAlert.errorAlert(
+          title: "Error",
+          e.toString(),
+        );
+      },
+    );
   }
 
   //--------------------------------------------------------------------------
   // Messages
   //--------------------------------------------------------------------------
 
-  Future<void> fetchMessages(String chatId) async {
+  void listenMessages(String chatId) {
     currentChatId = chatId;
-
-    messages.clear(); // <-- Clear old messages immediately
 
     isMessagesLoading.value = true;
 
-    final data = await _repository.getMessages(chatId);
+    _messageSubscription?.cancel();
 
-    messages.assignAll(data);
+    _repository.markMessagesAsRead(chatId);
 
-    markAsRead(chatId);
+    _messageSubscription =
+        _repository.streamMessages(chatId).listen(
+              (data) {
+            messages.assignAll(data);
 
-    isMessagesLoading.value = false;
+            isMessagesLoading.value = false;
+
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!scrollController.hasClients) return;
+
+              scrollController.animateTo(
+                scrollController.position.maxScrollExtent,
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeOut,
+              );
+            });
+          },
+          onError: (e) {
+            isMessagesLoading.value = false;
+
+            CustomAlert.errorAlert(
+              title: "Error",
+              e.toString(),
+            );
+          },
+        );
   }
+
 
   //--------------------------------------------------------------------------
   // Send Message
   //--------------------------------------------------------------------------
 
-  void sendMessage({
-    required String senderId,
+  Future<void> sendMessage({
     required String receiverId,
-  }) {
+  }) async {
+    final chat = currentChat.value;
+    if (chat == null) return;
+
     final text = messageController.text.trim();
+    if (text.isEmpty) return;
 
-    if (text.isEmpty || currentChatId == null) return;
+    try {
+      await _repository.sendMessage(
+        chatId: chat.id,
+        senderId: currentUserId,
+        receiverId: receiverId,
+        text: text,
+      );
 
-    final message = MessageModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      chatId: currentChatId!,
-      senderId: senderId,
-      receiverId: receiverId,
-      type: MessageType.text,
-      message: text,
-      isSeen: false,
-      createdAt: DateTime.now(),
-    );
-
-    messages.add(message);
-
-    final index = chats.indexWhere((e) => e.id == currentChatId);
-
-    if (index != -1) {
-      chats[index] = chats[index].copyWith(
-        lastMessage: text,
-        lastMessageType: MessageType.text,
-        lastMessageTime: DateTime.now(),
-        updatedAt: DateTime.now(),
+      messageController.clear();
+    } catch (e) {
+      CustomAlert.errorAlert(
+        title: "Error",
+        e.toString(),
       );
     }
-
-    messageController.clear();
   }
 
   //--------------------------------------------------------------------------
   // Mark Read
   //--------------------------------------------------------------------------
 
-  void markAsRead(String chatId) {
-    final index = chats.indexWhere((e) => e.id == chatId);
-
-    if (index == -1) return;
-
-    chats[index] = chats[index].copyWith(
-      unreadCount: 0,
-    );
+  Future<void> markAsRead(String chatId) async {
+    await _repository.markMessagesAsRead(chatId);
   }
 
   Future<void> openChat(ProductModel product) async {
-    final chat = await _repository.getOrCreateChat(product);
+    try {
+      if (product.sellerId == userInfo?["id"]) {
+        CustomAlert.errorAlert(
+          title: "Not allowed",
+          "You can't chat with yourself.",
+        );
+        return;
+      }
+      isChatsLoading.value = true;
+      final chatId = await _repository.getOrCreateChat(
+        sellerId: product.sellerId,
+        sellerName: product.sellerName!,
+        productPrice: product.price,
+        sellerPhoto: product.sellerPhoto,
 
-    Get.toNamed(
-      Routes.chat,
-      arguments: chat,
-    );
+        buyerId: userInfo?['id'],
+        buyerName: userInfo?['name'] ?? '',
+        buyerPhoto:  userInfo?['photo'] ?? '',
+
+        productId: product.id,
+        productTitle: product.title,
+        productImage: product.images.first,
+      );
+
+    AppConstants.log.i(currentChat);
+
+      Get.toNamed(
+        Routes.chat,
+        arguments: chatId,
+      );
+
+      isChatsLoading.value = false;
+    } catch (e) {
+      isChatsLoading.value = false;
+
+      CustomAlert.errorAlert(
+        title: "Unable to open chat",
+        e.toString(),
+      );
+    }
+  }
+
+  @override
+  @override
+  void onClose() {
+    _chatSubscription?.cancel();
+    _messageSubscription?.cancel();
+    _currentChatSubscription?.cancel();
+
+    messageController.dispose();
+    scrollController.dispose();
+
+    super.onClose();
   }
 }

@@ -294,6 +294,8 @@ class ProductModel {
       'subCategoryName': subCategoryName,
 
       'sellerId': sellerId,
+      "sellerName": sellerName,
+      "sellerPhoto": sellerPhoto,
       'agentId': agentId,
 
       'images': images,

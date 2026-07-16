@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 enum MessageType {
   text,
   image,
@@ -29,26 +31,65 @@ class MessageModel {
   });
 
   MessageModel copyWith({
-    String? id,
-    String? chatId,
-    String? senderId,
-    String? receiverId,
-    MessageType? type,
+    bool? isSeen,
     String? message,
     String? image,
-    bool? isSeen,
     DateTime? createdAt,
   }) {
     return MessageModel(
-      id: id ?? this.id,
-      chatId: chatId ?? this.chatId,
-      senderId: senderId ?? this.senderId,
-      receiverId: receiverId ?? this.receiverId,
-      type: type ?? this.type,
+      id: id,
+      chatId: chatId,
+      senderId: senderId,
+      receiverId: receiverId,
+      type: type,
       message: message ?? this.message,
       image: image ?? this.image,
       isSeen: isSeen ?? this.isSeen,
       createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  factory MessageModel.fromFirestore(
+      DocumentSnapshot<Map<String, dynamic>> doc,
+      ) {
+    final data = doc.data() ?? {};
+
+    return MessageModel(
+      id: doc.id,
+      chatId: data['chatId'] ?? '',
+      senderId: data['senderId'] ?? '',
+      receiverId: data['receiverId'] ?? '',
+      type: MessageType.values.firstWhere(
+            (e) => e.name == data['type'],
+        orElse: () => MessageType.text,
+      ),
+      message: data['message'] ?? '',
+      image: data['image'],
+      isSeen: data['isSeen'] ?? false,
+      createdAt:
+      (data['createdAt'] as Timestamp?)
+          ?.toDate() ??
+          DateTime.now(),
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'chatId': chatId,
+      'senderId': senderId,
+      'receiverId': receiverId,
+      'type': type.name,
+      'message': message,
+      'image': image,
+      'isSeen': isSeen,
+      'createdAt': createdAt,
+    };
+  }
+
+  static MessageType _parseType(dynamic value) {
+    return MessageType.values.firstWhere(
+          (e) => e.name == value,
+      orElse: () => MessageType.text,
     );
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teamomarket/app/routes/app_routes.dart';
 import '../../../app/utils/app_colors.dart';
+import '../../../app/widgets/custom_widget.dart';
 import '../controllers/chat_controller.dart';
 
 class ChatListPage extends GetView<ChatController> {
@@ -36,13 +37,17 @@ class ChatListPage extends GetView<ChatController> {
           separatorBuilder: (_, __) => const SizedBox(height: 10),
           itemBuilder: (_, index) {
             final chat = controller.chats[index];
+            final isSeller = chat.sellerId == controller.currentUserId;
 
+            final displayName = isSeller ? chat.buyerName : chat.sellerName;
+
+            final displayPhoto = isSeller ? chat.buyerPhoto : chat.sellerPhoto;
             return InkWell(
               borderRadius: BorderRadius.circular(16),
               onTap: () {
                 Get.toNamed(
                   Routes.chat,
-                  arguments: chat,
+                  arguments: chat.id,
                 );
               },
               child: Container(
@@ -55,10 +60,10 @@ class ChatListPage extends GetView<ChatController> {
                   children: [
 
                     // Seller Photo
-                    chat.sellerPhoto != null && chat.sellerPhoto!.isNotEmpty
+                    displayPhoto != null && displayPhoto.isNotEmpty
                         ? CircleAvatar(
                       radius: 24,
-                      backgroundImage: NetworkImage(chat.sellerPhoto!),
+                      backgroundImage: NetworkImage(displayPhoto),
                     )
                         : const CircleAvatar(
                       radius: 24,
@@ -80,7 +85,7 @@ class ChatListPage extends GetView<ChatController> {
                         children: [
 
                           Text(
-                            chat.sellerName,
+                            displayName,
                             style: const TextStyle(
                               fontWeight: FontWeight.w600,
                             ),
@@ -153,12 +158,10 @@ class ChatListPage extends GetView<ChatController> {
                     ClipRRect(
                       borderRadius:
                       BorderRadius.circular(8),
-                      child: Image.network(
+                      child: CustomWidget.getImage(
                         chat.productImage,
-                        width: 56,
-                        height: 56,
-                        fit: BoxFit.cover,
-                      ),
+                        shape: BoxShape.rectangle,
+                      )
                     ),
                   ],
                 ),
