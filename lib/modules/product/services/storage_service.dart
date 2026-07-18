@@ -8,23 +8,21 @@ class StorageService {
 
   Future<String> uploadProductImage({
     required String productId,
-    required String imagePath,
-    required String catogaryName,
+    required String categoryName,
+    required File imageFile,
   }) async {
-    final file = File(imagePath);
+    final ext = extension(imageFile.path).replaceFirst('.', '');
 
-    final extension = extensionFromMime(file.path);
-
-    final ref = _storage
+    final ref = FirebaseStorage.instance
         .ref()
-        .child("products")
-        .child(catogaryName)
+        .child('products')
+        .child(categoryName)
         .child(productId)
-        .child("${DateTime.now().millisecondsSinceEpoch}.$extension");
+        .child('${DateTime.now().millisecondsSinceEpoch}.$ext');
 
-    final task = await ref.putFile(file);
+    await ref.putFile(imageFile);
 
-    return await task.ref.getDownloadURL();
+    return ref.getDownloadURL();
   }
 
   String extensionFromMime(String path) {

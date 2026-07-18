@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../controllers/product_controller.dart';
-import 'post_details_page.dart';
+import 'product_details_page.dart';
 
 class ProductPreviewPage extends GetView<ProductController> {
   const ProductPreviewPage({super.key});
@@ -12,7 +12,7 @@ class ProductPreviewPage extends GetView<ProductController> {
     return Obx(() {
       final product = controller.buildProductModel();
 
-      return PostDetailsPage(
+      return ProductDetailsPage(
         product: product,
         previewImages: controller.images,
         isPreview: true,

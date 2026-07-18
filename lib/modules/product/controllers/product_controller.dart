@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:teamomarket/app/constants/app_constants.dart';
 import 'package:teamomarket/app/services/device_info.dart';
 import 'package:teamomarket/app/utils/offline_data.dart';
-
 import '../../../app/routes/app_routes.dart';
 import '../../../app/utils/custom_alert.dart';
 import '../../../app/utils/location_utils.dart';
@@ -17,8 +15,9 @@ import '../../category/models/sub_category_model.dart';
 import '../../location/models/location_result.dart';
 import '../models/product_image_model.dart';
 import '../models/product_model.dart';
-import '../services/product_repository.dart';
+import '../repositories/product_repository.dart';
 import '../services/storage_service.dart';
+import '../views/product_details_page.dart';
 
 class ProductController extends GetxController {
 
@@ -115,23 +114,20 @@ class ProductController extends GetxController {
 
   Future<List<String>> uploadImages({
     required String productId,
-    required String catogaryName,
+    required String categoryName,
     required List<String> imagePaths,
   }) async {
-
     final futures = imagePaths.map((path) async {
-
       final compressed = await CustomWidget.compressImage(path);
 
-      return await _storageService.uploadProductImage(
+      return _storageService.uploadProductImage(
         productId: productId,
-        imagePath: compressed,
-        catogaryName: catogaryName,
+        categoryName: categoryName,
+        imageFile: compressed,
       );
-
     });
 
-    return await Future.wait(futures);
+    return Future.wait(futures);
   }
 
   Future<void> useCurrentLocation() async {
@@ -372,6 +368,7 @@ class ProductController extends GetxController {
 
     try {
       isLoading.value = true;
+      CustomAlert.loadAlert("Uploading product...");
 
       final productId = _repository.generateProductId();
 
@@ -385,7 +382,7 @@ class ProductController extends GetxController {
 
       final imageUrls = await uploadImages(
         productId: productId,
-        catogaryName: product.categoryName!,
+        categoryName: product.categoryName!,
         imagePaths: images
             .where((image) => image.file != null)
             .map((image) => image.file!.path)
@@ -405,7 +402,9 @@ class ProductController extends GetxController {
       //---------------------------------------
 
       await _repository.createProduct(product);
-
+      clearForm();
+      CustomAlert.dismissAlert();
+      Get.offNamed(Routes.myAds);
       CustomAlert.successAlert(
         title: "Success",
         "Product published successfully.",
@@ -438,7 +437,7 @@ class ProductController extends GetxController {
       subCategoryName: selectedSubCategory?.name,
       sellerId: DeviceInfo.userUID!,
       sellerName: userInfo?['name'],
-      sellerPhoto: userInfo?["photo"],
+      sellerPhoto: userInfo?["photoUrl"],
       images: const [], // Images are uploaded during publish()
       attributes: Map<String, dynamic>.from(attributes),
       country: country.value,
@@ -456,6 +455,15 @@ class ProductController extends GetxController {
   /// ---------------------------------------
   /// Reset
   /// ---------------------------------------
+
+  Future<ProductModel?> getProductDetail(String productId) async {
+    CustomAlert.loadAlert("Loading Product Details...");
+    ProductModel? product = await _repository.getProduct(productId);
+    CustomAlert.dismissAlert();
+    if(product != null && (product.status != ProductStatus.active || product.isDeleted)) CustomAlert.errorAlert("Product is either sold, deleted or inactive", title: "Not Available");
+    else Get.to(() => ProductDetailsPage(product: product)) ;
+    return product;
+  }
 
   void clearForm() {
 

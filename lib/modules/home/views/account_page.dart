@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:teamomarket/app/routes/app_routes.dart';
 
 import '../../../app/utils/app_colors.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../../auth/services/auth_service.dart';
 
-class AccountPage extends GetView<ProfileController> {
+class AccountPage extends GetView<AccountController> {
   AccountPage({super.key});
   AuthController authController = Get.put(AuthController());
 
   @override
   Widget build(BuildContext context) {
-    Get.put(ProfileController());
+    Get.put(AccountController());
     return Scaffold(
       backgroundColor: const Color(0xffF7F8FA),
       appBar: AppBar(
@@ -28,56 +29,59 @@ class AccountPage extends GetView<ProfileController> {
         children: [
 
           /// Profile Card
-          Container(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(18),
-            ),
-            child: Row(
-              children: [
+          InkWell(
+            onTap: () => Get.toNamed(Routes.profile),
+            child: Container(
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(18),
+              ),
+              child: Row(
+                children: [
 
-                const CircleAvatar(
-                  radius: 34,
-                  backgroundColor: Color(0xffE9EEFF),
-                  child: Icon(
-                    Icons.person,
-                    size: 36,
-                    color: AppColors.primary,
-                  ),
-                ),
-
-                const SizedBox(width: 16),
-
-                Expanded(
-                  child: Obx(
-                        () => Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          controller.userName.value,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          controller.email.value,
-                          style: TextStyle(
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                      ],
+                  const CircleAvatar(
+                    radius: 34,
+                    backgroundColor: Color(0xffE9EEFF),
+                    child: Icon(
+                      Icons.person,
+                      size: 36,
+                      color: AppColors.primary,
                     ),
                   ),
-                ),
 
-                IconButton(
-                  onPressed: controller.editProfile,
-                  icon: const Icon(Icons.edit_outlined),
-                ),
-              ],
+                  const SizedBox(width: 16),
+
+                  Expanded(
+                    child: Obx(
+                          () => Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            controller.userName.value,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            controller.email.value,
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  IconButton(
+                    onPressed: controller.editProfile,
+                    icon: const Icon(Icons.edit_outlined),
+                  ),
+                ],
+              ),
             ),
           ),
 
@@ -213,7 +217,7 @@ class _MenuTile extends StatelessWidget {
   }
 }
 
-class ProfileController extends GetxController {
+class AccountController extends GetxController {
   final userName = "Kashif".obs;
   final email = "kashif@example.com".obs;
   final profileImage = "".obs;

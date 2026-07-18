@@ -9,7 +9,7 @@ import '../widgets/post_info_card.dart';
 import '../widgets/preview_bottom_bar.dart';
 import '../widgets/seller_card.dart';
 
-class PostDetailsPage extends StatelessWidget {
+class ProductDetailsPage extends StatelessWidget {
   /// Existing product (published)
   final ProductModel? product;
 
@@ -19,7 +19,7 @@ class PostDetailsPage extends StatelessWidget {
   /// Preview mode
   final bool isPreview;
 
-  const PostDetailsPage({
+  const ProductDetailsPage({
     super.key,
     this.product,
     this.previewImages,

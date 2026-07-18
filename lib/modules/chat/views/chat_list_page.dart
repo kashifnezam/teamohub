@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:teamomarket/app/constants/app_constants.dart';
 import 'package:teamomarket/app/routes/app_routes.dart';
 import '../../../app/utils/app_colors.dart';
 import '../../../app/widgets/custom_widget.dart';
@@ -42,6 +43,7 @@ class ChatListPage extends GetView<ChatController> {
             final displayName = isSeller ? chat.buyerName : chat.sellerName;
 
             final displayPhoto = isSeller ? chat.buyerPhoto : chat.sellerPhoto;
+
             return InkWell(
               borderRadius: BorderRadius.circular(16),
               onTap: () {
@@ -61,10 +63,7 @@ class ChatListPage extends GetView<ChatController> {
 
                     // Seller Photo
                     displayPhoto != null && displayPhoto.isNotEmpty
-                        ? CircleAvatar(
-                      radius: 24,
-                      backgroundImage: NetworkImage(displayPhoto),
-                    )
+                        ?  CustomWidget.getImage(chat.productImage)
                         : const CircleAvatar(
                       radius: 24,
                       backgroundColor: Color(0xFFE0E0E0),

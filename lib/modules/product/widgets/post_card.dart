@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teamomarket/app/widgets/custom_widget.dart';
-import 'package:teamomarket/modules/product/views/post_details_page.dart';
+import 'package:teamomarket/modules/product/views/product_details_page.dart';
 import '../../../app/utils/app_colors.dart';
 import '../models/product_model.dart';
 
@@ -26,7 +26,7 @@ class PostCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {
-          Get.to(()=> PostDetailsPage(product: post));
+          Get.to(()=> ProductDetailsPage(product: post));
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

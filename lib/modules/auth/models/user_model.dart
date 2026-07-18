@@ -1,11 +1,15 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../../../app/utils/time-utils.dart';
+
 class UserModel {
-  final String uid;
+  final String id;
   final String name;
   final String email;
   final String phone;
-  final String? photo;
+  final String? photoUrl;
 
   /// buyer | seller | agent | admin
   final String role;
@@ -24,11 +28,11 @@ class UserModel {
   final DateTime updatedAt;
 
   const UserModel({
-    required this.uid,
+    required this.id,
     required this.name,
     required this.email,
     required this.phone,
-    this.photo,
+    this.photoUrl,
     required this.role,
     required this.country,
     required this.state,
@@ -47,7 +51,7 @@ class UserModel {
     String? name,
     String? email,
     String? phone,
-    String? photo,
+    String? photoUrl,
     String? role,
     String? country,
     String? state,
@@ -61,11 +65,11 @@ class UserModel {
     DateTime? updatedAt,
   }) {
     return UserModel(
-      uid: id ?? this.uid,
+      id: id ?? this.id,
       name: name ?? this.name,
       email: email ?? this.email,
       phone: phone ?? this.phone,
-      photo: photo ?? this.photo,
+      photoUrl: photoUrl ?? this.photoUrl,
       role: role ?? this.role,
       country: country ?? this.country,
       state: state ?? this.state,
@@ -80,13 +84,62 @@ class UserModel {
     );
   }
 
-  Map<String, dynamic> toMap() {
+  /// Used when saving/updating Firestore
+  Map<String, dynamic> toFirestore() {
     return {
-      'id': uid,
+      'id': id,
       'name': name,
       'email': email,
       'phone': phone,
-      'photo': photo,
+      'photoUrl': photoUrl,
+      'role': role,
+      'country': country,
+      'state': state,
+      'city': city,
+      'area': area,
+      'address': address,
+      'pincode': pincode,
+      'isVerified': isVerified,
+      'isBlocked': isBlocked,
+      'createdAt': Timestamp.fromDate(createdAt),
+      'updatedAt': Timestamp.fromDate(updatedAt),
+    };
+  }
+
+  /// Create from Firestore DocumentSnapshot
+  factory UserModel.fromFirestore(
+      DocumentSnapshot<Map<String, dynamic>> doc,
+      ) {
+    final data = doc.data() ?? {};
+
+    return UserModel(
+      id: data['id'] ?? doc.id,
+      name: data['name'] ?? '',
+      email: data['email'] ?? '',
+      phone: data['phone'] ?? '',
+      photoUrl: data['photoUrl'],
+      role: data['role'] ?? 'buyer',
+      country: data['country'] ?? '',
+      state: data['state'] ?? '',
+      city: data['city'] ?? '',
+      area: data['area'],
+      address: data['address'],
+      pincode: data['pincode'],
+      isVerified: data['isVerified'] ?? false,
+      isBlocked: data['isBlocked'] ?? false,
+      createdAt: TimeUtils.parseDate(data['createdAt']),
+      updatedAt: TimeUtils.parseDate(data['updatedAt']),
+    );
+  }
+
+  /// Used for local JSON storage
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'email': email,
+      'phone': phone,
+      'photoUrl': photoUrl,
       'role': role,
       'country': country,
       'state': state,
@@ -102,12 +155,30 @@ class UserModel {
   }
 
   factory UserModel.fromMap(Map<String, dynamic> map) {
+    DateTime parse(dynamic value) {
+      if (value == null) return DateTime.now();
+
+      if (value is Timestamp) {
+        return value.toDate();
+      }
+
+      if (value is int) {
+        return DateTime.fromMillisecondsSinceEpoch(value);
+      }
+
+      if (value is String) {
+        return DateTime.tryParse(value) ?? DateTime.now();
+      }
+
+      return DateTime.now();
+    }
+
     return UserModel(
-      uid: map['id'] ?? '',
+      id: map['id'] ?? '',
       name: map['name'] ?? '',
       email: map['email'] ?? '',
       phone: map['phone'] ?? '',
-      photo: map['photo'],
+      photoUrl: map['photoUrl'],
       role: map['role'] ?? 'buyer',
       country: map['country'] ?? '',
       state: map['state'] ?? '',
@@ -117,33 +188,27 @@ class UserModel {
       pincode: map['pincode'],
       isVerified: map['isVerified'] ?? false,
       isBlocked: map['isBlocked'] ?? false,
-      createdAt: DateTime.fromMillisecondsSinceEpoch(
-        map['createdAt'] ?? 0,
-      ),
-      updatedAt: DateTime.fromMillisecondsSinceEpoch(
-        map['updatedAt'] ?? 0,
-      ),
+      createdAt: parse(map['createdAt']),
+      updatedAt: parse(map['updatedAt']),
     );
   }
 
-  String toJson() => json.encode(toMap());
+  String toJson() => jsonEncode(toMap());
 
   factory UserModel.fromJson(String source) =>
-      UserModel.fromMap(json.decode(source));
+      UserModel.fromMap(jsonDecode(source));
 
   @override
   String toString() {
-    return 'UserModel(id: $uid, name: $name, email: $email, role: $role)';
+    return 'UserModel(id: $id, name: $name, email: $email, role: $role)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
-        other is UserModel &&
-            runtimeType == other.runtimeType &&
-            other.uid == uid;
+        other is UserModel && other.id == id;
   }
 
   @override
-  int get hashCode => uid.hashCode;
+  int get hashCode => id.hashCode;
 }

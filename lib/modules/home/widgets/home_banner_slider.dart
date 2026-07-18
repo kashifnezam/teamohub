@@ -2,16 +2,22 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../../../app/widgets/custom_widget.dart';
+
 class HomeBannerSlider extends StatefulWidget {
   final List<String> images;
+  final bool isNetwork;
   final double height;
   final bool autoPlay;
+  final Function(int)? onTap;
 
   const HomeBannerSlider({
     super.key,
     required this.images,
+    this.isNetwork = false,
     this.height = 180,
     this.autoPlay = true,
+    this.onTap,
   });
 
   @override
@@ -29,12 +35,25 @@ class _HomeBannerSliderState extends State<HomeBannerSlider> {
         CarouselSlider.builder(
           itemCount: widget.images.length,
           itemBuilder: (context, index, realIndex) {
-            return ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Image.asset(
-                widget.images[index],
-                width: double.infinity,
-                fit: BoxFit.cover,
+            return GestureDetector(
+              onTap: () => widget.onTap?.call(index),
+              child: Padding(
+                padding: const EdgeInsets.all(5.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: widget.isNetwork
+                      ? CustomWidget.getImage(
+                    widget.images[index],
+                    height: widget.height,
+                    width: double.infinity,
+                    shape: BoxShape.rectangle
+                  )
+                      : Image.asset(
+                    widget.images[index],
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
             );
           },

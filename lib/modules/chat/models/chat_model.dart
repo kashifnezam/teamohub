@@ -85,21 +85,16 @@ class ChatModel {
       }) {
     final data = doc.data() ?? {};
 
-    final seller =
-    Map<String, dynamic>.from(data['sellerSnapshot'] ?? {});
+    final seller = Map<String, dynamic>.from(data['sellerSnapshot'] ?? {});
 
-    final buyer =
-    Map<String, dynamic>.from(data['buyerSnapshot'] ?? {});
+    final buyer = Map<String, dynamic>.from(data['buyerSnapshot'] ?? {});
 
-    final product =
-    Map<String, dynamic>.from(data['productSnapshot'] ?? {});
+    final product = Map<String, dynamic>.from(data['productSnapshot'] ?? {});
 
-    final unread =
-    Map<String, dynamic>.from(data['unreadCounts'] ?? {});
+    final unread = Map<String, dynamic>.from(data['unreadCounts'] ?? {});
 
     return ChatModel(
       id: doc.id,
-
       productId: data['productId'] ?? '',
       productTitle: product['title'] ?? '',
       productImage: product['image'] ?? '',

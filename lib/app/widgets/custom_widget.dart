@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -42,63 +44,74 @@ class CustomWidget {
         false; // Return false if the dialog is dismissed without a choice.
   }
 
-  static Future<String> imagePickFrom({String source = "gallary"}) async {
+  static Future<File?> imagePickFrom({String source = "gallery"}) async {
     try {
-      XFile? file;
+      final picker = ImagePicker();
 
-      ImagePicker imagePicker = ImagePicker();
-      if (source == "camera") {
-        file = await imagePicker.pickImage(source: ImageSource.camera);
-      } else if (source == "gallary") {
-        file = await imagePicker.pickImage(source: ImageSource.gallery);
-      }
+      final XFile? file = await picker.pickImage(
+        source: source == "camera"
+            ? ImageSource.camera
+            : ImageSource.gallery,
+      );
 
-      // if (filename == "NA") {
-      //   filename = file != null ? file.name : "";
-      // }
-      if (file != null) {
-        return file.path;
-      }
-      return "";
+      if (file == null) return null;
+
+      return File(file.path);
     } catch (e) {
       confirmDialogue(
-          title: "Something went wrong",
-          content: "Error while choosing file $e");
-      return "";
+        title: "Something went wrong",
+        content: e.toString(),
+      );
+      return null;
     }
   }
 
-  static CachedNetworkImage getImage(String imageUrl, {BoxShape shape = BoxShape.circle} ) {
+  static Widget getImage(
+      String imageUrl, {
+        double width = 60,
+        double height = 60,
+        BoxShape shape = BoxShape.circle,
+      }) {
     return CachedNetworkImage(
       imageUrl: imageUrl,
       imageBuilder: (context, imageProvider) => Container(
+        width: width,
+        height: height,
         decoration: BoxDecoration(
           shape: shape,
           image: DecorationImage(
             image: imageProvider,
             fit: BoxFit.cover,
-            // colorFilter:
-            //     ColorFilter.mode(Colors.red, BlendMode.colorBurn),
           ),
         ),
       ),
-      placeholder: (context, url) => buildCircularProgressIndicator(),
-      errorWidget: (context, url, error) => Icon(Icons.error),
+      placeholder: (_, __) => SizedBox(
+        width: width,
+        height: height,
+        child: const Center(child: CircularProgressIndicator()),
+      ),
+      errorWidget: (_, __, ___) => SizedBox(
+        width: width,
+        height: height,
+        child: const Icon(Icons.error),
+      ),
     );
   }
-
-  static Future<String> compressImage(String filePath) async {
+  static Future<File> compressImage(String path) async {
     final dir = await getTemporaryDirectory();
-    final targetPath = "${dir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg";
 
-    final result = await FlutterImageCompress.compressAndGetFile(
-      filePath,
-      targetPath,
-      quality: 70, // 🔥 60–75 is ideal
-      minWidth: 1080, // Resize large images
+    final target =
+        "${dir.path}/${DateTime.now().millisecondsSinceEpoch}.jpg";
+
+    final XFile? result =
+    await FlutterImageCompress.compressAndGetFile(
+      path,
+      target,
+      quality: 70,
+      minWidth: 1080,
       minHeight: 1080,
     );
 
-    return result?.path ?? filePath;
+    return File(result?.path ?? path);
   }
 }

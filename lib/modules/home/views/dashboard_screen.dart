@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:teamomarket/app/routes/app_routes.dart';
-
+import 'package:teamomarket/modules/profile/views/profile_page.dart';
 import '../../../app/utils/app_colors.dart';
-import '../../../../modules/home/views/account_page.dart';
+import '../../../app/utils/custom_alert.dart';
 import '../../chat/views/chat_list_page.dart';
 import 'home_page.dart';
 
@@ -17,24 +18,42 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   int currentIndex = 0;
 
-  final pages = [
-    const HomePage(),
-    const ChatListPage(),
-    const ChatListPage(),
-    AccountPage(),
+
+  static List<Widget> pages = [
+    HomePage(),
+    ChatListPage(),
+    ChatListPage(), // Replace with ExplorePage later
+    ProfilePage(),
   ];
+
+  void _changeTab(int index) {
+    if (currentIndex == index) return;
+
+    setState(() {
+      currentIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: currentIndex == 0,
-      onPopInvokedWithResult: (didPop, result) {
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
         if (didPop) return;
 
         if (currentIndex != 0) {
-          setState(() {
-            currentIndex = 0;
-          });
+          _changeTab(0);
+          return;
+        }
+
+        final exit = await CustomAlert.confirmAlert(
+          "",
+          title: "Are you sure you want to exit?",
+          confirmText: "Exit",
+        );
+
+        if (exit == true) {
+          SystemNavigator.pop();
         }
       },
       child: Scaffold(
@@ -48,58 +67,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         floatingActionButtonLocation:
         FloatingActionButtonLocation.centerDocked,
 
-        floatingActionButton: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 25),
-
-            GestureDetector(
-              onTap: () {
-                Get.toNamed(Routes.categories);
-              },
-              child: Container(
-                width: 50,
-                height: 50,
-                padding: const EdgeInsets.all(3),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(18),
-                  gradient: const LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFF6366F1), // Indigo
-                      Color(0xFF8B5CF6), // Purple
-                      Color(0xFF06B6D4), // Cyan
-                      Color(0xFF3B82F6), // Blue
-                    ],
-                  ),
-                ),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: const Icon(
-                    Icons.add_rounded,
-                    color: AppColors.primary,
-                    size: 30,
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 13),
-
-
-            const Text(
-              "Sell",
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-
-          ],
-        ),
+        floatingActionButton: const _SellButton(),
 
         bottomNavigationBar: Material(
           elevation: 12,
@@ -112,17 +80,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
             child: Row(
               children: [
 
-                Expanded(
-                  child: _NavItem(
-                    selected: currentIndex == 0,
-                    icon: currentIndex == 0
-                        ? Icons.home
-                        : Icons.home_outlined,
-                    label: "Home",
-                    onTap: () => setState(() => currentIndex = 0),
-                  ),
+                _buildNavItem(
+                  index: 0,
+                  selectedIcon: Icons.home,
+                  unselectedIcon: Icons.home_outlined,
+                  label: "Home",
                 ),
+
                 const SizedBox(width: 25),
+
                 Expanded(
                   child: Stack(
                     clipBehavior: Clip.none,
@@ -134,30 +100,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ? Icons.chat
                             : Icons.chat_bubble_outline,
                         label: "Chats",
-                        onTap: () => setState(() => currentIndex = 1),
+                        onTap: () => _changeTab(1),
                       ),
 
-                      Positioned(
-                        right: 18,
-                        top: -1,
-                        child: Container(
-                          width: 15,
-                          height: 15,
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                          ),
-                          alignment: Alignment.center,
-                          child: const Text(
-                            "2",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 8,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
+                      // const Positioned(
+                      //   right: 18,
+                      //   top: -1,
+                      //   child: _ChatBadge(
+                      //     count: "2",
+                      //   ),
+                      // ),
 
                     ],
                   ),
@@ -165,28 +117,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                 const SizedBox(width: 66),
 
-                Expanded(
-                  child: _NavItem(
-                    selected: currentIndex == 2,
-                    icon: currentIndex == 2
-                        ? Icons.grid_view_rounded
-                        : Icons.grid_view_outlined,
-                    label: "Explore",
-                    onTap: () => setState(() => currentIndex = 2),
-                  ),
+                _buildNavItem(
+                  index: 2,
+                  selectedIcon: Icons.grid_view_rounded,
+                  unselectedIcon: Icons.grid_view_outlined,
+                  label: "Explore",
                 ),
 
                 const SizedBox(width: 25),
 
-                Expanded(
-                  child: _NavItem(
-                    selected: currentIndex == 3,
-                    icon: currentIndex == 3
-                        ? Icons.person
-                        : Icons.person_outline,
-                    label: "Account",
-                    onTap: () => setState(() => currentIndex = 3),
-                  ),
+                _buildNavItem(
+                  index: 3,
+                  selectedIcon: Icons.person,
+                  unselectedIcon: Icons.person_outline,
+                  label: "Account",
                 ),
 
               ],
@@ -196,8 +140,110 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
     );
   }
+  Widget _buildNavItem({
+    required int index,
+    required IconData selectedIcon,
+    required IconData unselectedIcon,
+    required String label,
+  }) {
+    return Expanded(
+      child: _NavItem(
+        selected: currentIndex == index,
+        icon: currentIndex == index
+            ? selectedIcon
+            : unselectedIcon,
+        label: label,
+        onTap: () => _changeTab(index),
+      ),
+    );
+  }
 }
+/*class _ChatBadge extends StatelessWidget {
+  final String count;
 
+  const _ChatBadge({
+    required this.count,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 15,
+      height: 15,
+      decoration: const BoxDecoration(
+        color: Colors.red,
+        shape: BoxShape.circle,
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        count,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 8,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+}*/
+class _SellButton extends StatelessWidget {
+  const _SellButton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const SizedBox(height: 25),
+
+        GestureDetector(
+          onTap: () {
+            Get.toNamed(Routes.categories);
+          },
+          child: Container(
+            width: 50,
+            height: 50,
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFF6366F1),
+                  Color(0xFF8B5CF6),
+                  Color(0xFF06B6D4),
+                  Color(0xFF3B82F6),
+                ],
+              ),
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+              ),
+              child: const Icon(
+                Icons.add_rounded,
+                color: AppColors.primary,
+                size: 30,
+              ),
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 13),
+
+        const Text(
+          "Sell",
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+}
 class _NavItem extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -255,4 +301,5 @@ class _NavItem extends StatelessWidget {
       ),
     );
   }
+
 }

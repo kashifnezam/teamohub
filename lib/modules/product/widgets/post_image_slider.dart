@@ -248,14 +248,20 @@ class _PostImageSliderState extends State<PostImageSlider> {
 
   Widget _buildImage(ProductImageModel image) {
     if (image.file != null) {
-      return Image.file(
-        image.file!,
-        fit: BoxFit.contain,
-        width: double.infinity,
+      return SizedBox.expand(
+        child: Image.file(
+          image.file!,
+          fit: BoxFit.cover,
+        ),
       );
     }
 
-    return CustomWidget.getImage(image.url!, shape: BoxShape.rectangle);
+    return CustomWidget.getImage(
+      image.url!,
+      width: double.infinity,
+      height: double.infinity,
+      shape: BoxShape.rectangle,
+    );
   }
 
   Widget _circleButton({

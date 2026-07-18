@@ -12,6 +12,11 @@ abstract class Routes {
   static const signup = '/signup';
   static const forgotPassword = '/forgot-password';
 
+  // ---------------- Banner ----------------
+  static const bannerManagement = '/banner-management';
+  static const bannerForm = '/banner-form';
+
+
   // ---------------- Dashboard ----------------
 
   static const dashboard = '/dashboard';
@@ -32,6 +37,7 @@ abstract class Routes {
   static const productDetails = '/product-details';
   static const myProducts = '/my-products';
   static const productPreview = '/product-preview';
+  static const myAds = '/my-ads';
 
   // ---------------- Chat ----------------
 

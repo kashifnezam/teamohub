@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teamomarket/app/utils/offline_data.dart';
 import 'package:teamomarket/app/utils/time-utils.dart';
+import 'package:teamomarket/modules/product/controllers/product_controller.dart';
+import 'package:teamomarket/modules/product/models/product_model.dart';
+import 'package:teamomarket/modules/product/views/product_details_page.dart';
 import '../../../app/constants/app_constants.dart';
 import '../../../app/utils/app_colors.dart';
 import '../../../app/utils/custom_alert.dart';
@@ -33,8 +36,6 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
-    AppConstants.log.i(controller.currentChat);
-
     return Obx((){
       final chat = controller.currentChat.value;
       final isSeller = chat?.sellerId == controller.currentUserId;
@@ -137,9 +138,10 @@ class _ChatPageState extends State<ChatPage> {
               child: InkWell(
                 borderRadius:
                 BorderRadius.circular(18),
-                onTap: () {
+                onTap: () async {
                   // TODO
-                  // Navigate back to Product Details
+                await ProductController().getProductDetail(chat.productId);
+
                 },
                 child: Row(
                   children: [

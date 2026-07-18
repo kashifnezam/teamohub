@@ -1,4 +1,8 @@
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../../../app/utils/time-utils.dart';
+
 /// ===============================
 /// Product Type
 /// ===============================
@@ -23,7 +27,7 @@ enum ProductCondition {
 /// ===============================
 enum ProductStatus {
   draft,
-  pending,
+  inactive,
   active,
   sold,
   rejected,
@@ -398,22 +402,29 @@ class ProductModel {
       isDeleted: map['isDeleted'] ?? false,
 
       publishedAt: map['publishedAt'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['publishedAt'])
+          ? TimeUtils.parseDate(map['publishedAt'])
           : null,
 
       expiresAt: map['expiresAt'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['expiresAt'])
+          ? TimeUtils.parseDate(map['expiresAt'])
           : null,
 
-      createdAt: DateTime.fromMillisecondsSinceEpoch(
-        map['createdAt'] ?? 0,
-      ),
+      createdAt: TimeUtils.parseDate(map['createdAt']),
 
-      updatedAt: DateTime.fromMillisecondsSinceEpoch(
-        map['updatedAt'] ?? 0,
-      ),
+      updatedAt: TimeUtils.parseDate(map['updatedAt']),
     );
-  }  /// Convert to JSON
+  }
+
+  factory ProductModel.fromFirestore(
+      DocumentSnapshot<Map<String, dynamic>> doc,
+      ) {
+    final map = doc.data() ?? {};
+    map['id'] = doc.id;
+
+    return ProductModel.fromMap(map);
+  }
+
+  /// Convert to JSON
   Map<String, dynamic> toJson() => toMap();
 
   /// Create from JSON
@@ -427,7 +438,7 @@ class ProductModel {
 
   bool get isSold => status == ProductStatus.sold;
 
-  bool get isPending => status == ProductStatus.pending;
+  bool get isInactive => status == ProductStatus.inactive;
 
   bool get hasImages => images.isNotEmpty;
 

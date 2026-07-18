@@ -25,16 +25,32 @@ class ProductRepository {
   ///------------------------------------------------
   /// Get All Products
   ///------------------------------------------------
-  Future<List<ProductModel>> getProducts() async {
-    final snapshot = await _products
+/*  final CollectionReference<Map<String, dynamic>> _products =
+  FirebaseFirestore.instance.collection("products");*/
+
+  static const int pageSize = 20;
+
+  Future<(List<ProductModel>, DocumentSnapshot?)> getProducts({
+    DocumentSnapshot? lastDocument,
+  }) async {
+    Query<Map<String, dynamic>> query = _products
         .where("isDeleted", isEqualTo: false)
         .where("status", isEqualTo: ProductStatus.active.name)
         .orderBy("publishedAt", descending: true)
-        .get();
+        .limit(pageSize);
 
-    return snapshot.docs
-        .map((doc) => ProductModel.fromJson(doc.data()))
-        .toList();
+    if (lastDocument != null) {
+      query = query.startAfterDocument(lastDocument);
+    }
+
+    final snapshot = await query.get();
+
+    return (
+    snapshot.docs
+        .map((e) => ProductModel.fromJson(e.data()))
+        .toList(),
+    snapshot.docs.isNotEmpty ? snapshot.docs.last : null,
+    );
   }
 
   ///------------------------------------------------
@@ -58,9 +74,7 @@ class ProductRepository {
   ///------------------------------------------------
   Future<ProductModel?> getProduct(String productId) async {
     final doc = await _products.doc(productId).get();
-
     if (!doc.exists) return null;
-
     return ProductModel.fromJson(doc.data()!);
   }
 

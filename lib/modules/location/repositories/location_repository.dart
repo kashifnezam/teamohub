@@ -1,6 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-import '../../../app/constants/firestore_collections.dart';
 import '../data/city_list.dart';
 import '../data/country_list.dart';
 import '../data/state_list.dart';
@@ -9,8 +7,6 @@ import '../models/country_model.dart';
 import '../models/state_model.dart';
 
 class LocationRepository {
-  final FirebaseFirestore _firestore =
-      FirebaseFirestore.instance;
 
   //----------------------------------------------------------
   // Countries

@@ -2,6 +2,31 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 class TimeUtils {
+
+  static DateTime parseDate(dynamic value) {
+    if (value == null) {
+      return DateTime.now();
+    }
+
+    if (value is Timestamp) {
+      return value.toDate();
+    }
+
+    if (value is int) {
+      return DateTime.fromMillisecondsSinceEpoch(value);
+    }
+
+    if (value is String) {
+      return DateTime.tryParse(value) ?? DateTime.now();
+    }
+
+    if (value is DateTime) {
+      return value;
+    }
+
+    return DateTime.now();
+  }
+
   static String timeAgo(int timestamp) {
     final now = DateTime.now();
     final time = DateTime.fromMillisecondsSinceEpoch(timestamp);

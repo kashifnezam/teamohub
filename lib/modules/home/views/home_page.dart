@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teamomarket/app/utils/app_colors.dart';
+import 'package:teamomarket/modules/banner/controllers/banner_management_controller.dart';
 import 'package:teamomarket/modules/home/widgets/image_category.dart';
 import '../../product/widgets/post_card.dart';
-import '../../product/repositories/dummy_products.dart';
-import '../../category/models/category_model.dart';
 import '../../category/repositories/category_list.dart';
 import '../../product/widgets/post_card_shimmer.dart';
 import '../controllers/home_controller.dart';
 import '../widgets/home_banner_slider.dart';
 
 class HomePage extends GetView<HomeController> {
-  const HomePage({super.key});
-
+  HomePage({super.key});
+  final BannerManagementController _bannerManagementController = Get.put(BannerManagementController());
   @override
   Widget build(BuildContext context) {
    return Scaffold(
@@ -169,14 +168,17 @@ class HomePage extends GetView<HomeController> {
       ),
     ),
 
+        SizedBox(height: 5),
         /// IMPORTANT
         Expanded(
           child: RefreshIndicator(
             color: AppColors.primary,
             onRefresh: () async {
-              await controller.fetchProducts();
+              _bannerManagementController.loadActiveBanners();
+              controller.fetchProducts();
             },
             child: ListView(
+              controller: controller.scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.only(bottom: 20),
               children: [
@@ -185,17 +187,23 @@ class HomePage extends GetView<HomeController> {
                 // Banner
                 //----------------------------------
 
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  child: HomeBannerSlider(
-                    images: [
-                      "assets/images/banner1.png",
-                      "assets/images/banner2.png",
-                      "assets/images/banner3.png",
-                      "assets/images/banner4.png",
-                    ],
-                  ),
-                ),
+                Obx(() {
+                  if (_bannerManagementController.activeBanners.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return HomeBannerSlider(
+                    isNetwork: true,
+                    images: _bannerManagementController.activeBanners
+                        .map((e) => e.imageUrl)
+                        .toList(),
+                    onTap: (index) {
+                      _bannerManagementController.onBannerTap(
+                        _bannerManagementController.activeBanners[index],
+                      );
+                    },
+                  );
+                }),
 
                 const SizedBox(height: 20),
 
@@ -304,8 +312,19 @@ class HomePage extends GetView<HomeController> {
                       );
                     },
                   );
-                })
+                }),
+                Obx(() {
+                  if (!controller.isLoadingMore.value) {
+                    return const SizedBox.shrink();
+                  }
 
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }),
               ],
             ),
           ),

@@ -30,13 +30,14 @@ class AuthController extends GetxController {
 
   Future<void> logout() async {
     if (isLoggingOut.value) return;
-
+    CustomAlert.loadAlert("Logging out...");
     isLoggingOut.value = true;
-
     try {
       await AuthService.logout();
+      CustomAlert.dismissAlert();
       Get.offAllNamed(Routes.login);
     } catch (e) {
+      CustomAlert.dismissAlert();
       CustomAlert.errorAlert(
         "Couldn't logout properly. Please try again.",
         title: "Logout Failed",
@@ -80,7 +81,7 @@ class AuthController extends GetxController {
       );
 
       final user = await _authService.getUserData(userCredential.user!.uid);
-      await _deviceService.updateDeviceInfo(user.uid);
+      await _deviceService.updateDeviceInfo(user.id);
 
       Get.to(() => const SplashScreen());
     } catch (e) {
@@ -138,7 +139,7 @@ class AuthController extends GetxController {
       errorMessage('');
 
       final user = await _authService.login(email, password);
-      await _deviceService.updateDeviceInfo(user.uid);
+      await _deviceService.updateDeviceInfo(user.id);
 
       Get.offAll(() => const SplashScreen());
 
@@ -150,7 +151,7 @@ class AuthController extends GetxController {
       CustomAlert.errorAlert(message);
 
     } catch (e) {
-      CustomAlert.errorAlert("Something went wrong. Please try again.");
+      CustomAlert.errorAlert(e.toString());
     } finally {
       isLoading(false);
     }

@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:teamomarket/app/constants/app_constants.dart';
+import 'package:teamomarket/app/constants/firebase_constants.dart';
 
 import '../../../app/services/device_info.dart';
 import '../../../app/utils/custom_alert.dart';
@@ -110,11 +111,11 @@ class AuthService {
 
       // 3️⃣ Create UserModel
       final userModel = UserModel(
-        uid: user.uid,
+        id: user.uid,
         name: fullName.trim(),
         email: email.trim().toLowerCase(),
         phone: mobile.trim(),
-        photo: null,
+        photoUrl: null,
 
         // Every user can buy & sell
         role: "user",
@@ -159,7 +160,7 @@ class AuthService {
   }
 
   Future<UserModel> getUserData(String uid) async {
-    final doc = await _firestore.collection('users').doc(uid).get();
+    final doc = await _firestore.collection(FirebaseConstants.users).doc(uid).get();
 
     if (!doc.exists || doc.data() == null) {
       throw Exception('User not found');

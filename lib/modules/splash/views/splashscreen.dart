@@ -52,7 +52,7 @@ class _SplashScreenState extends State<SplashScreen> {
       }
 
       /// 4️⃣ Store user id
-      await offlineData.storeObject("uid", user.uid);
+      await offlineData.storeObject("id", user.uid);
       await offlineData.refreshUserData(user.uid);
 
       AppConstants.log.i(await offlineData.getUserDetails());

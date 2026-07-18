@@ -1,6 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:teamomarket/modules/category/repositories/category_list.dart';
-import '../../../../app/constants/firestore_collections.dart';
 import '../models/category_field_model.dart';
 import '../models/category_model.dart';
 import '../models/sub_category_model.dart';
@@ -8,7 +6,6 @@ import 'category_field_list.dart';
 import 'sub_category_list.dart';
 
 class CategoryRepository {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<List<CategoryModel>> getCategories() async {
     // final snapshot = await _firestore

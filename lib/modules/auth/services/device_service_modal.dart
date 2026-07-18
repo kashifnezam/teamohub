@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:teamomarket/app/constants/firebase_constants.dart';
 import '../../../app/services/device_info.dart';
 
 class DeviceService {
@@ -39,8 +40,7 @@ class DeviceService {
         if (token != null) data['fcmTokenWeb'] = token;
       }
     } catch (_) {}
-
-    await _firestore.collection('users').doc(userId).set(
+    await _firestore.collection(FirebaseConstants.users).doc(userId).set(
       data,
       SetOptions(merge: true),
     );
