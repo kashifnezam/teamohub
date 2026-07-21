@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 
 import '../../../app/routes/app_routes.dart';
 import '../../../app/utils/custom_alert.dart';
+import '../../../app/utils/offline_data.dart';
 import '../../../app/widgets/custom_widget.dart';
 import '../../auth/models/user_model.dart';
 import '../repository/profile_repository.dart';
@@ -133,7 +134,7 @@ class ProfileController extends GetxController {
   }
 
   void openFavourites() {
-    Get.toNamed(Routes.bannerForm);
+    if(userInfo?['role']=='admin') Get.toNamed(Routes.bannerManagement);
   }
 
   void openChats() {

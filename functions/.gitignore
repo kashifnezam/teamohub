@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+
+# Compiled JavaScript
+lib/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Firebase Emulator
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Coverage
+coverage/
+
+# Temporary files
+tmp/
+temp/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Runtime
+*.pid
+*.seed
+*.pid.lock

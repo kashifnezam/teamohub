@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamoMart</title>
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial,Helvetica,sans-serif;
+        }
+        body{
+            background:#f5f7fb;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            min-height:100vh;
+            padding:20px;
+            color:#222;
+        }
+        .card{
+            max-width:700px;
+            width:100%;
+            background:#fff;
+            padding:40px;
+            border-radius:18px;
+            text-align:center;
+            box-shadow:0 15px 40px rgba(0,0,0,.08);
+        }
+        .logo{
+            width:90px;
+            height:90px;
+            object-fit:contain;
+            margin-bottom:20px;
+        }
+        h1{
+            font-size:2.4rem;
+            margin-bottom:10px;
+        }
+        .tagline{
+            color:#0d6efd;
+            font-weight:600;
+            margin-bottom:25px;
+        }
+        p{
+            color:#555;
+            line-height:1.8;
+            margin-bottom:18px;
+            font-size:1.05rem;
+        }
+        .highlight{
+            background:#f8f9ff;
+            border-left:4px solid #0d6efd;
+            padding:18px;
+            border-radius:10px;
+            text-align:left;
+            margin:25px 0;
+        }
+        button{
+            margin-top:10px;
+            border:none;
+            background:#0d6efd;
+            color:#fff;
+            padding:15px 32px;
+            border-radius:10px;
+            font-size:16px;
+            font-weight:bold;
+            cursor:pointer;
+            transition:.25s;
+        }
+        button:hover{
+            transform:translateY(-2px);
+            background:#0b5ed7;
+        }
+        small{
+            display:block;
+            margin-top:20px;
+            color:#888;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+
+    <img class="logo"
+         src="https://firebasestorage.googleapis.com/v0/b/teamomart.firebasestorage.app/o/logo%2FGemini_Generated_Image_4j3ava4j3ava4j3a%20(1)%20(1).png?alt=media&token=4dcf8f25-e7cd-47da-ba40-f037592cdb9b"
+         alt="TeamoMart">
+
+    <h1>TeamoMart</h1>
+
+    <div class="tagline">
+        Buy smarter. Sell easier.
+    </div>
+
+    <p>
+        TeamoMart is a local marketplace where people can buy and sell products around them—simple, fast, and community-driven.
+    </p>
+
+    <div class="highlight">
+        ✨ What makes TeamoMart different?<br><br>
+        Choose a <strong>TeamoMart Agent</strong> for free to help you receive your product quickly and with added confidence. It's an extra layer of convenience designed to make local buying easier.
+    </div>
+
+    <p>
+        Curious how it works? Download the app and discover a new way to buy and sell locally.
+    </p>
+
+    <button onclick="openTeamoMart()">
+        Open TeamoMart App
+    </button>
+
+    <small>Best experience available in the mobile app.</small>
+
+</div>
+
+<script>
+    function openTeamoMart() {
+        const playStore =
+            "https://play.google.com/store/apps/details?id=com.kashif.teamomart";
+
+        if (/android/i.test(navigator.userAgent)) {
+            window.location.href =
+                "intent://#Intent;" +
+                "scheme=https;" +
+                "package=com.kashif.teamomart;" +
+                "S.browser_fallback_url=" +
+                encodeURIComponent(playStore) +
+                ";end";
+        } else {
+            window.location.href = playStore;
+        }
+    }
+</script>
+
+</body>
+</html>

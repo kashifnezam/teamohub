@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teamomarket/modules/chat/controllers/chat_controller.dart';
 
+import '../../../app/routes/middlewares/auth_helper.dart';
 import '../../../app/utils/app_colors.dart';
 import '../models/product_model.dart';
 
 class BottomActionBar extends StatelessWidget {
   final ProductModel product;
-  final ChatController chatController = Get.put(ChatController());
   BottomActionBar({
     super.key,
     required this.product,
@@ -62,8 +62,11 @@ class BottomActionBar extends StatelessWidget {
               child: SizedBox(
                 height: 52,
                 child: ElevatedButton.icon(
-                  onPressed: () {
-                    chatController.openChat(product);
+                  onPressed: () async {
+                    if (!await AuthHelper.requireLogin(
+                    message: "Login to access your account.",
+                    )) return;
+                    ChatController().openChat(product);
                   },
                   style: ElevatedButton.styleFrom(
                     elevation: 0,

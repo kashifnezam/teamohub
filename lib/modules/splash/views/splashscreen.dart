@@ -1,8 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:teamomarket/app/constants/app_constants.dart';
-
 import '../../../app/routes/app_routes.dart';
 import '../../../app/services/device_info.dart';
 import '../../../app/utils/offline_data.dart';
@@ -29,44 +27,21 @@ class _SplashScreenState extends State<SplashScreen> {
     try {
       final user = FirebaseAuth.instance.currentUser;
 
-      /// 1️⃣ Version check
-      // final updates = await FirebaseApi.getVersionUpdate();
-      //
-      // if (updates != null && (updates["expire"] ?? false)) {
-      //   CustomAlert.errorAlert(
-      //     "Please update your app to get the latest features.",
-      //     title: "Update App",
-      //   );
-      //   return;
-      // }
-
-      /// 2️⃣ Offline storage + device info
       final offlineData = OfflineData();
       await offlineData.init();
       await DeviceInfo.getDetails();
 
-      /// 3️⃣ Not logged in
-      if (user == null) {
-        Get.offAllNamed(Routes.login);
-        return;
+      if (user != null) {
+        await offlineData.storeObject("id", user.uid);
+        await offlineData.refreshUserData(user.uid);
+        await user.getIdToken(true);
       }
-
-      /// 4️⃣ Store user id
-      await offlineData.storeObject("id", user.uid);
-      await offlineData.refreshUserData(user.uid);
-
-      AppConstants.log.i(await offlineData.getUserDetails());
-      /// 5️⃣ Refresh Firebase token
-      await user.getIdToken(true);
 
       if (!mounted) return;
 
-      /// 6️⃣ Navigate to app
-      Get.offAllNamed(Routes.appEntry);
-    } catch (e, s) {
-      debugPrint("Splash Error: $e");
-      debugPrintStack(stackTrace: s);
-      Get.offAllNamed(Routes.login);
+      Get.offAllNamed(Routes.dashboard);
+    } catch (_) {
+      Get.offAllNamed(Routes.dashboard);
     }
   }
 

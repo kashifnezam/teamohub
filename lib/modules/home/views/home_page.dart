@@ -63,29 +63,29 @@ class HomePage extends GetView<HomeController> {
 
                   const Spacer(),
 
-                  InkWell(
-                    borderRadius: BorderRadius.circular(20),
-                    onTap: () {},
-                    child: const Padding(
-                      padding: EdgeInsets.all(6),
-                      child: Icon(
-                        Icons.notifications_none_rounded,
-                        size: 22,
-                      ),
-                    ),
-                  ),
-
-                  InkWell(
-                    borderRadius: BorderRadius.circular(20),
-                    onTap: () {},
-                    child: const Padding(
-                      padding: EdgeInsets.all(6),
-                      child: Icon(
-                        Icons.person_outline_rounded,
-                        size: 22,
-                      ),
-                    ),
-                  ),
+                  // InkWell(
+                  //   borderRadius: BorderRadius.circular(20),
+                  //   onTap: () {},
+                  //   child: const Padding(
+                  //     padding: EdgeInsets.all(6),
+                  //     child: Icon(
+                  //       Icons.notifications_none_rounded,
+                  //       size: 22,
+                  //     ),
+                  //   ),
+                  // ),
+                  //
+                  // InkWell(
+                  //   borderRadius: BorderRadius.circular(20),
+                  //   onTap: () {},
+                  //   child: const Padding(
+                  //     padding: EdgeInsets.all(6),
+                  //     child: Icon(
+                  //       Icons.person_outline_rounded,
+                  //       size: 22,
+                  //     ),
+                  //   ),
+                  // ),
 
                 ],
               ),

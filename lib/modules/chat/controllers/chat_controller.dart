@@ -165,6 +165,7 @@ class ChatController extends GetxController {
         return;
       }
       isChatsLoading.value = true;
+      CustomAlert.loadAlert("Loading chat..");
       final chatId = await _repository.getOrCreateChat(
         sellerId: product.sellerId,
         sellerName: product.sellerName!,
@@ -179,14 +180,11 @@ class ChatController extends GetxController {
         productTitle: product.title,
         productImage: product.images.first,
       );
-
-    AppConstants.log.i(currentChat);
-
+      CustomAlert.dismissAlert();
       Get.toNamed(
         Routes.chat,
         arguments: chatId,
       );
-
       isChatsLoading.value = false;
     } catch (e) {
       isChatsLoading.value = false;

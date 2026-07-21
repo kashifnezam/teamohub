@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../app/utils/offline_data.dart';
 import '../../../app/widgets/custom_widget.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../controllers/profile_controller.dart';
@@ -434,8 +435,8 @@ class ProfilePage extends GetView<ProfileController> {
 
                         _actionCard(
                           context: context,
-                          icon: Icons.favorite_border_rounded,
-                          title: "Favourites",
+                          icon: userInfo?['role'] == "admin" ? Icons.addchart_sharp :Icons.favorite_border_rounded,
+                          title: userInfo?['role'] == "admin" ? "Banners" : 'Favourites',
                           subtitle: "Saved products",
                           onTap: controller.openFavourites,
                         ),
@@ -448,13 +449,13 @@ class ProfilePage extends GetView<ProfileController> {
                           onTap: controller.openChats,
                         ),
 
-                        _actionCard(
-                          context: context,
-                          icon: Icons.notifications_none_rounded,
-                          title: "Notifications",
-                          subtitle: "Latest updates",
-                          onTap: controller.openNotifications,
-                        ),
+                        // _actionCard(
+                        //   context: context,
+                        //   icon: Icons.notifications_none_rounded,
+                        //   title: "Notifications",
+                        //   subtitle: "Latest updates",
+                        //   onTap: controller.openNotifications,
+                        // ),
                       ],
                     ),
 

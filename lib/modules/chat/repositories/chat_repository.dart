@@ -79,6 +79,12 @@ class ChatRepository {
       data['lastMessageTime'] = FieldValue.serverTimestamp();
 
       transaction.set(docRef, data);
+      sendMessage(
+        chatId: chatId,
+        senderId: buyerId,
+        receiverId: sellerId,
+        text: "I'm interested in your ads",
+      );
     });
 
     return chatId;

@@ -1,8 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:teamomarket/app/routes/app_routes.dart';
+import 'package:teamomarket/modules/my_ads/views/my_ads_page.dart';
 import 'package:teamomarket/modules/profile/views/profile_page.dart';
+import '../../../app/routes/middlewares/auth_helper.dart';
 import '../../../app/utils/app_colors.dart';
 import '../../../app/utils/custom_alert.dart';
 import '../../chat/views/chat_list_page.dart';
@@ -17,17 +20,28 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int currentIndex = 0;
-
-
-  static List<Widget> pages = [
-    HomePage(),
-    ChatListPage(),
-    ChatListPage(), // Replace with ExplorePage later
-    ProfilePage(),
-  ];
-
-  void _changeTab(int index) {
+  Future<void> _changeTab(int index) async {
     if (currentIndex == index) return;
+
+    switch (index) {
+      case 1: // Chats
+        if (!await AuthHelper.requireLogin(
+          message: "Login to access your chats.",
+        )) return;
+        break;
+
+      case 2: // My Ads
+        if (!await AuthHelper.requireLogin(
+          message: "Login to view your ads.",
+        )) return;
+        break;
+
+      case 3: // Account
+        if (!await AuthHelper.requireLogin(
+          message: "Login to access your account.",
+        )) return;
+        break;
+    }
 
     setState(() {
       currentIndex = index;
@@ -61,7 +75,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
         body: IndexedStack(
           index: currentIndex,
-          children: pages,
+          children: List.generate(
+            4,
+                (index) => _buildPage(index),
+          ),
         ),
 
         floatingActionButtonLocation:
@@ -119,9 +136,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                 _buildNavItem(
                   index: 2,
-                  selectedIcon: Icons.grid_view_rounded,
-                  unselectedIcon: Icons.grid_view_outlined,
-                  label: "Explore",
+                  selectedIcon: Icons.inventory_2_rounded,
+                  unselectedIcon: Icons.inventory_2_outlined,
+                  label: "My Ads",
                 ),
 
                 const SizedBox(width: 25),
@@ -156,6 +173,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
         onTap: () => _changeTab(index),
       ),
     );
+  }
+
+  Widget _buildPage(int index) {
+    final isLoggedIn = FirebaseAuth.instance.currentUser != null;
+
+    switch (index) {
+      case 0:
+        return HomePage();
+
+      case 1:
+        return isLoggedIn
+            ? ChatListPage()
+            : const SizedBox.shrink();
+
+      case 2:
+        return isLoggedIn
+            ? MyAdsPage()
+            : const SizedBox.shrink();
+
+      case 3:
+        return isLoggedIn
+            ? ProfilePage()
+            : const SizedBox.shrink();
+
+      default:
+        return const SizedBox.shrink();
+    }
   }
 }
 /*class _ChatBadge extends StatelessWidget {
@@ -197,7 +241,11 @@ class _SellButton extends StatelessWidget {
         const SizedBox(height: 25),
 
         GestureDetector(
-          onTap: () {
+          onTap: () async {
+            if (!await AuthHelper.requireLogin(
+              message: "Login to post your ad.",
+            )) return;
+
             Get.toNamed(Routes.categories);
           },
           child: Container(
@@ -301,5 +349,6 @@ class _NavItem extends StatelessWidget {
       ),
     );
   }
+
 
 }

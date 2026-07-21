@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teamomarket/modules/product/controllers/product_controller.dart';
+import '../../../app/routes/app_routes.dart';
 import '../../../app/widgets/custom_widget.dart';
 import '../../product/models/product_model.dart';
 import '../controllers/my_ads_controller.dart';
@@ -20,8 +21,7 @@ class MyAdsPage extends GetView<MyAdsController> {
         actions: [
           IconButton(
             onPressed: () {
-              // TODO:
-              // Get.toNamed(AppRoutes.addProduct);
+              Get.toNamed(Routes.categories);
             },
             icon: const Icon(Icons.add),
           ),
@@ -184,8 +184,7 @@ class MyAdsPage extends GetView<MyAdsController> {
 
                         FilledButton.icon(
                           onPressed: () {
-                            // TODO:
-                            // Get.toNamed(AppRoutes.addProduct);
+                            Get.toNamed(Routes.categories);
                           },
                           icon: const Icon(Icons.add),
                           label: const Text("Sell Product"),

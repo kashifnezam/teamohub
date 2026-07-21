@@ -33,7 +33,6 @@ class AppPages {
       name: Routes.appEntry,
       page: () => const SizedBox(),
       middlewares: [
-        AuthGuard(),
         RoleRedirectMiddleware(),
       ],
     ),
@@ -77,11 +76,13 @@ class AppPages {
     GetPage(
       name: Routes.addProduct,
       page: () => AddProductPage(),
+      middlewares: [AuthGuard()],
     ),
 
     GetPage(
       name: Routes.productPreview,
       page: () => ProductPreviewPage(),
+      // middlewares: [AuthGuard()],
     ),
 
     GetPage(
@@ -94,36 +95,42 @@ class AppPages {
       name: Routes.chats,
       page: () => const ChatListPage(),
       binding: ChatBinding(),
+      middlewares: [AuthGuard()],
     ),
 
     GetPage(
       name: Routes.chat,
       page: () => const ChatPage(),
       binding: ChatBinding(),
+      middlewares: [AuthGuard()],
     ),
 
     GetPage(
       name: Routes.profile,
       page: () => const ProfilePage(),
       binding: ProfileBinding(),
+      middlewares: [AuthGuard()],
     ),
 
     GetPage(
       name: Routes.myAds,
       page: () => const MyAdsPage(),
       binding: MyAdsBinding(),
+      middlewares: [AuthGuard()],
     ),
 
     GetPage(
       name: Routes.bannerManagement,
       page: () => const BannerManagementPage(),
       binding: BannerBinding(),
+      middlewares: [AuthGuard()],
     ),
 
     GetPage(
       name: Routes.bannerForm,
       page: () => const BannerFormPage(),
       binding: BannerBinding(),
+      middlewares: [AuthGuard()],
     ),
   ];
 }

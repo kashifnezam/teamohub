@@ -11,11 +11,10 @@ class RoleRedirectMiddleware extends GetMiddleware {
   @override
   RouteSettings? redirect(String? route) {
     final role = userInfo?["role"];
-    AppConstants.log.i(userInfo);
 
     /// No role → family home
     if (role == null) {
-      return const RouteSettings(name: Routes.login);
+      return const RouteSettings(name: Routes.dashboard);
     }
 
     /// Executive
