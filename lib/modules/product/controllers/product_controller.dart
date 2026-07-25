@@ -1,8 +1,6 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:teamomarket/app/services/device_info.dart';
 import 'package:teamomarket/app/utils/offline_data.dart';
@@ -10,6 +8,7 @@ import '../../../app/routes/app_routes.dart';
 import '../../../app/utils/custom_alert.dart';
 import '../../../app/utils/location_utils.dart';
 import '../../../app/widgets/custom_widget.dart';
+import '../../../app/widgets/image_helper.dart';
 import '../../category/models/category_model.dart';
 import '../../category/models/sub_category_model.dart';
 import '../../location/models/location_result.dart';
@@ -31,7 +30,6 @@ class ProductController extends GetxController {
   CategoryModel? selectedCategory;
   SubCategoryModel? selectedSubCategory;
   final RxMap<String, dynamic> attributes = <String, dynamic>{}.obs;
-  final ImagePicker _picker = ImagePicker();
   static const int maxImages = 20;
   final RxList<ProductImageModel> images = <ProductImageModel>[].obs;
   final Rxn<LocationResult> selectedLocation = Rxn<LocationResult>();
@@ -276,15 +274,11 @@ class ProductController extends GetxController {
 
   Future<void> pickImages() async {
     try {
-      final pickedImages = await _picker.pickMultiImage(
-        imageQuality: 85,
-      );
+      final source = await ImageHelper.imagesPickFrom();
 
-      if (pickedImages.isEmpty) {
-        return;
-      }
+      if (source == null) return;
 
-      final remaining = maxImages - images.length;
+      final remaining = maxImages - source.length;
 
       if (remaining <= 0) {
         CustomAlert.infoAlert(
@@ -294,7 +288,7 @@ class ProductController extends GetxController {
         return;
       }
 
-      for (final image in pickedImages.take(remaining)) {
+      for (final image in source.take(remaining)) {
         images.add(
           ProductImageModel(
             file: File(image.path),
@@ -304,9 +298,15 @@ class ProductController extends GetxController {
         );
       }
 
+        if (source.length > remaining) {
+          CustomAlert.infoAlert(
+            title: "Some images skipped",
+            "Only $remaining more images could be added.",
+          );
+        }
       imagesError.value = false;
-
-    } catch (e) {
+    }
+     catch (e) {
       CustomAlert.errorAlert(
         title: "Error",
         "Unable to select images.",

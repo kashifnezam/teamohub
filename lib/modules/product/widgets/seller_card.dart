@@ -1,21 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:teamomarket/app/widgets/custom_widget.dart';
+import 'package:teamomarket/modules/product/models/product_model.dart';
 
 import '../../../app/utils/app_colors.dart';
 
-class SellerCard extends StatelessWidget {
-  final String userId;
+class SellerCard extends StatefulWidget {
+  final ProductModel product;
 
   const SellerCard({
     super.key,
-    required this.userId,
+    required this.product,
   });
 
   @override
+  State<SellerCard> createState() => _SellerCardState();
+}
+
+class _SellerCardState extends State<SellerCard> {
+  @override
   Widget build(BuildContext context) {
     // TODO: Replace with Firebase UserModel
-    const sellerName = "Kashif";
-    const sellerImage =
-        "https://i.pravatar.cc/150?img=3";
+    final sellerName = widget.product.sellerName ?? "";
+    final sellerImage = widget.product.sellerPhoto ??  "https://i.pravatar.cc/150?img=3";
 
     return Card(
       margin: const EdgeInsets.fromLTRB(12, 12, 12, 0),
@@ -46,12 +52,12 @@ class SellerCard extends StatelessWidget {
 
                 const Spacer(),
 
-                TextButton(
-                  onPressed: () {
-                    // View seller profile
-                  },
-                  child: const Text("View Profile"),
-                )
+                // TextButton(
+                //   onPressed: () {
+                //     // View seller profile
+                //   },
+                //   child: const Text("View Profile"),
+                // )
 
               ],
             ),
@@ -65,12 +71,13 @@ class SellerCard extends StatelessWidget {
             Row(
               children: [
 
-                CircleAvatar(
-                  radius: 30,
-                  backgroundImage: NetworkImage(
-                    sellerImage,
-                  ),
-                ),
+                // CircleAvatar(
+                //   radius: 30,
+                //   backgroundImage: NetworkImage(
+                //     sellerImage,
+                //   ),
+                // ),
+                CustomWidget.getImage(sellerImage!),
 
                 const SizedBox(width: 14),
 
@@ -83,9 +90,9 @@ class SellerCard extends StatelessWidget {
                       Row(
                         children: [
 
-                          const Expanded(
+                          Expanded(
                             child: Text(
-                              sellerName,
+                              sellerName!,
                               style: TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.bold,
@@ -93,81 +100,81 @@ class SellerCard extends StatelessWidget {
                             ),
                           ),
 
-                          Container(
-                            padding:
-                            const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.green
-                                  .withOpacity(.1),
-                              borderRadius:
-                              BorderRadius.circular(20),
-                            ),
-                            child: const Row(
-                              mainAxisSize:
-                              MainAxisSize.min,
-                              children: [
-
-                                Icon(
-                                  Icons.verified,
-                                  color: Colors.green,
-                                  size: 14,
-                                ),
-
-                                SizedBox(width: 4),
-
-                                Text(
-                                  "Verified",
-                                  style: TextStyle(
-                                    color: Colors.green,
-                                    fontSize: 11,
-                                    fontWeight:
-                                    FontWeight.bold,
-                                  ),
-                                ),
-
-                              ],
-                            ),
-                          ),
-
-                        ],
-                      ),
-
-                      const SizedBox(height: 6),
-
-                      Row(
-                        children: [
-
-                          Icon(
-                            Icons.star,
-                            color: Colors.amber.shade700,
-                            size: 18,
-                          ),
-
-                          const SizedBox(width: 4),
-
-                          const Text(
-                            "4.8",
-                            style: TextStyle(
-                              fontWeight:
-                              FontWeight.w600,
-                            ),
-                          ),
-
-                          const SizedBox(width: 4),
-
-                          Text(
-                            "(128 Reviews)",
-                            style: TextStyle(
-                              color:
-                              Colors.grey.shade600,
-                            ),
-                          ),
+                          // Container(
+                          //   padding:
+                          //   const EdgeInsets.symmetric(
+                          //     horizontal: 8,
+                          //     vertical: 4,
+                          //   ),
+                          //   decoration: BoxDecoration(
+                          //     color: Colors.green
+                          //         .withOpacity(.1),
+                          //     borderRadius:
+                          //     BorderRadius.circular(20),
+                          //   ),
+                          //   child: const Row(
+                          //     mainAxisSize:
+                          //     MainAxisSize.min,
+                          //     children: [
+                          //
+                          //       Icon(
+                          //         Icons.verified,
+                          //         color: Colors.green,
+                          //         size: 14,
+                          //       ),
+                          //
+                          //       SizedBox(width: 4),
+                          //
+                          //       Text(
+                          //         "Verified",
+                          //         style: TextStyle(
+                          //           color: Colors.green,
+                          //           fontSize: 11,
+                          //           fontWeight:
+                          //           FontWeight.bold,
+                          //         ),
+                          //       ),
+                          //
+                          //     ],
+                          //   ),
+                          // ),
 
                         ],
                       ),
+
+                      // const SizedBox(height: 6),
+                      //
+                      // Row(
+                      //   children: [
+                      //
+                      //     Icon(
+                      //       Icons.star,
+                      //       color: Colors.amber.shade700,
+                      //       size: 18,
+                      //     ),
+                      //
+                      //     const SizedBox(width: 4),
+                      //
+                      //     const Text(
+                      //       "4.8",
+                      //       style: TextStyle(
+                      //         fontWeight:
+                      //         FontWeight.w600,
+                      //       ),
+                      //     ),
+                      //
+                      //     const SizedBox(width: 4),
+                      //
+                      //     Text(
+                      //       "(128 Reviews)",
+                      //       style: TextStyle(
+                      //         color:
+                      //         Colors.grey.shade600,
+                      //       ),
+                      //     ),
+                      //
+                      //   ],
+                      // ),
 
                       const SizedBox(height: 6),
 
@@ -191,39 +198,39 @@ class SellerCard extends StatelessWidget {
             // Statistics
             //------------------------------------------
 
-            Row(
-              children: [
-
-                Expanded(
-                  child: _statCard(
-                    Icons.inventory_2_outlined,
-                    "32",
-                    "Ads",
-                  ),
-                ),
-
-                const SizedBox(width: 12),
-
-                Expanded(
-                  child: _statCard(
-                    Icons.sell_outlined,
-                    "24",
-                    "Sold",
-                  ),
-                ),
-
-                const SizedBox(width: 12),
-
-                Expanded(
-                  child: _statCard(
-                    Icons.visibility_outlined,
-                    "18K",
-                    "Views",
-                  ),
-                ),
-
-              ],
-            ),
+            // Row(
+            //   children: [
+            //
+            //     Expanded(
+            //       child: _statCard(
+            //         Icons.inventory_2_outlined,
+            //         "32",
+            //         "Ads",
+            //       ),
+            //     ),
+            //
+            //     const SizedBox(width: 12),
+            //
+            //     Expanded(
+            //       child: _statCard(
+            //         Icons.sell_outlined,
+            //         "24",
+            //         "Sold",
+            //       ),
+            //     ),
+            //
+            //     const SizedBox(width: 12),
+            //
+            //     Expanded(
+            //       child: _statCard(
+            //         Icons.visibility_outlined,
+            //         "18K",
+            //         "Views",
+            //       ),
+            //     ),
+            //
+            //   ],
+            // ),
 
           ],
         ),

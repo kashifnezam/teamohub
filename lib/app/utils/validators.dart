@@ -12,8 +12,8 @@ class AppValidator {
       return "Title should be at least 10 characters.";
     }
 
-    if (title.length > 100) {
-      return "Title cannot exceed 100 characters.";
+    if (title.length > 40) {
+      return "Title cannot exceed 40 characters.";
     }
 
     if (RegExp(r'^\d+$').hasMatch(title)) {

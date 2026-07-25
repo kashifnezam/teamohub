@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/product_image_model.dart';
 import '../models/product_model.dart';
+import '../repositories/product_repository.dart';
 import '../widgets/bottom_action_bar.dart';
 import '../widgets/description_card.dart';
 import '../widgets/post_image_slider.dart';
@@ -9,7 +10,7 @@ import '../widgets/post_info_card.dart';
 import '../widgets/preview_bottom_bar.dart';
 import '../widgets/seller_card.dart';
 
-class ProductDetailsPage extends StatelessWidget {
+class ProductDetailsPage extends StatefulWidget {
   /// Existing product (published)
   final ProductModel? product;
 
@@ -31,6 +32,23 @@ class ProductDetailsPage extends StatelessWidget {
   );
 
   @override
+  State<ProductDetailsPage> createState() => _ProductDetailsPageState();
+}
+
+class _ProductDetailsPageState extends State<ProductDetailsPage> {
+  final repository = ProductRepository();
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(seconds: 3), () {
+      repository.registerView(
+        productId: widget.product!.id,
+        sellerId: widget.product!.sellerId,
+      );
+    });
+  }
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffF8F9FB),
@@ -43,17 +61,17 @@ class ProductDetailsPage extends StatelessWidget {
 
           SliverToBoxAdapter(
             child: PostImageSlider(
-              images: isPreview
-                  ? previewImages!
-                  : product!.images
+              images: widget.isPreview
+                  ? widget.previewImages!
+                  : widget.product!.images
                   .map(
                     (url) => ProductImageModel(
                   url: url,
                 ),
               )
                   .toList(),
-              post: product,
-              isPreview: isPreview,
+              product: widget.product,
+              isPreview: widget.isPreview,
             ),
           ),
 
@@ -63,7 +81,7 @@ class ProductDetailsPage extends StatelessWidget {
 
           SliverToBoxAdapter(
             child: PostInfoCard(
-              post: product!,
+              post: widget.product!,
             ),
           ),
 
@@ -73,8 +91,8 @@ class ProductDetailsPage extends StatelessWidget {
 
           SliverToBoxAdapter(
             child: DescriptionCard(
-              post: product!,
-              isPreview: isPreview,
+              post: widget.product!,
+              isPreview: widget.isPreview,
             ),
           ),
 
@@ -82,10 +100,10 @@ class ProductDetailsPage extends StatelessWidget {
           // Seller
           //------------------------------------------------
 
-          if (!isPreview)
+          if (!widget.isPreview)
             SliverToBoxAdapter(
               child: SellerCard(
-                userId: product!.sellerId,
+                product: widget.product!
               ),
             ),
 
@@ -103,10 +121,10 @@ class ProductDetailsPage extends StatelessWidget {
       // Bottom Bar
       //------------------------------------------------
 
-      bottomNavigationBar: isPreview
+      bottomNavigationBar: widget.isPreview
           ? const PreviewBottomBar()
           : BottomActionBar(
-        product: product!,
+        product: widget.product!,
       ),
     );
   }

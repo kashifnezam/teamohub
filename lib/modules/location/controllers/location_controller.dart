@@ -1,12 +1,11 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
-
 import '../../../app/services/location_api_service.dart';
 import '../models/city_model.dart';
 import '../models/country_model.dart';
 import '../models/location_result.dart';
 import '../models/state_model.dart';
-import '../repositories/location_repository.dart';
 import '../services/recent_location_service.dart';
 
 class LocationController extends GetxController {
@@ -40,6 +39,8 @@ class LocationController extends GetxController {
 // Recent Locations
 //----------------------------------------------------------
 
+  final isServiceEnabled = false.obs;
+  final permission = LocationPermission.denied.obs;
   final RxList<LocationResult> recentLocations = <LocationResult>[].obs;
 
 //----------------------------------------------------------
@@ -90,7 +91,16 @@ class LocationController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    selectedCountry.value = CountryModel(id: "in", name: "India", code: "123", phoneCode: "-", flag: "ind");
+    checkLocationStatus();
+
+    selectedCountry.value = CountryModel(
+      id: "in",
+      name: "India",
+      code: "123",
+      phoneCode: "-",
+      flag: "ind",
+    );
+
     loadStates("India");
     loadRecent();
   }
@@ -114,7 +124,82 @@ class LocationController extends GetxController {
       _recentService.getRecent(),
     );
   }
+  Future<void> getCurrentLocation() async {
+    final position = await Geolocator.getCurrentPosition(
+      locationSettings: AndroidSettings(accuracy: LocationAccuracy.high),
+    ).then((position) {
+      print(position.latitude);
+      print(position.longitude);
+    });
 
+
+    // TODO:
+    // Reverse geocode the coordinates into
+    // Country, State and City.
+  }
+  Future<void> checkLocationStatus() async {
+    isServiceEnabled.value = await Geolocator.isLocationServiceEnabled();
+    permission.value = await Geolocator.checkPermission();
+  }
+
+  Future<void> handleLocationButton() async {
+    final permission = await Geolocator.requestPermission();
+
+    switch (permission) {
+      case LocationPermission.whileInUse:
+      case LocationPermission.always:
+        getCurrentLocation();
+        Get.back();
+        break;
+
+      case LocationPermission.denied:
+        Get.snackbar(
+          "Permission Required",
+          "Please allow location access to use your current location.",
+        );
+        break;
+
+      case LocationPermission.deniedForever:
+        Get.defaultDialog(
+          title: "Location Permission",
+          middleText:
+          "Location permission has been permanently denied. Please enable it from Settings.",
+          textConfirm: "Settings",
+          textCancel: "Cancel",
+          onConfirm: () async {
+            Get.back();
+            await Geolocator.openAppSettings();
+          },
+        );
+        break;
+
+      default:
+        break;
+    }
+  }
+  String get buttonText {
+    if (!isServiceEnabled.value) return "Turn on location";
+
+    switch (permission.value) {
+      case LocationPermission.denied:
+        return "Allow location access";
+      case LocationPermission.deniedForever:
+        return "Open Settings";
+      default:
+        return "Use current location";
+    }
+  }
+
+  IconData get buttonIcon {
+    if (!isServiceEnabled.value) return Icons.location_on;
+
+    switch (permission.value) {
+      case LocationPermission.deniedForever:
+        return Icons.settings;
+      default:
+        return Icons.my_location;
+    }
+  }
   //----------------------------------------------------------
   // Filter States
   //----------------------------------------------------------

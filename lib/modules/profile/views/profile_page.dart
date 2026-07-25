@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:teamomarket/app/routes/app_routes.dart';
 import '../../../app/utils/offline_data.dart';
 import '../../../app/widgets/custom_widget.dart';
 import '../../auth/controllers/auth_controller.dart';
@@ -430,15 +431,16 @@ class ProfilePage extends GetView<ProfileController> {
                           icon: Icons.inventory_2_outlined,
                           title: "My Ads",
                           subtitle: "Manage your listings",
-                          onTap: controller.openMyAds,
+                          onTap: () => Get.toNamed(Routes.myAds),
                         ),
 
+                        if(userInfo?['role'] == "admin")
                         _actionCard(
                           context: context,
-                          icon: userInfo?['role'] == "admin" ? Icons.addchart_sharp :Icons.favorite_border_rounded,
-                          title: userInfo?['role'] == "admin" ? "Banners" : 'Favourites',
-                          subtitle: "Saved products",
-                          onTap: controller.openFavourites,
+                          icon: Icons.addchart_sharp,
+                          title:  "Banners",
+                          subtitle: "Managee banners",
+                          onTap: () => Get.toNamed(Routes.bannerManagement),
                         ),
 
                         _actionCard(
@@ -446,8 +448,34 @@ class ProfilePage extends GetView<ProfileController> {
                           icon: Icons.chat_bubble_outline_rounded,
                           title: "Chats",
                           subtitle: "Buyer & seller chats",
-                          onTap: controller.openChats,
+                          onTap: () => Get.toNamed(Routes.chats),
                         ),
+
+                        _actionCard(
+                          context: context,
+                          icon: Icons.favorite_border_rounded,
+                          title: 'Favourites',
+                          subtitle: "Saved products",
+                          onTap: () => Get.toNamed(Routes.favourites),
+                        ),
+
+                        if (userInfo?['role'] != "agent")
+                          _actionCard(
+                            context: context,
+                            icon: Icons.support_agent_rounded,
+                            title: "Become Agent",
+                            subtitle: "Help buyers & earn commission",
+                            onTap: () => Get.toNamed(Routes.becomeAgent),
+                          ),
+
+                        if (userInfo?['role'] == "agent")
+                          _actionCard(
+                            context: context,
+                            icon: Icons.support_agent,
+                            title: "Agent Profile",
+                            subtitle: "Manage your agent profile",
+                            onTap: () => Get.toNamed(Routes.agent),
+                          ),
 
                         // _actionCard(
                         //   context: context,
@@ -489,7 +517,7 @@ class ProfilePage extends GetView<ProfileController> {
                           _accountTile(
                             icon: Icons.edit_outlined,
                             title: "Edit Profile",
-                            onTap: controller.editProfile,
+                            onTap: () => null,
                           ),
 
                           const Divider(height: 1),
@@ -497,7 +525,7 @@ class ProfilePage extends GetView<ProfileController> {
                           _accountTile(
                             icon: Icons.location_on_outlined,
                             title: "Change Location",
-                            onTap: controller.changeLocation,
+                            onTap: () => null,
                           ),
 
                           const Divider(height: 1),
@@ -505,7 +533,7 @@ class ProfilePage extends GetView<ProfileController> {
                           _accountTile(
                             icon: Icons.privacy_tip_outlined,
                             title: "Privacy Policy",
-                            onTap: controller.openPrivacyPolicy,
+                            onTap: () => null,
                           ),
 
                           const Divider(height: 1),
@@ -513,7 +541,7 @@ class ProfilePage extends GetView<ProfileController> {
                           _accountTile(
                             icon: Icons.description_outlined,
                             title: "Terms & Conditions",
-                            onTap: controller.openTerms,
+                            onTap: () => null,
                           ),
 
                           const Divider(height: 1),
@@ -521,7 +549,7 @@ class ProfilePage extends GetView<ProfileController> {
                           _accountTile(
                             icon: Icons.help_outline_rounded,
                             title: "Help & Support",
-                            onTap: controller.openHelpSupport,
+                            onTap: () => null,
                           ),
 
                           const Divider(height: 1),

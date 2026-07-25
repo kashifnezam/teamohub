@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teamomarket/app/utils/app_colors.dart';
 import 'package:teamomarket/modules/banner/controllers/banner_management_controller.dart';
-import 'package:teamomarket/modules/home/widgets/image_category.dart';
-import '../../product/widgets/post_card.dart';
-import '../../category/repositories/category_list.dart';
+import '../../../app/routes/app_routes.dart';
+import '../../../app/routes/middlewares/auth_helper.dart';
+import '../../product/widgets/product_card.dart';
 import '../../product/widgets/post_card_shimmer.dart';
+import '../../product/widgets/product_tile.dart';
 import '../controllers/home_controller.dart';
 import '../widgets/home_banner_slider.dart';
 
@@ -17,201 +18,256 @@ class HomePage extends GetView<HomeController> {
    return Scaffold(
     backgroundColor: Colors.white,
      appBar: AppBar(
-       backgroundColor: AppColors.primary,
+       backgroundColor: Colors.white,
        toolbarHeight: 0, // Hide the AppBar
        elevation: 0,
      ),
-    body: Column(
-      children: [
+     body: RefreshIndicator(
+       color: AppColors.primary,
+       onRefresh: () async {
+         _bannerManagementController.loadActiveBanners();
+         await controller.fetchProducts();
+       },
+       child: CustomScrollView(
+         controller: controller.scrollController,
+         physics: const AlwaysScrollableScrollPhysics(),
+         slivers: [
 
-      Material(
-      elevation: 1,
-      color: Colors.white,
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 8, 12, 10),
-          child: Column(
-            children: [
+           // Header comes here
+           SliverAppBar(
+             pinned: true,
+             floating: false,
+             snap: false,
 
-              Row(
-                children: [
+             automaticallyImplyLeading: false,
 
-                  Text.rich(
-                    const TextSpan(
-                      children: [
-                        TextSpan(
-                          text: "Teamo",
-                          style: TextStyle(
-                            color: Colors.black87,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        TextSpan(
-                          text: "Mart",
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    style: const TextStyle(
-                      fontSize: 20,
-                    ),
-                  ),
+             backgroundColor: Colors.white,
+             surfaceTintColor: Colors.white,
+             elevation: 2,
 
-                  const Spacer(),
+             toolbarHeight: 110,
 
-                  // InkWell(
-                  //   borderRadius: BorderRadius.circular(20),
-                  //   onTap: () {},
-                  //   child: const Padding(
-                  //     padding: EdgeInsets.all(6),
-                  //     child: Icon(
-                  //       Icons.notifications_none_rounded,
-                  //       size: 22,
-                  //     ),
-                  //   ),
-                  // ),
-                  //
-                  // InkWell(
-                  //   borderRadius: BorderRadius.circular(20),
-                  //   onTap: () {},
-                  //   child: const Padding(
-                  //     padding: EdgeInsets.all(6),
-                  //     child: Icon(
-                  //       Icons.person_outline_rounded,
-                  //       size: 22,
-                  //     ),
-                  //   ),
-                  // ),
+             titleSpacing: 0,
 
-                ],
-              ),
+             title: SafeArea(
+               bottom: false,
+               child: Padding(
+                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+                 child: Column(
+                   children: [
 
-              const SizedBox(height: 8),
+                     /// Top Row
 
-              InkWell(
-                onTap: () {},
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
-                  ),
-                  decoration: BoxDecoration(
-                    color: const Color(0xffF5F5F5),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: const Color(0xffE5E7EB),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
+                     Row(
+                       children: [
 
-                      const Icon(
-                        Icons.search_rounded,
-                        size: 20,
-                        color: Colors.grey,
-                      ),
+                         Text.rich(
+                           const TextSpan(
+                             children: [
 
-                      const SizedBox(width: 10),
+                               TextSpan(
+                                 text: "Teamo",
+                                 style: TextStyle(
+                                   color: Colors.black87,
+                                   fontWeight: FontWeight.w800,
+                                 ),
+                               ),
 
-                      const Expanded(
-                        child: Text(
-                          "Search products...",
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
+                               TextSpan(
+                                 text: "Mart",
+                                 style: TextStyle(
+                                   color: AppColors.primary,
+                                   fontWeight: FontWeight.w800,
+                                 ),
+                               ),
 
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: .1),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: const Row(
-                          children: [
-                            Icon(
-                              Icons.location_on_outlined,
-                              size: 14,
-                              color: AppColors.primary,
-                            ),
-                            SizedBox(width: 3),
-                            Text(
-                              "Patna",
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                             ],
+                           ),
+                           style: const TextStyle(
+                             fontSize: 24,
+                             letterSpacing: -.3,
+                           ),
+                         ),
 
-                    ],
-                  ),
-                ),
-              ),
+                         const Spacer(),
 
-            ],
-          ),
-        ),
-      ),
-    ),
+                         InkWell(
+                           borderRadius: BorderRadius.circular(12),
+                           onTap: () {
+                             Get.toNamed(Routes.locationPicker);
+                           },
+                           child: Padding(
+                             padding: const EdgeInsets.symmetric(
+                               horizontal: 6,
+                               vertical: 4,
+                             ),
+                             child: Row(
+                               children: [
 
-        SizedBox(height: 5),
-        /// IMPORTANT
-        Expanded(
-          child: RefreshIndicator(
-            color: AppColors.primary,
-            onRefresh: () async {
-              _bannerManagementController.loadActiveBanners();
-              controller.fetchProducts();
-            },
-            child: ListView(
-              controller: controller.scrollController,
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.only(bottom: 20),
-              children: [
+                                 const Icon(
+                                   Icons.location_on_rounded,
+                                   color: AppColors.primary,
+                                   size: 20,
+                                 ),
 
-                //----------------------------------
-                // Banner
-                //----------------------------------
+                                 const SizedBox(width: 6),
 
-                Obx(() {
-                  if (_bannerManagementController.activeBanners.isEmpty) {
-                    return const SizedBox.shrink();
-                  }
+                                 Column(
+                                   crossAxisAlignment:
+                                   CrossAxisAlignment.start,
+                                   children: const [
 
-                  return HomeBannerSlider(
-                    isNetwork: true,
-                    images: _bannerManagementController.activeBanners
-                        .map((e) => e.imageUrl)
-                        .toList(),
-                    onTap: (index) {
-                      _bannerManagementController.onBannerTap(
-                        _bannerManagementController.activeBanners[index],
-                      );
-                    },
-                  );
-                }),
+                                     Text(
+                                       "Patna",
+                                       style: TextStyle(
+                                         fontSize: 14,
+                                         fontWeight: FontWeight.w700,
+                                       ),
+                                     ),
 
-                const SizedBox(height: 20),
+                                     Text(
+                                       "Bihar",
+                                       style: TextStyle(
+                                         fontSize: 11,
+                                         color: Colors.grey,
+                                       ),
+                                     ),
 
-                //----------------------------------
-                // Categories
-                //----------------------------------
+                                   ],
+                                 ),
 
-                Padding(
+                                 const Icon(
+                                   Icons.keyboard_arrow_down_rounded,
+                                 ),
+
+                               ],
+                             ),
+                           ),
+                         ),
+                       ],
+                     ),
+
+                     const SizedBox(height: 14),
+
+                     Row(
+                       children: [
+
+                         Expanded(
+                           child: InkWell(
+                             borderRadius:
+                             BorderRadius.circular(16),
+                             onTap: () {
+                               Get.toNamed(Routes.search);
+                             },
+                             child: Container(
+                               height: 48,
+                               padding: const EdgeInsets.symmetric(
+                                 horizontal: 16,
+                               ),
+                               decoration: BoxDecoration(
+                                 color: const Color(0xffF7F8FA),
+                                 borderRadius:
+                                 BorderRadius.circular(16),
+                                 border: Border.all(
+                                   color: Colors.grey.shade300,
+                                 ),
+                               ),
+                               child: Row(
+                                 children: [
+
+                                   const Icon(
+                                     Icons.search_rounded,
+                                     color: Colors.grey,
+                                   ),
+
+                                   const SizedBox(width: 10),
+
+                                   Expanded(
+                                     child: Text(
+                                       "Search products...",
+                                       style: TextStyle(
+                                         color: Colors.grey.shade600,
+                                       ),
+                                     ),
+                                   ),
+
+                                 ],
+                               ),
+                             ),
+                           ),
+                         ),
+
+                         const SizedBox(width: 10),
+
+                         Material(
+                           color: const Color(0xffF7F8FA),
+                           borderRadius:
+                           BorderRadius.circular(16),
+                           child: InkWell(
+                             borderRadius:
+                             BorderRadius.circular(16),
+                             onTap: () async {
+
+                               if (!await AuthHelper.requireLogin(
+                                 message:
+                                 "Login to access your favourite products.",
+                               )) {
+                                 return;
+                               }
+
+                               Get.toNamed(Routes.favourites);
+
+                             },
+                             child: Container(
+                               width: 48,
+                               height: 48,
+                               decoration: BoxDecoration(
+                                 border: Border.all(
+                                   color: Colors.grey.shade300,
+                                 ),
+                                 borderRadius:
+                                 BorderRadius.circular(16),
+                               ),
+                               child: const Icon(
+                                 Icons.favorite_border_rounded,
+                               ),
+                             ),
+                           ),
+                         ),
+                       ],
+                     ),
+                   ],
+                 ),
+               ),
+             ),
+           ),
+           // Banner comes here
+           SliverToBoxAdapter(
+             child: Obx(() {
+               if (_bannerManagementController.activeBanners.isEmpty) {
+                 return const SizedBox.shrink();
+               }
+
+               return HomeBannerSlider(
+                 isNetwork: true,
+                 images: _bannerManagementController.activeBanners
+                     .map((e) => e.imageUrl)
+                     .toList(),
+                 onTap: (index) {
+                   _bannerManagementController.onBannerTap(
+                     _bannerManagementController.activeBanners[index],
+                   );
+                 },
+               );
+             }),
+           ),
+
+           // Products come here
+           const SliverToBoxAdapter(
+             child: SizedBox(height: 20),
+           ),
+
+           /* Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: LayoutBuilder(
                     builder: (context, constraints) {
@@ -248,89 +304,90 @@ class HomePage extends GetView<HomeController> {
                   ),
                 ),
 
-                const SizedBox(height: 25),
+                const SizedBox(height: 25),*/
+           Obx(() {
 
-                //----------------------------------
-                // Latest Posts
-                //----------------------------------
+             if (controller.isLoading.value) {
+               return SliverPadding(
+                 padding: const EdgeInsets.symmetric(horizontal: 10),
+                 sliver: SliverGrid(
+                   delegate: SliverChildBuilderDelegate(
+                         (_, __) => const PostCardShimmer(),
+                     childCount: 6,
+                   ),
+                   gridDelegate:
+                   const SliverGridDelegateWithFixedCrossAxisCount(
+                     crossAxisCount: 2,
+                     crossAxisSpacing: 8,
+                     mainAxisSpacing: 8,
+                     mainAxisExtent: 285,
+                   ),
+                 ),
+               );
+             }
 
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  child: Text(
-                    "Latest Listings",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
+             if (controller.products.isEmpty) {
+               return const SliverFillRemaining(
+                 hasScrollBody: false,
+                 child: Center(
+                   child: Text("No products found"),
+                 ),
+               );
+             }
 
-                const SizedBox(height: 10),
+             return SliverPadding(
+               padding: const EdgeInsets.symmetric(horizontal: 10),
+               sliver: SliverGrid(
+                 delegate: SliverChildBuilderDelegate(
+                       (context, index) {
 
-                Obx(() {
-                  if (controller.isLoading.value) {
-                    return GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      itemCount: 6,
-                      gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 8,
-                        mainAxisSpacing: 8,
-                        childAspectRatio: 0.61,
-                      ),
-                      itemBuilder: (_, __) => const PostCardShimmer(),
-                    );
-                  }
+                     return ProductTile(
+                       index: index,
+                     );
 
-                  if (controller.products.isEmpty) {
-                    return const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(40),
-                        child: Text("No products found"),
-                      ),
-                    );
-                  }
+                   },
+                   childCount: controller.products.length,
+                 ),
+                 gridDelegate:
+                 const SliverGridDelegateWithFixedCrossAxisCount(
+                   crossAxisCount: 2,
+                   crossAxisSpacing: 8,
+                   mainAxisSpacing: 8,
+                   mainAxisExtent: 275,
+                 ),
+               ),
+             );
+           }),
+           SliverToBoxAdapter(
+             child: Obx(() {
 
-                  return GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    itemCount: controller.products.length,
-                    gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 8,
-                      mainAxisSpacing: 8,
-                      childAspectRatio: 0.61,
-                    ),
-                    itemBuilder: (context, index) {
-                      return PostCard(
-                        post: controller.products[index],
-                      );
-                    },
-                  );
-                }),
-                Obx(() {
-                  if (!controller.isLoadingMore.value) {
-                    return const SizedBox.shrink();
-                  }
+               if (!controller.isLoadingMore.value) {
+                 return const SizedBox.shrink();
+               }
 
-                  return const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                }),
-              ],
-            ),
-          ),
-        ),
+               return GridView.builder(
+                 shrinkWrap: true,
+                 physics: const NeverScrollableScrollPhysics(),
+                 padding: const EdgeInsets.symmetric(horizontal: 10),
+                 itemCount: 6,
+                 gridDelegate:
+                 const SliverGridDelegateWithFixedCrossAxisCount(
+                   crossAxisCount: 2,
+                   crossAxisSpacing: 8,
+                   mainAxisSpacing: 8,
+                   mainAxisExtent: 285,
+                 ),
+                 itemBuilder: (_, __) => const PostCardShimmer(),
+               );
 
-      ],
-    ),
+             }),
+           ),
+           const SliverToBoxAdapter(
+             child: SizedBox(height: 20),
+           ),
+
+         ],
+       ),
+     ),
     );
   }}

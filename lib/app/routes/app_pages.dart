@@ -1,12 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
+import 'package:teamomarket/modules/favourite/views/favoutite_page.dart';
 import 'package:teamomarket/modules/home/bindings/dashboard_binding.dart';
 import 'package:teamomarket/modules/home/views/dashboard_screen.dart';
 import 'package:teamomarket/modules/my_ads/bindings/my_ads_binding.dart';
 import 'package:teamomarket/modules/my_ads/views/my_ads_page.dart';
 import 'package:teamomarket/modules/product/views/product_preview_page.dart';
+import 'package:teamomarket/modules/product/views/product_search_page.dart';
 import 'package:teamomarket/modules/profile/bindings/profile_binding.dart';
 import 'package:teamomarket/modules/profile/views/profile_page.dart';
+import '../../modules/agent/bindings/agent_binding.dart';
+import '../../modules/agent/views/become_agent_view.dart';
 import '../../modules/auth/views/login_screen.dart';
 import '../../modules/auth/views/signup_view.dart';
 import '../../modules/banner/bindings/banner_binding.dart';
@@ -131,6 +135,26 @@ class AppPages {
       page: () => const BannerFormPage(),
       binding: BannerBinding(),
       middlewares: [AuthGuard()],
+    ),
+
+    GetPage(
+      name: Routes.search,
+      page: () => const ProductSearchPage(),
+    ),
+    GetPage(
+      name: Routes.favourites,
+      page: () => const FavouritePage(),
+    ),
+
+    GetPage(
+      name: Routes.becomeAgent,
+      page: () => const BecomeAgentView(),
+      binding: AgentBinding(),
+    ),
+    GetPage(
+      name: Routes.agent,
+      page: () => const BecomeAgentView(),
+      binding: AgentBinding(),
     ),
   ];
 }

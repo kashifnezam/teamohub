@@ -119,48 +119,6 @@ class ProfileController extends GetxController {
     }
   }
 
-  void editProfile() {
-    // TODO:
-    // Get.toNamed(AppRoutes.editProfile);
-  }
-
-  void changeLocation() {
-    // TODO:
-    // Get.toNamed(AppRoutes.locationPicker);
-  }
-
-  void openMyAds() {
-    Get.toNamed(Routes.myAds);
-  }
-
-  void openFavourites() {
-    if(userInfo?['role']=='admin') Get.toNamed(Routes.bannerManagement);
-  }
-
-  void openChats() {
-    Get.toNamed(Routes.chats);
-  }
-
-  void openNotifications() {
-    // TODO:
-    Get.toNamed(Routes.bannerManagement);
-  }
-
-  void openPrivacyPolicy() {
-    // TODO:
-    // Get.toNamed(AppRoutes.privacyPolicy);
-  }
-
-  void openTerms() {
-    // TODO:
-    // Get.toNamed(AppRoutes.terms);
-  }
-
-  void openHelpSupport() {
-    // TODO:
-    // Get.toNamed(AppRoutes.helpSupport);
-  }
-
   Future<void> deleteAccount() async {
     final bool? confirm =
     await CustomWidget.confirmDialogue(

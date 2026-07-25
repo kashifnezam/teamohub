@@ -7,6 +7,8 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'image_helper.dart';
+
 class CustomWidget {
   static Widget buildCircularProgressIndicator() {
     return const Center(
@@ -46,13 +48,15 @@ class CustomWidget {
 
   static Future<File?> imagePickFrom({String source = "gallery"}) async {
     try {
-      final picker = ImagePicker();
+      final File? file = await ImageHelper.imagePickFrom();
+
+      /*final picker = ImagePicker();
 
       final XFile? file = await picker.pickImage(
         source: source == "camera"
             ? ImageSource.camera
             : ImageSource.gallery,
-      );
+      );*/
 
       if (file == null) return null;
 

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:teamomarket/app/constants/app_constants.dart';
 import 'package:teamomarket/app/utils/offline_data.dart';
 import '../../../app/routes/app_routes.dart';
 import '../../../app/utils/custom_alert.dart';
@@ -35,6 +34,14 @@ class ChatController extends GetxController {
   }
 
   String get currentUserId => userInfo?['id'] ?? '';
+  List<ChatModel> get buyingChats => chats.where((e) => e.buyerId == currentUserId).toList();
+  List<ChatModel> get sellingChats => chats.where((e) => e.sellerId == currentUserId).toList();
+  bool get hasUnreadBuying => buyingChats.any((e) => e.unreadCount > 0);
+  bool get hasUnreadSelling => sellingChats.any((e) => e.unreadCount > 0);
+  int get buyingUnreadCount => buyingChats.fold(0, (sum, e) => sum + e.unreadCount);
+  int get sellingUnreadCount => sellingChats.fold(0, (sum, e) => sum + e.unreadCount);
+  int get totalUnreadCount => chats.fold(0, (sum, chat) => sum + chat.unreadCount);
+  bool get hasUnreadChats => totalUnreadCount > 0;
 
   //--------------------------------------------------------------------------
   // Chats
@@ -57,6 +64,7 @@ class ChatController extends GetxController {
   }
 
   void listenChats() {
+    if(currentUserId.isEmpty) return;
     isChatsLoading.value = true;
     _chatSubscription?.cancel();
 
@@ -154,6 +162,51 @@ class ChatController extends GetxController {
   Future<void> markAsRead(String chatId) async {
     await _repository.markMessagesAsRead(chatId);
   }
+  
+  Future<void> callChat(ProductModel product) async {
+    try {
+      if (product.sellerId == userInfo?["id"]) {
+        CustomAlert.errorAlert(
+          title: "Not allowed",
+          "You can't chat with yourself.",
+        );
+        return;
+      }
+      final confirmAlert = await CustomAlert.confirmAlert("Deal with precaution", title: "Fraud Alert", confirmText: "Get number");
+      if(!confirmAlert) return;
+      isChatsLoading.value = true;
+      CustomAlert.loadAlert("Loading chat..");
+      final chatId = await _repository.getOrCreateChat(
+        sellerId: product.sellerId,
+        sellerName: product.sellerName!,
+        productPrice: product.price,
+        sellerPhoto: product.sellerPhoto,
+
+        buyerId: userInfo?['id'],
+        buyerName: userInfo?['name'] ?? '',
+        buyerPhoto:  userInfo?['photo'] ?? '',
+
+        productId: product.id,
+        productTitle: product.title,
+        productImage: product.images.first,
+        chatText: "I'm interested in Lets talk on ${userInfo?['phone']}"
+      );
+      CustomAlert.dismissAlert();
+      Get.toNamed(
+        Routes.chat,
+        arguments: chatId,
+      );
+
+      isChatsLoading.value = false;
+    } catch (e) {
+      isChatsLoading.value = false;
+
+      CustomAlert.errorAlert(
+        title: "Unable to open chat",
+        e.toString(),
+      );
+    }
+  }
 
   Future<void> openChat(ProductModel product) async {
     try {
@@ -179,6 +232,7 @@ class ChatController extends GetxController {
         productId: product.id,
         productTitle: product.title,
         productImage: product.images.first,
+        chatText: "Hey, I'm interested in the ads"
       );
       CustomAlert.dismissAlert();
       Get.toNamed(

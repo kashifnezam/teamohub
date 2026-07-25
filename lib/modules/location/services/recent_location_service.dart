@@ -5,8 +5,7 @@ import '../models/location_result.dart';
 class RecentLocationService {
   RecentLocationService._();
 
-  static final RecentLocationService instance =
-  RecentLocationService._();
+  static final RecentLocationService instance =  RecentLocationService._();
 
   static const String _storageKey = 'recent_locations';
 

@@ -6,6 +6,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../../app/utils/app_colors.dart';
 import '../../../../../modules/product/models/product_model.dart';
 import '../../../app/widgets/custom_widget.dart';
+import '../../favourite/controllers/favourite_controller.dart';
 import '../models/product_image_model.dart';
 import '../views/image_viewer_page.dart';
 
@@ -13,7 +14,7 @@ class PostImageSlider extends StatefulWidget {
   final List<ProductImageModel> images;
 
   /// Null while previewing
-  final ProductModel? post;
+  final ProductModel? product;
 
   /// Preview Mode
   final bool isPreview;
@@ -21,7 +22,7 @@ class PostImageSlider extends StatefulWidget {
   const PostImageSlider({
     super.key,
     required this.images,
-    this.post,
+    this.product,
     this.isPreview = false,
   });
 
@@ -31,6 +32,7 @@ class PostImageSlider extends StatefulWidget {
 
 class _PostImageSliderState extends State<PostImageSlider> {
   int currentIndex = 0;
+  final favouriteController = Get.find<FavouriteController>();
 
   @override
   Widget build(BuildContext context) {
@@ -62,13 +64,14 @@ class _PostImageSliderState extends State<PostImageSlider> {
                 Get.to(
                       () => ImageViewerPage(
                     images: widget.images,
+                    productId: widget.product!.id,
                     initialIndex: index,
-                    heroTag: widget.post?.id ?? "preview",
+                    heroTag: widget.product?.id ?? "preview",
                   ),
                 );
               },
               child: Hero(
-                tag: "${widget.post?.id ?? 'preview'}$index",
+                tag: "${widget.product?.id ?? 'preview'}$index",
                 child: _buildImage(widget.images[index]),
               )
             );
@@ -128,13 +131,20 @@ class _PostImageSliderState extends State<PostImageSlider> {
 
                 const Spacer(),
 
-                _circleButton(
-                  icon: Icons.favorite_border,
-                  onTap: () {},
-                ),
+               if(!widget.isPreview)
+               Obx(() =>  _circleButton(
+                 icon: favouriteController.isFavourite(widget.product!.id)
+                     ? Icons.favorite
+                     : Icons.favorite_border,
+                 onTap: () =>  favouriteController.toggleFavourite(widget.product!.id),
+                 color: favouriteController.isFavourite(widget.product!.id)
+                     ? Colors.red
+                     : Colors.grey,
+               ),),
 
                 const SizedBox(width: 10),
 
+                if(!widget.isPreview)
                 _circleButton(
                   icon: Icons.share_outlined,
                   onTap: () {},
@@ -149,7 +159,7 @@ class _PostImageSliderState extends State<PostImageSlider> {
         // NEW Badge
         //------------------------------------------------
 
-        if (widget.post!.attributes["condition"] == "new")
+        if (widget.product!.attributes["condition"] == "new")
           Positioned(
             bottom: 18,
             left: 0,
@@ -167,7 +177,7 @@ class _PostImageSliderState extends State<PostImageSlider> {
         // Featured
         //------------------------------------------------
 
-        if (!widget.isPreview && widget.post!.isFeatured)
+        if (!widget.isPreview && widget.product!.isFeatured)
           Positioned(
             left: 12,
             bottom: 18,
@@ -181,7 +191,7 @@ class _PostImageSliderState extends State<PostImageSlider> {
         // Verified
         //------------------------------------------------
 
-        if (!widget.isPreview && widget.post!.isVerified)
+        if (!widget.isPreview && widget.product!.isVerified)
           Positioned(
             right: 12,
             bottom: 18,
@@ -267,6 +277,7 @@ class _PostImageSliderState extends State<PostImageSlider> {
   Widget _circleButton({
     required IconData icon,
     required VoidCallback onTap,
+  Color color = Colors.white
   }) {
     return Material(
       color: Colors.black45,
@@ -275,12 +286,12 @@ class _PostImageSliderState extends State<PostImageSlider> {
         onTap: onTap,
         customBorder: const CircleBorder(),
         child: SizedBox(
-          width: 42,
-          height: 42,
+          width: 40,
+          height: 40,
           child: Icon(
             icon,
-            color: Colors.white,
-            size: 20,
+            color: color,
+            size: 23,
           ),
         ),
       ),

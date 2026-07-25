@@ -6,19 +6,21 @@ import 'package:photo_view/photo_view_gallery.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../../app/utils/app_colors.dart';
+import '../../favourite/controllers/favourite_controller.dart';
 import '../models/product_image_model.dart';
 
 class ImageViewerPage extends StatefulWidget {
   final List<ProductImageModel> images;
   final int initialIndex;
   final String heroTag;
-
+  final String productId;
   /// Hide favourite/share while previewing
   final bool isPreview;
 
   const ImageViewerPage({
     super.key,
     required this.images,
+    required this.productId,
     this.initialIndex = 0,
     required this.heroTag,
     this.isPreview = false,
@@ -31,6 +33,7 @@ class ImageViewerPage extends StatefulWidget {
 class _ImageViewerPageState extends State<ImageViewerPage> {
   late final PageController _controller;
   late int currentIndex;
+  final FavouriteController favouriteController =  Get.find<FavouriteController>();
 
   @override
   void initState() {
@@ -100,24 +103,30 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
                 children: [
 
                   _circleButton(
-                    Icons.arrow_back_ios_new,
-                    Get.back,
+                    icon: Icons.arrow_back_ios_new,
+                    onTap: () => Get.back(),
                   ),
 
                   const Spacer(),
 
                   if (!widget.isPreview) ...[
 
-                    _circleButton(
-                      Icons.favorite_border,
-                          () {},
-                    ),
+                    Obx(() =>  _circleButton(
+                      icon: favouriteController.isFavourite(widget.productId)
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      onTap: () =>  favouriteController.toggleFavourite(widget.productId),
+                      color: favouriteController.isFavourite(widget.productId)
+                          ? Colors.red
+                          : Colors.grey,
+                    ),),
+
 
                     const SizedBox(width: 10),
 
                     _circleButton(
-                      Icons.share_outlined,
-                          () {},
+                      icon: Icons.share_outlined,
+                      onTap: () {},
                     ),
 
                   ],
@@ -157,22 +166,24 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
     );
   }
 
-  Widget _circleButton(
-      IconData icon,
-      VoidCallback onTap,
-      ) {
+  Widget _circleButton({
+    required IconData icon,
+    required VoidCallback onTap,
+    Color color = Colors.white
+  }) {
     return Material(
       color: Colors.black45,
       shape: const CircleBorder(),
       child: InkWell(
-        customBorder: const CircleBorder(),
         onTap: onTap,
+        customBorder: const CircleBorder(),
         child: SizedBox(
-          width: 44,
-          height: 44,
+          width: 42,
+          height: 42,
           child: Icon(
             icon,
-            color: Colors.white,
+            color: color,
+            size: 20,
           ),
         ),
       ),

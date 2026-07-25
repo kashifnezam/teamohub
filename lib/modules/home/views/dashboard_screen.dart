@@ -1,14 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:teamomarket/app/routes/app_routes.dart';
+import 'package:teamomarket/modules/chat/controllers/chat_controller.dart';
 import 'package:teamomarket/modules/my_ads/views/my_ads_page.dart';
 import 'package:teamomarket/modules/profile/views/profile_page.dart';
 import '../../../app/routes/middlewares/auth_helper.dart';
 import '../../../app/utils/app_colors.dart';
 import '../../../app/utils/custom_alert.dart';
 import '../../chat/views/chat_list_page.dart';
+import '../../location/views/location_bottom_sheet.dart';
 import 'home_page.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -20,6 +23,16 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int currentIndex = 0;
+  final ChatController chatController = Get.find<ChatController>();
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkLocation();
+    });
+  }
+
   Future<void> _changeTab(int index) async {
     if (currentIndex == index) return;
 
@@ -45,6 +58,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     setState(() {
       currentIndex = index;
+
     });
   }
 
@@ -107,28 +121,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 const SizedBox(width: 25),
 
                 Expanded(
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
+                  child: Obx(
+                        () => Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        _NavItem(
+                          selected: currentIndex == 1,
+                          icon: currentIndex == 1
+                              ? Icons.chat
+                              : Icons.chat_bubble_outline,
+                          label: "Chats",
+                          onTap: () => _changeTab(1),
+                        ),
 
-                      _NavItem(
-                        selected: currentIndex == 1,
-                        icon: currentIndex == 1
-                            ? Icons.chat
-                            : Icons.chat_bubble_outline,
-                        label: "Chats",
-                        onTap: () => _changeTab(1),
-                      ),
-
-                      // const Positioned(
-                      //   right: 18,
-                      //   top: -1,
-                      //   child: _ChatBadge(
-                      //     count: "2",
-                      //   ),
-                      // ),
-
-                    ],
+                        if (chatController.hasUnreadChats)
+                          Positioned(
+                            left: 18,
+                            top: -1,
+                            child: _ChatBadge(
+                              count: chatController.totalUnreadCount > 99
+                                  ? "99+"
+                                  : chatController.totalUnreadCount.toString(),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
 
@@ -201,8 +218,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
         return const SizedBox.shrink();
     }
   }
+
+  Future<void> _checkLocation() async {
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    final permission = await Geolocator.checkPermission();
+
+    if (!serviceEnabled ||
+        permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      await showModalBottomSheet(
+        context: context,
+        isDismissible: true,
+        enableDrag: false,
+        isScrollControlled: true,
+        backgroundColor: Colors.transparent,
+        builder: (_) => LocationBottomSheet(),
+      );
+
+      return;
+    }
+
+    // Permission already granted.
+    // Fetch current location here.
+  }
 }
-/*class _ChatBadge extends StatelessWidget {
+
+
+class _ChatBadge extends StatelessWidget {
   final String count;
 
   const _ChatBadge({
@@ -212,8 +254,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 15,
-      height: 15,
+      constraints: const BoxConstraints(
+        minWidth: 18,
+        minHeight: 18,
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 5),
       decoration: const BoxDecoration(
         color: Colors.red,
         shape: BoxShape.circle,
@@ -223,13 +268,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
         count,
         style: const TextStyle(
           color: Colors.white,
-          fontSize: 8,
+          fontSize: 10,
           fontWeight: FontWeight.bold,
         ),
       ),
     );
   }
-}*/
+}
+
 class _SellButton extends StatelessWidget {
   const _SellButton();
 
@@ -292,6 +338,7 @@ class _SellButton extends StatelessWidget {
     );
   }
 }
+
 class _NavItem extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -349,6 +396,4 @@ class _NavItem extends StatelessWidget {
       ),
     );
   }
-
-
 }

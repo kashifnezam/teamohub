@@ -12,6 +12,12 @@ abstract class Routes {
   static const signup = '/signup';
   static const forgotPassword = '/forgot-password';
 
+  // ---------------- Authentication ----------------
+  static const agent = '/agent';
+  static const becomeAgent = '/become-agent';
+
+
+
   // ---------------- Banner ----------------
   static const bannerManagement = '/banner-management';
   static const bannerForm = '/banner-form';

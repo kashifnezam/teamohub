@@ -37,6 +37,7 @@ enum ProductStatus {
 class ProductModel {
   /// Unique Product ID
   final String id;
+  final List<String>? searchKeywords;
   final String? sellerName;
   final String? sellerPhoto;
   /// Basic Information
@@ -146,6 +147,7 @@ class ProductModel {
     required this.id,
     this.sellerName,
     this.sellerPhoto,
+    this.searchKeywords,
     required this.title,
     required this.description,
     required this.price,
@@ -203,6 +205,7 @@ class ProductModel {
   ProductModel copyWith({
     String? id,
     String? sellerName,
+    List<String>? searchKeywords,
     String? sellerPhoto,
     String? title,
     String? description,
@@ -243,6 +246,7 @@ class ProductModel {
     return ProductModel(
       id: id ?? this.id,
       sellerName: sellerName ?? this.sellerName,
+      searchKeywords: searchKeywords ?? this.searchKeywords,
       sellerPhoto: sellerPhoto ?? this.sellerPhoto,
       title: title ?? this.title,
       description: description ?? this.description,
@@ -289,7 +293,7 @@ class ProductModel {
       'title': title,
       'description': description,
       'price': price,
-
+      "searchKeywords": searchKeywords,
       'type': type.name,
 
       'categoryId': categoryId,
@@ -344,6 +348,7 @@ class ProductModel {
     return ProductModel(
       id: map['id'] ?? '',
       sellerName: map['sellerName'],
+      searchKeywords: List<String>.from(map["searchKeywords"] ?? []),
       sellerPhoto: map['sellerPhoto'],
       title: map['title'] ?? '',
       description: map['description'] ?? '',

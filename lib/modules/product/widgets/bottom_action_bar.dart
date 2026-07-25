@@ -4,10 +4,12 @@ import 'package:teamomarket/modules/chat/controllers/chat_controller.dart';
 
 import '../../../app/routes/middlewares/auth_helper.dart';
 import '../../../app/utils/app_colors.dart';
+import '../../favourite/controllers/favourite_controller.dart';
 import '../models/product_model.dart';
 
 class BottomActionBar extends StatelessWidget {
   final ProductModel product;
+  final favouriteController = Get.find<FavouriteController>();
   BottomActionBar({
     super.key,
     required this.product,
@@ -34,9 +36,11 @@ class BottomActionBar extends StatelessWidget {
             // Wishlist
             //------------------------------------------------
 
-            InkWell(
+          /*  InkWell(
               borderRadius: BorderRadius.circular(14),
-              onTap: () {},
+              onTap: () {
+                Get.find<FavouriteController>().toggleFavourite(product.id);
+              },
               child: Container(
                 height: 52,
                 width: 52,
@@ -46,13 +50,25 @@ class BottomActionBar extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: const Icon(
-                  Icons.favorite_border,
+                child: Obx(
+                      () => IconButton(
+                    onPressed: () {
+                      favouriteController.toggleFavourite(product.id);
+                    },
+                    icon: Icon(
+                      favouriteController.isFavourite(product.id)
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      color: favouriteController.isFavourite(product.id)
+                          ? Colors.red
+                          : Colors.grey,
+                    ),
+                  ),
                 ),
               ),
             ),
 
-            const SizedBox(width: 10),
+            const SizedBox(width: 10),*/
 
             //------------------------------------------------
             // Chat
@@ -97,8 +113,12 @@ class BottomActionBar extends StatelessWidget {
               child: SizedBox(
                 height: 52,
                 child: OutlinedButton.icon(
-                  onPressed: () {
+                  onPressed: () async {
                     // Call Seller
+                    if (!await AuthHelper.requireLogin(
+                    message: "Login to access your account.",
+                    )) return;
+                    ChatController().callChat(product);
                   },
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.primary,

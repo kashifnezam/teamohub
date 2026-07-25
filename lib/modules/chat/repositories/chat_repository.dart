@@ -10,8 +10,7 @@ class ChatRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  CollectionReference<Map<String, dynamic>> get _chats =>
-      _firestore.collection('chats');
+  CollectionReference<Map<String, dynamic>> get _chats => _firestore.collection('chats');
 
   String get _currentUserId => _auth.currentUser!.uid;
 
@@ -30,6 +29,7 @@ class ChatRepository {
     required String productId,
     required String productTitle,
     required String productImage,
+    required String chatText
   }) async {
     final ids = [buyerId, sellerId]..sort();
 
@@ -83,7 +83,7 @@ class ChatRepository {
         chatId: chatId,
         senderId: buyerId,
         receiverId: sellerId,
-        text: "I'm interested in your ads",
+        text: chatText,
       );
     });
 

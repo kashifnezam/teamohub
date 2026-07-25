@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teamomarket/app/widgets/custom_widget.dart';
+import 'package:teamomarket/modules/favourite/controllers/favourite_controller.dart';
 import 'package:teamomarket/modules/product/views/product_details_page.dart';
 import '../../../app/utils/app_colors.dart';
 import '../models/product_model.dart';
 
-class PostCard extends StatelessWidget {
-  final ProductModel post;
-
-  const PostCard({
+class ProductCard extends StatelessWidget {
+  final ProductModel product;
+  final FavouriteController favouriteController = Get.find();
+  ProductCard({
     super.key,
-    required this.post,
+    required this.product,
   });
 
   @override
   Widget build(BuildContext context) {
-    final condition = post.attributes["condition"];
+    print("Home build");
+    final condition = product.attributes["condition"];
     return Card(
       elevation: 1,
       margin: EdgeInsets.zero,
@@ -26,7 +28,7 @@ class PostCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () {
-          Get.to(()=> ProductDetailsPage(product: post));
+          Get.to(()=> ProductDetailsPage(product: product));
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,15 +41,15 @@ class PostCard extends StatelessWidget {
                 SizedBox(
                   height: 160,
                   width: double.infinity,
-                  child: post.images.isEmpty
+                  child: product.images.isEmpty
                       ? Container(
                     color: Colors.grey.shade200,
                     child: const Icon(Icons.image, size: 40),
                   )
-                      : CustomWidget.getImage(post.images.first, shape: BoxShape.rectangle),
+                      : CustomWidget.getImage(product.images.first, shape: BoxShape.rectangle),
                 ),
 
-                if (post.attributes["condition"] == "new")
+                if (product.attributes["condition"] == "new")
                   Positioned(
                     top: 8,
                     left: 8,
@@ -57,7 +59,7 @@ class PostCard extends StatelessWidget {
                     ),
                   ),
 
-                if (post.isFeatured)
+                if (product.isFeatured)
                   Positioned(
                     bottom: 8,
                     left: 8,
@@ -67,7 +69,7 @@ class PostCard extends StatelessWidget {
                     ),
                   ),
 
-                if (post.isVerified)
+                if (product.isVerified)
                   Positioned(
                     bottom: 8,
                     right: 8,
@@ -81,12 +83,26 @@ class PostCard extends StatelessWidget {
                   top: 8,
                   right: 8,
                   child: CircleAvatar(
-                    radius: 16,
+                    radius: 18,
                     backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.favorite_border,
-                      color: Colors.grey.shade700,
-                      size: 18,
+                    child: Obx(
+                          () => IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        splashRadius: 18,
+                        icon: Icon(
+                          favouriteController.isFavourite(product.id)
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          color: favouriteController.isFavourite(product.id)
+                              ? Colors.red
+                              : Colors.grey,
+                          size: 18,
+                        ),
+                        onPressed: () {
+                          favouriteController.toggleFavourite(product.id);
+                        },
+                      ),
                     ),
                   ),
                 ),
@@ -101,7 +117,7 @@ class PostCard extends StatelessWidget {
                 children: [
 
                   Text(
-                    post.title,
+                    product.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
@@ -116,7 +132,7 @@ class PostCard extends StatelessWidget {
                     children: [
 
                       Text(
-                        "₹${post.price.toStringAsFixed(0)}",
+                        "₹${product.price.toStringAsFixed(0)}",
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -158,7 +174,7 @@ class PostCard extends StatelessWidget {
                       const SizedBox(width: 2),
                       Expanded(
                         child: Text(
-                          post.city,
+                          product.city,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -184,7 +200,7 @@ class PostCard extends StatelessWidget {
                       const SizedBox(width: 2),
 
                       Text(
-                        "${post.views}",
+                        "${product.views}",
                         style: TextStyle(
                           fontSize: 11,
                           color: Colors.grey.shade600,
@@ -202,7 +218,7 @@ class PostCard extends StatelessWidget {
                       const SizedBox(width: 2),
 
                       Text(
-                        "${post.likes}",
+                        "${product.likes}",
                         style: TextStyle(
                           fontSize: 11,
                           color: Colors.grey.shade600,
