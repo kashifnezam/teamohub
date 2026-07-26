@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teamomarket/app/constants/app_constants.dart';
 import 'package:teamomarket/app/routes/app_routes.dart';
-import '../../../app/utils/app_colors.dart';
+import '../../../app/theme/app_colors.dart';
 import '../../../app/widgets/custom_widget.dart';
 import '../controllers/chat_controller.dart';
 import '../models/chat_model.dart';
@@ -73,7 +73,7 @@ class ChatListPage extends GetView<ChatController> {
           borderRadius: BorderRadius.circular(16),
           onTap: () {
             Get.toNamed(
-              Routes.chat,
+              AppRoutes.chat,
               arguments: chat.id,
             );
           },

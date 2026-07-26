@@ -10,7 +10,19 @@ import 'package:teamomarket/modules/product/views/product_search_page.dart';
 import 'package:teamomarket/modules/profile/bindings/profile_binding.dart';
 import 'package:teamomarket/modules/profile/views/profile_page.dart';
 import '../../modules/agent/bindings/agent_binding.dart';
+import '../../modules/agent/bindings/agent_client_requests_binding.dart';
+import '../../modules/agent/bindings/agent_create_listing_binding.dart';
+import '../../modules/agent/bindings/agent_dashboard_binding.dart';
+import '../../modules/agent/bindings/agent_listing_share_binding.dart';
+import '../../modules/agent/bindings/agent_my_listings_binding.dart';
+import '../../modules/agent/bindings/agent_promotion_requests_binding.dart';
 import '../../modules/agent/views/become_agent_view.dart';
+import '../../modules/agent/views/dashboard/agent_dashboard_view.dart';
+import '../../modules/agent/views/listings/agent_create_listing_view.dart';
+import '../../modules/agent/views/listings/agent_listing_share_view.dart';
+import '../../modules/agent/views/listings/agent_my_listings_view.dart';
+import '../../modules/agent/views/promotions/agent_promotion_requests_view.dart';
+import '../../modules/agent/views/requests/agent_client_requests_view.dart';
 import '../../modules/auth/views/login_screen.dart';
 import '../../modules/auth/views/signup_view.dart';
 import '../../modules/banner/bindings/banner_binding.dart';
@@ -34,7 +46,7 @@ class AppPages {
   static final pages = [
 
     GetPage(
-      name: Routes.appEntry,
+      name: AppRoutes.appEntry,
       page: () => const SizedBox(),
       middlewares: [
         RoleRedirectMiddleware(),
@@ -42,119 +54,150 @@ class AppPages {
     ),
 
     GetPage(
-      name: Routes.signup,
+      name: AppRoutes.signup,
       page: () =>  SignupView(),
     ),
 
     GetPage(
-      name: Routes.login,
+      name: AppRoutes.login,
       page: () =>  AuthenticationView(),
     ),
 
 
     GetPage(
-      name: Routes.splash,
+      name: AppRoutes.splash,
       page: () => const SplashScreen(),
     ),
 
 
     GetPage(
-      name: Routes.dashboard,
+      name: AppRoutes.dashboard,
       page: () =>  DashboardScreen(),
       binding: DashboardBinding(),
     ),
 
 
     GetPage(
-      name: Routes.categories,
+      name: AppRoutes.categories,
       page: () => const CategoriesPage(),
       binding: CategoryBinding(),
     ),
 
     GetPage(
-      name: Routes.subCategories,
+      name: AppRoutes.subCategories,
       page: () => SubCategoryPage(),
       binding: CategoryBinding(),
     ),
     //
     GetPage(
-      name: Routes.addProduct,
+      name: AppRoutes.addProduct,
       page: () => AddProductPage(),
       middlewares: [AuthGuard()],
     ),
 
     GetPage(
-      name: Routes.productPreview,
+      name: AppRoutes.productPreview,
       page: () => ProductPreviewPage(),
       // middlewares: [AuthGuard()],
     ),
 
     GetPage(
-      name: Routes.locationPicker,
+      name: AppRoutes.locationPicker,
       page: () => LocationPickerPage(),
       binding: LocationBinding(),
     ),
 
     GetPage(
-      name: Routes.chats,
+      name: AppRoutes.chats,
       page: () => const ChatListPage(),
       binding: ChatBinding(),
       middlewares: [AuthGuard()],
     ),
 
     GetPage(
-      name: Routes.chat,
+      name: AppRoutes.chat,
       page: () => const ChatPage(),
       binding: ChatBinding(),
       middlewares: [AuthGuard()],
     ),
 
     GetPage(
-      name: Routes.profile,
+      name: AppRoutes.profile,
       page: () => const ProfilePage(),
       binding: ProfileBinding(),
       middlewares: [AuthGuard()],
     ),
 
     GetPage(
-      name: Routes.myAds,
+      name: AppRoutes.myAds,
       page: () => const MyAdsPage(),
       binding: MyAdsBinding(),
       middlewares: [AuthGuard()],
     ),
 
     GetPage(
-      name: Routes.bannerManagement,
+      name: AppRoutes.bannerManagement,
       page: () => const BannerManagementPage(),
       binding: BannerBinding(),
       middlewares: [AuthGuard()],
     ),
 
     GetPage(
-      name: Routes.bannerForm,
+      name: AppRoutes.bannerForm,
       page: () => const BannerFormPage(),
       binding: BannerBinding(),
       middlewares: [AuthGuard()],
     ),
 
     GetPage(
-      name: Routes.search,
+      name: AppRoutes.search,
       page: () => const ProductSearchPage(),
     ),
     GetPage(
-      name: Routes.favourites,
+      name: AppRoutes.favourites,
       page: () => const FavouritePage(),
     ),
 
     GetPage(
-      name: Routes.becomeAgent,
+      name: AppRoutes.agent,
       page: () => const BecomeAgentView(),
       binding: AgentBinding(),
     ),
+
     GetPage(
-      name: Routes.agent,
-      page: () => const BecomeAgentView(),
-      binding: AgentBinding(),
+      name: AppRoutes.agentDashboard,
+      page: () => const AgentDashboardView(),
+      binding: AgentDashboardBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.agentClientRequests,
+      page: () => const AgentClientRequestsView(),
+      binding: AgentClientRequestsBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.agentPromotionRequests,
+      page: () => const AgentPromotionRequestsView(),
+      binding: AgentPromotionRequestsBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.agentCreateListing,
+      page: () => const AgentCreateListingView(),
+      binding: AgentCreateListingBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.agentListingShare,
+      page: () => const AgentListingShareView(),
+      binding: AgentListingShareBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.agentMyListings,
+      page: () => const AgentMyListingsView(),
+      binding: AgentMyListingsBinding(),
     ),
   ];
 }

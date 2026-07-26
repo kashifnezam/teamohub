@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:teamomarket/app/widgets/custom_widget.dart';
 import 'package:teamomarket/modules/product/models/product_model.dart';
 
-import '../../../app/utils/app_colors.dart';
+import '../../../app/theme/app_colors.dart';
 
 class SellerCard extends StatefulWidget {
   final ProductModel product;

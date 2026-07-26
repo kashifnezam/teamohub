@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:teamomarket/app/utils/app_colors.dart';
+import 'package:teamomarket/app/theme/app_colors.dart';
 
 import '../controllers/product_controller.dart';
 import '../models/product_image_model.dart';

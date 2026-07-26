@@ -5,6 +5,7 @@ class FirebaseConstants {
   // Authentication
   // ===========================
   static const users = 'users';
+  static const agents = 'agents';
   static const userSessions = 'userSessions';
   static const userDevices = 'userDevices';
 

@@ -1,0 +1,17 @@
+const List<String> languages = [
+  "Hindi",
+  "English",
+  "Bengali",
+  "Marathi",
+  "Telugu",
+  "Tamil",
+  "Gujarati",
+  "Kannada",
+  "Malayalam",
+  "Punjabi",
+  "Odia",
+  "Assamese",
+  "Urdu",
+  "Nepali",
+  "Sanskrit",
+];

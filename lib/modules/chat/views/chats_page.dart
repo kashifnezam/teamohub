@@ -6,7 +6,7 @@ import 'package:teamomarket/modules/product/controllers/product_controller.dart'
 import 'package:teamomarket/modules/product/models/product_model.dart';
 import 'package:teamomarket/modules/product/views/product_details_page.dart';
 import '../../../app/constants/app_constants.dart';
-import '../../../app/utils/app_colors.dart';
+import '../../../app/theme/app_colors.dart';
 import '../../../app/utils/custom_alert.dart';
 import '../../../app/widgets/custom_widget.dart';
 import '../controllers/chat_controller.dart';

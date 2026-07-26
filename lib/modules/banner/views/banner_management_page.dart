@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../app/routes/app_routes.dart';
-import '../../../app/utils/app_colors.dart';
+import '../../../app/theme/app_colors.dart';
 import '../../../app/widgets/custom_widget.dart';
 import '../controllers/banner_management_controller.dart';
 import '../models/banner_model.dart';
@@ -44,7 +44,7 @@ class BannerManagementPage extends GetView<BannerManagementController> {
                   ),
                   onPressed: () async {
                     final result = await Get.toNamed(
-                      Routes.bannerForm,
+                      AppRoutes.bannerForm,
                     );
 
                     if (result == true) {
@@ -121,7 +121,7 @@ class BannerManagementPage extends GetView<BannerManagementController> {
                       banner: banner,
                       onEdit: () async {
                         final result = await Get.toNamed(
-                          Routes.bannerForm,
+                          AppRoutes.bannerForm,
                           arguments: banner,
                         );
 

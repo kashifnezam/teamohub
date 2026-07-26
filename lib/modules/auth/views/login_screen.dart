@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teamomarket/app/routes/app_routes.dart';
-import '../../../app/utils/app_colors.dart';
+import '../../../app/theme/app_colors.dart';
 import '../controllers/auth_controller.dart';
 
 class AuthenticationView extends StatelessWidget {
@@ -495,7 +495,7 @@ class AuthenticationView extends StatelessWidget {
             
             OutlinedButton(
               onPressed: () {
-                Get.toNamed(Routes.signup);
+                Get.toNamed(AppRoutes.signup);
               },
             
               style: OutlinedButton.styleFrom(

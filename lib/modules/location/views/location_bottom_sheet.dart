@@ -55,7 +55,7 @@ class LocationBottomSheet extends StatelessWidget {
               width: double.infinity,
               height: 56,
               child: OutlinedButton.icon(
-                onPressed: () => Get.toNamed(Routes.locationPicker),
+                onPressed: () => Get.toNamed(AppRoutes.locationPicker),
                 icon: const Icon(Icons.search),
                 label: const Text(
                   "Search city manually",

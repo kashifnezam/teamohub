@@ -54,7 +54,7 @@ class CategoriesPage extends GetView<CategoryController> {
                   await controller.loadSubCategories(category.id);
 
                   Get.toNamed(
-                    Routes.subCategories,
+                    AppRoutes.subCategories,
                     arguments: category,
                   );
                 } else {
@@ -63,7 +63,7 @@ class CategoriesPage extends GetView<CategoryController> {
                   );
 
                   Get.toNamed(
-                    Routes.addProduct,
+                    AppRoutes.addProduct,
                     arguments: AddProductArguments(
                       category: category,
                     ),

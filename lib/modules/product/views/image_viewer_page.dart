@@ -5,7 +5,7 @@ import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-import '../../../app/utils/app_colors.dart';
+import '../../../app/theme/app_colors.dart';
 import '../../favourite/controllers/favourite_controller.dart';
 import '../models/product_image_model.dart';
 

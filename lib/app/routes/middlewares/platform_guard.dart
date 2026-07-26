@@ -20,7 +20,7 @@ class PlatformGuard extends GetMiddleware {
         );
       });
 
-      return const RouteSettings(name: Routes.login);
+      return const RouteSettings(name: AppRoutes.login);
     }
 
     return null;

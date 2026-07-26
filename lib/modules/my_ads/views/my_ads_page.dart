@@ -21,7 +21,7 @@ class MyAdsPage extends GetView<MyAdsController> {
         actions: [
           IconButton(
             onPressed: () {
-              Get.toNamed(Routes.categories);
+              Get.toNamed(AppRoutes.categories);
             },
             icon: const Icon(Icons.add),
           ),
@@ -184,7 +184,7 @@ class MyAdsPage extends GetView<MyAdsController> {
 
                         FilledButton.icon(
                           onPressed: () {
-                            Get.toNamed(Routes.categories);
+                            Get.toNamed(AppRoutes.categories);
                           },
                           icon: const Icon(Icons.add),
                           label: const Text("Sell Product"),

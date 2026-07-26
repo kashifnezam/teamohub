@@ -35,7 +35,7 @@ class AuthController extends GetxController {
     try {
       await AuthService.logout();
       CustomAlert.dismissAlert();
-      Get.offAllNamed(Routes.login);
+      Get.offAllNamed(AppRoutes.login);
     } catch (e) {
       CustomAlert.dismissAlert();
       CustomAlert.errorAlert(

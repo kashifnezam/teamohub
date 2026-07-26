@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:teamomarket/modules/chat/controllers/chat_controller.dart';
 
 import '../../../app/routes/middlewares/auth_helper.dart';
-import '../../../app/utils/app_colors.dart';
+import '../../../app/theme/app_colors.dart';
 import '../../favourite/controllers/favourite_controller.dart';
 import '../models/product_model.dart';
 

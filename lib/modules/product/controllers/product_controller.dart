@@ -356,7 +356,7 @@ class ProductController extends GetxController {
 
 
     Get.toNamed(
-      Routes.productPreview,
+      AppRoutes.productPreview,
     );
   }
   /// ---------------------------------------
@@ -404,7 +404,7 @@ class ProductController extends GetxController {
       await _repository.createProduct(product);
       clearForm();
       CustomAlert.dismissAlert();
-      Get.offNamed(Routes.myAds);
+      Get.offNamed(AppRoutes.myAds);
       CustomAlert.successAlert(
         title: "Success",
         "Product published successfully.",

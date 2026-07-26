@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
+import '../../../app/constants/firebase_constants.dart';
 import '../models/agent_model.dart';
 
 class AgentRepository {
@@ -15,8 +16,7 @@ class AgentRepository {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  CollectionReference<Map<String, dynamic>> get _users =>
-      _firestore.collection('users');
+  CollectionReference<Map<String, dynamic>> get _users => _firestore.collection(FirebaseConstants.agents);
 
   Future<AgentModel?> getAgentDetails() async {
     final uid = _auth.currentUser?.uid;
@@ -62,6 +62,7 @@ class AgentRepository {
         .ref()
         .child('agents')
         .child(uid)
+        .child('profile')
         .child('profile.jpg');
 
     await ref.putFile(imageFile);
@@ -86,11 +87,17 @@ class AgentRepository {
   Future<void> saveAgent({
     required AgentModel agent,
     File? imageFile,
+    File? verificationFile,
   }) async {
     String imageUrl = agent.profileImage;
+    String? verificationUrl = agent.verificationFileUrl;
 
     if (imageFile != null) {
       imageUrl = await uploadProfileImage(imageFile);
+    }
+
+    if (verificationFile != null) {
+      verificationUrl = await uploadVerificationDocument(verificationFile);
     }
 
     final updated = agent.copyWith(
@@ -98,15 +105,34 @@ class AgentRepository {
       isAgent: true,
       agentStatus: "pending",
       profileImage: imageUrl,
+      verificationFileUrl: verificationUrl,
     );
 
-    final doc =
-    await _users.doc(_auth.currentUser!.uid).get();
+    final doc = await _users.doc(_auth.currentUser!.uid).get();
 
     if (doc.exists && (doc.data()?['isAgent'] ?? false)) {
       await updateAgent(agent: updated);
     } else {
       await registerAgent(agent: updated);
     }
+  }
+
+  Future<String> uploadVerificationDocument(
+      File file,
+      ) async {
+    final uid = _auth.currentUser!.uid;
+
+    final extension = file.path.split('.').last.toLowerCase();
+
+    final ref = _storage
+        .ref()
+        .child("agents")
+        .child(uid)
+        .child("documents")
+        .child("verification.$extension");
+
+    await ref.putFile(file);
+
+    return await ref.getDownloadURL();
   }
 }

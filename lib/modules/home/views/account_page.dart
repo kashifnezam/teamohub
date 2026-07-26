@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teamomarket/app/routes/app_routes.dart';
 
-import '../../../app/utils/app_colors.dart';
+import '../../../app/theme/app_colors.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../../auth/services/auth_service.dart';
 
@@ -30,7 +30,7 @@ class AccountPage extends GetView<AccountController> {
 
           /// Profile Card
           InkWell(
-            onTap: () => Get.toNamed(Routes.profile),
+            onTap: () => Get.toNamed(AppRoutes.profile),
             child: Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(

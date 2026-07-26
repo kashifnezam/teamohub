@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:teamomarket/app/utils/app_colors.dart';
+import 'package:teamomarket/app/theme/app_colors.dart';
 import 'package:teamomarket/modules/banner/controllers/banner_management_controller.dart';
 import '../../../app/routes/app_routes.dart';
 import '../../../app/routes/middlewares/auth_helper.dart';
@@ -94,7 +94,7 @@ class HomePage extends GetView<HomeController> {
                          InkWell(
                            borderRadius: BorderRadius.circular(12),
                            onTap: () {
-                             Get.toNamed(Routes.locationPicker);
+                             Get.toNamed(AppRoutes.locationPicker);
                            },
                            child: Padding(
                              padding: const EdgeInsets.symmetric(
@@ -157,7 +157,7 @@ class HomePage extends GetView<HomeController> {
                              borderRadius:
                              BorderRadius.circular(16),
                              onTap: () {
-                               Get.toNamed(Routes.search);
+                               Get.toNamed(AppRoutes.search);
                              },
                              child: Container(
                                height: 48,
@@ -215,7 +215,7 @@ class HomePage extends GetView<HomeController> {
                                  return;
                                }
 
-                               Get.toNamed(Routes.favourites);
+                               Get.toNamed(AppRoutes.favourites);
 
                              },
                              child: Container(

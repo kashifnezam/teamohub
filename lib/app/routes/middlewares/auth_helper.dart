@@ -23,7 +23,7 @@ class AuthHelper {
     );
 
     if (login == true) {
-      Get.toNamed(Routes.login);
+      Get.toNamed(AppRoutes.login);
     }
 
     return false;

@@ -14,7 +14,7 @@ class RoleRedirectMiddleware extends GetMiddleware {
 
     /// No role → family home
     if (role == null) {
-      return const RouteSettings(name: Routes.dashboard);
+      return const RouteSettings(name: AppRoutes.dashboard);
     }
 
     /// Executive
@@ -31,13 +31,13 @@ class RoleRedirectMiddleware extends GetMiddleware {
           );
         });
 
-        return const RouteSettings(name: Routes.login);
+        return const RouteSettings(name: AppRoutes.login);
       }
 
-      return const RouteSettings(name: Routes.dashboard);
+      return const RouteSettings(name: AppRoutes.dashboard);
     }
 
     /// fallback
-    return const RouteSettings(name: Routes.dashboard);
+    return const RouteSettings(name: AppRoutes.dashboard);
   }
 }

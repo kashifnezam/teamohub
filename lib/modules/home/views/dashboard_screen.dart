@@ -8,7 +8,7 @@ import 'package:teamomarket/modules/chat/controllers/chat_controller.dart';
 import 'package:teamomarket/modules/my_ads/views/my_ads_page.dart';
 import 'package:teamomarket/modules/profile/views/profile_page.dart';
 import '../../../app/routes/middlewares/auth_helper.dart';
-import '../../../app/utils/app_colors.dart';
+import '../../../app/theme/app_colors.dart';
 import '../../../app/utils/custom_alert.dart';
 import '../../chat/views/chat_list_page.dart';
 import '../../location/views/location_bottom_sheet.dart';
@@ -292,7 +292,7 @@ class _SellButton extends StatelessWidget {
               message: "Login to post your ad.",
             )) return;
 
-            Get.toNamed(Routes.categories);
+            Get.toNamed(AppRoutes.categories);
           },
           child: Container(
             width: 50,

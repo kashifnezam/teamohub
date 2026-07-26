@@ -423,7 +423,7 @@ class ProfilePage extends GetView<ProfileController> {
                       physics: const NeverScrollableScrollPhysics(),
                       crossAxisSpacing: 16,
                       mainAxisSpacing: 16,
-                      childAspectRatio: 1.35,
+                      childAspectRatio: 1.20,
                       children: [
 
                         _actionCard(
@@ -431,7 +431,7 @@ class ProfilePage extends GetView<ProfileController> {
                           icon: Icons.inventory_2_outlined,
                           title: "My Ads",
                           subtitle: "Manage your listings",
-                          onTap: () => Get.toNamed(Routes.myAds),
+                          onTap: () => Get.toNamed(AppRoutes.myAds),
                         ),
 
                         if(userInfo?['role'] == "admin")
@@ -440,7 +440,7 @@ class ProfilePage extends GetView<ProfileController> {
                           icon: Icons.addchart_sharp,
                           title:  "Banners",
                           subtitle: "Managee banners",
-                          onTap: () => Get.toNamed(Routes.bannerManagement),
+                          onTap: () => Get.toNamed(AppRoutes.bannerManagement),
                         ),
 
                         _actionCard(
@@ -448,7 +448,7 @@ class ProfilePage extends GetView<ProfileController> {
                           icon: Icons.chat_bubble_outline_rounded,
                           title: "Chats",
                           subtitle: "Buyer & seller chats",
-                          onTap: () => Get.toNamed(Routes.chats),
+                          onTap: () => Get.toNamed(AppRoutes.chats),
                         ),
 
                         _actionCard(
@@ -456,7 +456,7 @@ class ProfilePage extends GetView<ProfileController> {
                           icon: Icons.favorite_border_rounded,
                           title: 'Favourites',
                           subtitle: "Saved products",
-                          onTap: () => Get.toNamed(Routes.favourites),
+                          onTap: () => Get.toNamed(AppRoutes.favourites),
                         ),
 
                         if (userInfo?['role'] != "agent")
@@ -465,7 +465,7 @@ class ProfilePage extends GetView<ProfileController> {
                             icon: Icons.support_agent_rounded,
                             title: "Become Agent",
                             subtitle: "Help buyers & earn commission",
-                            onTap: () => Get.toNamed(Routes.becomeAgent),
+                            onTap: () => Get.toNamed(AppRoutes.agentDashboard),
                           ),
 
                         if (userInfo?['role'] == "agent")
@@ -474,7 +474,7 @@ class ProfilePage extends GetView<ProfileController> {
                             icon: Icons.support_agent,
                             title: "Agent Profile",
                             subtitle: "Manage your agent profile",
-                            onTap: () => Get.toNamed(Routes.agent),
+                            onTap: () => Get.toNamed(AppRoutes.agent),
                           ),
 
                         // _actionCard(
@@ -684,9 +684,12 @@ class ProfilePage extends GetView<ProfileController> {
               const SizedBox(height: 4),
               Text(
                 subtitle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color: Colors.grey.shade600,
                   fontSize: 12,
+                  height: 1.3,
                 ),
               ),
             ],

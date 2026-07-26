@@ -63,7 +63,7 @@ class SubCategoryPage extends GetView<CategoryController> {
                 );
 
                 Get.toNamed(
-                  Routes.addProduct,
+                  AppRoutes.addProduct,
                   arguments: AddProductArguments(
                     category: category,
                     subCategory: subCategory,

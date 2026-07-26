@@ -39,9 +39,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
       if (!mounted) return;
 
-      Get.offAllNamed(Routes.dashboard);
+      Get.offAllNamed(AppRoutes.dashboard);
     } catch (_) {
-      Get.offAllNamed(Routes.dashboard);
+      Get.offAllNamed(AppRoutes.dashboard);
     }
   }
 

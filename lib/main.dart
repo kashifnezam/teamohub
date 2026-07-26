@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
-      initialRoute: Routes.splash,
+      initialRoute: AppRoutes.splash,
       getPages: AppPages.pages,
     );
   }

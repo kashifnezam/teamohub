@@ -89,8 +89,7 @@ class ProfileController extends GetxController {
 
       final File compressed = await CustomWidget.compressImage(image.path);
 
-      final String photoUrl =
-      await _repository.uploadProfileImage(
+      final String photoUrl = await _repository.uploadProfileImage(
         uid: uid,
         image: compressed,
       );

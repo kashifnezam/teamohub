@@ -193,7 +193,7 @@ class ChatController extends GetxController {
       );
       CustomAlert.dismissAlert();
       Get.toNamed(
-        Routes.chat,
+        AppRoutes.chat,
         arguments: chatId,
       );
 
@@ -236,7 +236,7 @@ class ChatController extends GetxController {
       );
       CustomAlert.dismissAlert();
       Get.toNamed(
-        Routes.chat,
+        AppRoutes.chat,
         arguments: chatId,
       );
       isChatsLoading.value = false;

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-import '../../../app/utils/app_colors.dart';
+import '../../../app/theme/app_colors.dart';
 import '../../../../../modules/product/models/product_model.dart';
 import '../../../app/widgets/custom_widget.dart';
 import '../../favourite/controllers/favourite_controller.dart';

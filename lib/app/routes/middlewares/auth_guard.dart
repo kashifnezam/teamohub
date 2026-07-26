@@ -21,7 +21,7 @@ class AuthGuard extends GetMiddleware {
     });
 
     return const RouteSettings(
-      name: Routes.login,
+      name: AppRoutes.login,
     );
   }
 }

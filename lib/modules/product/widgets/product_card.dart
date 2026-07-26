@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:teamomarket/app/widgets/custom_widget.dart';
 import 'package:teamomarket/modules/favourite/controllers/favourite_controller.dart';
 import 'package:teamomarket/modules/product/views/product_details_page.dart';
-import '../../../app/utils/app_colors.dart';
+import '../../../app/theme/app_colors.dart';
 import '../models/product_model.dart';
 
 class ProductCard extends StatelessWidget {
