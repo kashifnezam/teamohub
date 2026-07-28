@@ -21,8 +21,7 @@ class AgentListingShareController extends GetxController {
 
     listingId = Get.arguments;
 
-    shareUrl =
-    "https://teamomart.web.app/a/$listingId";
+    shareUrl = "https://teamomart.web.app/p/$listingId";
   }
 
   Future<void> shareListing() async {

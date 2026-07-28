@@ -25,8 +25,7 @@ class AgentCreateListingController extends GetxController {
     promotion = Map<String, dynamic>.from(Get.arguments);
 
     titleController.text = promotion["productTitle"] ?? "";
-    descriptionController.text =
-        promotion["description"] ?? "";
+    descriptionController.text = promotion["description"] ?? "";
 
     images.assignAll(
       List<String>.from(

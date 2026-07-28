@@ -8,6 +8,7 @@ import '../../product/widgets/product_card.dart';
 import '../../product/widgets/post_card_shimmer.dart';
 import '../../product/widgets/product_tile.dart';
 import '../controllers/home_controller.dart';
+import '../widgets/home_agent_banner.dart';
 import '../widgets/home_banner_slider.dart';
 
 class HomePage extends GetView<HomeController> {
@@ -260,6 +261,18 @@ class HomePage extends GetView<HomeController> {
                  },
                );
              }),
+           ),
+
+           const SliverToBoxAdapter(
+             child: SizedBox(height: 20),
+           ),
+
+           const SliverToBoxAdapter(
+             child: HomeAgentHelpCard(),
+           ),
+
+           const SliverToBoxAdapter(
+             child: SizedBox(height: 24),
            ),
 
            // Products come here

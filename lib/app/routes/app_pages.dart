@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
-import 'package:teamomarket/modules/favourite/views/favoutite_page.dart';
+import 'package:teamomarket/modules/favourite/views/favourite_page.dart';
 import 'package:teamomarket/modules/home/bindings/dashboard_binding.dart';
 import 'package:teamomarket/modules/home/views/dashboard_screen.dart';
 import 'package:teamomarket/modules/my_ads/bindings/my_ads_binding.dart';
@@ -9,13 +9,21 @@ import 'package:teamomarket/modules/product/views/product_preview_page.dart';
 import 'package:teamomarket/modules/product/views/product_search_page.dart';
 import 'package:teamomarket/modules/profile/bindings/profile_binding.dart';
 import 'package:teamomarket/modules/profile/views/profile_page.dart';
+import '../../modules/agent/bindings/agent_analytics_binding.dart';
 import '../../modules/agent/bindings/agent_binding.dart';
 import '../../modules/agent/bindings/agent_client_requests_binding.dart';
 import '../../modules/agent/bindings/agent_create_listing_binding.dart';
 import '../../modules/agent/bindings/agent_dashboard_binding.dart';
+import '../../modules/agent/bindings/agent_directory_binding.dart';
+import '../../modules/agent/bindings/agent_hire_request_binding.dart';
 import '../../modules/agent/bindings/agent_listing_share_binding.dart';
 import '../../modules/agent/bindings/agent_my_listings_binding.dart';
+import '../../modules/agent/bindings/agent_profile_binding.dart';
 import '../../modules/agent/bindings/agent_promotion_requests_binding.dart';
+import '../../modules/agent/views/agent_directory_view.dart';
+import '../../modules/agent/views/agent_hire_request_view.dart';
+import '../../modules/agent/views/agent_profile_view.dart';
+import '../../modules/agent/views/analytics/agent_analytics_view.dart';
 import '../../modules/agent/views/become_agent_view.dart';
 import '../../modules/agent/views/dashboard/agent_dashboard_view.dart';
 import '../../modules/agent/views/listings/agent_create_listing_view.dart';
@@ -79,7 +87,7 @@ class AppPages {
 
     GetPage(
       name: AppRoutes.categories,
-      page: () => const CategoriesPage(),
+      page: () => CategoriesPage(),
       binding: CategoryBinding(),
     ),
 
@@ -198,6 +206,30 @@ class AppPages {
       name: AppRoutes.agentMyListings,
       page: () => const AgentMyListingsView(),
       binding: AgentMyListingsBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.agentAnalytics,
+      page: () => const AgentAnalyticsView(),
+      binding: AgentAnalyticsBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.agentDirectory,
+      page: () => const AgentDirectoryView(),
+      binding: AgentDirectoryBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.agentProfile,
+      page: () => const AgentProfileView(),
+      binding: AgentProfileBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.agentHireRequest,
+      page: () => const AgentHireRequestView(),
+      binding: AgentHireRequestBinding(),
     ),
   ];
 }

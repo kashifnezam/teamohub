@@ -37,9 +37,9 @@ class AgentQuickActionSection extends StatelessWidget {
             } else if (width >= 900) {
               columns = 5;
             } else if (width >= 700) {
-              columns = 4;
+              columns = 2;
             } else {
-              columns = 4;
+              columns = 2;
             }
 
             const spacing = 12.0;
@@ -89,6 +89,19 @@ class AgentQuickActionSection extends StatelessWidget {
                     onTap: () {
                       Get.toNamed(
                         AppRoutes.agentListings,
+                      );
+                    },
+                  ),
+                ),
+
+                SizedBox(
+                  width: itemWidth,
+                  child: AgentQuickActionCard(
+                    title: "Analytics",
+                    icon: Icons.analytics_outlined,
+                    onTap: () {
+                      Get.toNamed(
+                        AppRoutes.agentAnalytics,
                       );
                     },
                   ),

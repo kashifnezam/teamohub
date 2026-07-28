@@ -6,10 +6,14 @@ import '../controllers/category_controller.dart';
 import '../../../app/routes/app_routes.dart';
 
 class CategoriesPage extends GetView<CategoryController> {
-  const CategoriesPage({super.key});
+  final args = Get.arguments as Map<String, dynamic>;
+
+  CategoriesPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final String? agentId = args["agentId"];
+
     return Scaffold(
       backgroundColor: const Color(0xffF8F9FC),
       appBar: AppBar(
@@ -55,7 +59,10 @@ class CategoriesPage extends GetView<CategoryController> {
 
                   Get.toNamed(
                     AppRoutes.subCategories,
-                    arguments: category,
+                    arguments: {
+                      "category": category,
+                      "agentId": agentId,
+                    },
                   );
                 } else {
                   await controller.loadFields(
@@ -66,6 +73,7 @@ class CategoriesPage extends GetView<CategoryController> {
                     AppRoutes.addProduct,
                     arguments: AddProductArguments(
                       category: category,
+                      agentId: agentId,
                     ),
                   );
                 }
@@ -76,7 +84,7 @@ class CategoriesPage extends GetView<CategoryController> {
                   borderRadius: BorderRadius.circular(18),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(.08),
+                      color: Colors.grey.withValues(alpha: .08),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),

@@ -4,11 +4,13 @@ import 'package:get/get.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:teamomarket/app/services/device_info.dart';
 import 'package:teamomarket/app/utils/offline_data.dart';
+import 'package:teamomarket/modules/agent/controllers/agent_hire_request_controller.dart';
 import '../../../app/routes/app_routes.dart';
 import '../../../app/utils/custom_alert.dart';
 import '../../../app/utils/location_utils.dart';
 import '../../../app/widgets/custom_widget.dart';
 import '../../../app/widgets/image_helper.dart';
+import '../../agent/repositories/agent_hire_request_repository.dart';
 import '../../category/models/category_model.dart';
 import '../../category/models/sub_category_model.dart';
 import '../../location/models/location_result.dart';
@@ -28,6 +30,8 @@ class ProductController extends GetxController {
   final areaController = TextEditingController();
 
   CategoryModel? selectedCategory;
+  String? agentId;
+  final AgentHireRequestRepository agentHireRequestRepository = AgentHireRequestRepository.instance;
   SubCategoryModel? selectedSubCategory;
   final RxMap<String, dynamic> attributes = <String, dynamic>{}.obs;
   static const int maxImages = 20;
@@ -166,12 +170,10 @@ class ProductController extends GetxController {
     );
   }
 
-  void initialize({
-    required CategoryModel category,
-    SubCategoryModel? subCategory,
-  }) {
+  void initialize({required CategoryModel category, SubCategoryModel? subCategory, String? agentId}) {
     selectedCategory = category;
     selectedSubCategory = subCategory;
+    this.agentId = agentId;
   }
 
   void removeImage(int index) {
@@ -365,7 +367,7 @@ class ProductController extends GetxController {
 
   Future<void> publishProduct() async {
     if (!validateForm()) return;
-
+    print(agentId);
     try {
       isLoading.value = true;
       CustomAlert.loadAlert("Uploading product...");
@@ -374,6 +376,8 @@ class ProductController extends GetxController {
 
       ProductModel product = buildProductModel().copyWith(
         id: productId,
+        status: agentId != null ? ProductStatus.draft : ProductStatus.active,
+        agentId: agentId
       );
 
       //---------------------------------------
@@ -402,6 +406,7 @@ class ProductController extends GetxController {
       //---------------------------------------
 
       await _repository.createProduct(product);
+      if(agentId != null) await agentHireRequestRepository.submitRequest(productId: productId, agentId: agentId!);
       clearForm();
       CustomAlert.dismissAlert();
       Get.offNamed(AppRoutes.myAds);
@@ -440,6 +445,7 @@ class ProductController extends GetxController {
       sellerPhoto: userInfo?["photoUrl"],
       images: const [], // Images are uploaded during publish()
       attributes: Map<String, dynamic>.from(attributes),
+      type: ProductType.sell,
       country: country.value,
       state: state.value,
       city: city.value,

@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teamomarket/app/widgets/custom_widget.dart';
 
-import '../../../../app/routes/app_routes.dart';
-import '../../../../app/theme/app_colors.dart';
 import '../../controllers/agent_client_requests_controller.dart';
+import '../../widgets/dashboard/agent_request_card.dart';
 
-class AgentClientRequestsView
-    extends GetView<AgentClientRequestsController> {
+class AgentClientRequestsView extends GetView<AgentClientRequestsController> {
   const AgentClientRequestsView({super.key});
 
   @override
@@ -19,7 +17,9 @@ class AgentClientRequestsView
         appBar: AppBar(
           elevation: 0,
           title: const Text("Client Requests"),
+          centerTitle: false,
           bottom: const TabBar(
+            tabAlignment: TabAlignment.fill,
             tabs: [
               Tab(text: "Pending"),
               Tab(text: "Active"),
@@ -34,14 +34,15 @@ class AgentClientRequestsView
 
           return TabBarView(
             children: [
-              _RequestList(
+              _RequestTab(
                 requests: controller.pendingRequests,
-                isPending: true,
               ),
-              _RequestList(
+
+              _RequestTab(
                 requests: controller.activeRequests,
               ),
-              _RequestList(
+
+              _RequestTab(
                 requests: controller.completedRequests,
               ),
             ],
@@ -52,276 +53,70 @@ class AgentClientRequestsView
   }
 }
 
-class _RequestList extends GetView<AgentClientRequestsController> {
-  const _RequestList({
+class _RequestTab extends StatelessWidget {
+  const _RequestTab({
     required this.requests,
-    this.isPending = false,
   });
 
   final List requests;
-  final bool isPending;
 
   @override
   Widget build(BuildContext context) {
     if (requests.isEmpty) {
-      return const Center(
-        child: Text(
-          "No requests found.",
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(30),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.inventory_2_outlined,
+                size: 70,
+                color: Colors.grey.shade400,
+              ),
+
+              const SizedBox(height: 20),
+
+              const Text(
+                "No Requests Yet",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 8),
+
+              Text(
+                "Product requests from customers\nwill appear here.",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.grey.shade600,
+                  height: 1.5,
+                ),
+              ),
+            ],
+          ),
         ),
       );
     }
 
-    return ListView.separated(
-      padding: const EdgeInsets.all(16),
-      itemCount: requests.length,
-      separatorBuilder: (_, __) =>
-      const SizedBox(height: 14),
-      itemBuilder: (_, index) {
-        final data = requests[index].data();
-
-        return Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: Colors.grey.shade200,
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-
-                Row(
-                  children: [
-
-                    CircleAvatar(
-                      radius: 24,
-                      backgroundImage:
-                      (data["userImage"] ?? "")
-                          .toString()
-                          .isNotEmpty
-                          ? NetworkImage(
-                        data["userImage"],
-                      )
-                          : null,
-                      child: (data["userImage"] ?? "")
-                          .toString()
-                          .isEmpty
-                          ? const Icon(Icons.person)
-                          : null,
-                    ),
-
-                    const SizedBox(width: 14),
-
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment:
-                        CrossAxisAlignment.start,
-                        children: [
-
-                          Text(
-                            data["userName"] ?? "",
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16,
-                            ),
-                          ),
-
-                          const SizedBox(height: 3),
-
-                          Text(
-                            data["category"] ?? "",
-                            style: TextStyle(
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    Container(
-                      padding:
-                      const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: .08),
-                        borderRadius:
-                        BorderRadius.circular(30),
-                      ),
-                      child: Text(
-                        data["status"],
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
-
-                Row(
-                  children: [
-
-                    const Icon(
-                      Icons.location_on_outlined,
-                      size: 18,
-                    ),
-
-                    const SizedBox(width: 6),
-
-                    Expanded(
-                      child: Text(
-                        data["location"] ?? "",
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 10),
-
-                Row(
-                  crossAxisAlignment:
-                  CrossAxisAlignment.start,
-                  children: [
-
-                    const Icon(
-                      Icons.description_outlined,
-                      size: 18,
-                    ),
-
-                    const SizedBox(width: 6),
-
-                    Expanded(
-                      child: Text(
-                        data["requirement"] ?? "",
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-
-                if ((data["budget"] ?? 0) > 0) ...[
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-
-                      const Icon(
-                        Icons.account_balance_wallet,
-                        size: 18,
-                      ),
-
-                      const SizedBox(width: 6),
-
-                      Text(
-                        "Budget : ₹${data["budget"]}",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-
-                const SizedBox(height: 18),
-
-                Row(
-                  children: [
-
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () {
-                          Get.toNamed(
-                            AppRoutes.chat,
-                            arguments:
-                            data["chatId"],
-                          );
-                        },
-                        icon: const Icon(
-                          Icons.chat_bubble_outline,
-                        ),
-                        label: const Text("Chat"),
-                      ),
-                    ),
-
-                    if (!isPending &&
-                        data["status"] ==
-                            "accepted") ...[
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: FilledButton.icon(
-                          onPressed: () {
-                            Get.toNamed(
-                              AppRoutes.agentCreateListing,
-                              arguments: data,
-                            );
-                          },
-                          icon: const Icon(
-                            Icons.inventory_2_outlined,
-                          ),
-                          label: const Text(
-                            "Create Listing",
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-
-                if (isPending) ...[
-                  const SizedBox(height: 12),
-
-                  Row(
-                    children: [
-
-                      Expanded(
-                        child: FilledButton(
-                          style:
-                          FilledButton.styleFrom(
-                            backgroundColor:
-                            Colors.green,
-                          ),
-                          onPressed: () {
-                            controller.acceptRequest(
-                              requests[index].id,
-                            );
-                          },
-                          child:
-                          const Text("Accept"),
-                        ),
-                      ),
-
-                      const SizedBox(width: 12),
-
-                      Expanded(
-                        child: FilledButton(
-                          style:
-                          FilledButton.styleFrom(
-                            backgroundColor:
-                            Colors.red,
-                          ),
-                          onPressed: () {
-                            controller.rejectRequest(
-                              requests[index].id,
-                            );
-                          },
-                          child:
-                          const Text("Reject"),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ],
-            ),
-          ),
-        );
+    return RefreshIndicator(
+      onRefresh: () async {
+        Get.find<AgentClientRequestsController>().onInit();
       },
+      child: ListView.separated(
+        padding: const EdgeInsets.all(16),
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: requests.length,
+        separatorBuilder: (_, __) =>
+        const SizedBox(height: 16),
+        itemBuilder: (_, index) {
+          return AgentRequestCard(
+            request: requests[index],
+          );
+        },
+      ),
     );
   }
 }

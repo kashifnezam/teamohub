@@ -28,8 +28,7 @@ class CategoryController extends GetxController {
     try {
       isCategoryLoading.value = true;
 
-      categories.value =
-      await _repository.getCategories();
+      categories.value = await _repository.getCategories();
     } finally {
       isCategoryLoading.value = false;
     }

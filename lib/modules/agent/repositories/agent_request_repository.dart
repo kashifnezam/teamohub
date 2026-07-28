@@ -1,69 +1,69 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../models/agent_request_model.dart';
+
 class AgentRequestRepository {
   AgentRequestRepository._();
 
   static final AgentRequestRepository instance =
   AgentRequestRepository._();
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore =
+      FirebaseFirestore.instance;
 
-  String get _uid => _auth.currentUser!.uid;
+  final FirebaseAuth _auth =
+      FirebaseAuth.instance;
 
-  CollectionReference<Map<String, dynamic>> get _requests =>
+  CollectionReference<Map<String, dynamic>> get _collection =>
       _firestore.collection('agent_requests');
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> pendingRequests() {
-    return _requests
-        .where('agentId', isEqualTo: _uid)
-        .where('status', isEqualTo: 'pending')
+  Stream<List<AgentRequestModel>> streamRequests({
+    required String status,
+  }) {
+    return _collection
+        .where('agentId', isEqualTo: _auth.currentUser!.uid)
+        .where('status', isEqualTo: status)
         .orderBy('createdAt', descending: true)
-        .snapshots();
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+          .map(
+            (doc) => AgentRequestModel.fromFirestore(doc),
+      )
+          .toList(),
+    );
   }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> activeRequests() {
-    return _requests
-        .where('agentId', isEqualTo: _uid)
-        .where('status', whereIn: const [
-      'accepted',
-      'in_progress',
-    ])
-        .orderBy('createdAt', descending: true)
-        .snapshots();
+  Stream<List<AgentRequestModel>> streamPendingRequests() {
+    return streamRequests(status: 'pending');
   }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> completedRequests() {
-    return _requests
-        .where('agentId', isEqualTo: _uid)
-        .where('status', isEqualTo: 'completed')
-        .orderBy('updatedAt', descending: true)
-        .snapshots();
+  Stream<List<AgentRequestModel>> streamAcceptedRequests() {
+    return streamRequests(status: 'accepted');
   }
 
-  Future<void> acceptRequest(String requestId) async {
-    await _requests.doc(requestId).update({
+  Stream<List<AgentRequestModel>> streamCompletedRequests() {
+    return streamRequests(status: 'completed');
+  }
+
+  Future<void> acceptRequest(String requestId) {
+    return _collection.doc(requestId).update({
       'status': 'accepted',
       'acceptedAt': FieldValue.serverTimestamp(),
       'updatedAt': FieldValue.serverTimestamp(),
     });
   }
 
-  Future<void> rejectRequest({
-    required String requestId,
-    String? reason,
-  }) async {
-    await _requests.doc(requestId).update({
+  Future<void> rejectRequest(String requestId) {
+    return _collection.doc(requestId).update({
       'status': 'rejected',
-      'rejectedReason': reason ?? '',
-      'rejectedAt': FieldValue.serverTimestamp(),
       'updatedAt': FieldValue.serverTimestamp(),
     });
   }
 
-  Future<void> markCompleted(String requestId) async {
-    await _requests.doc(requestId).update({
+  Future<void> completeRequest(String requestId) {
+    return _collection.doc(requestId).update({
       'status': 'completed',
       'completedAt': FieldValue.serverTimestamp(),
       'updatedAt': FieldValue.serverTimestamp(),

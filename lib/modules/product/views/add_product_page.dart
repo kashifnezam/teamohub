@@ -16,11 +16,10 @@ class AddProductPage extends GetView<CategoryController> {
   final AddProductArguments args = Get.arguments;
   @override
   Widget build(BuildContext context) {
-
-
     productController.initialize(
       category: args.category,
       subCategory: args.subCategory,
+      agentId: args.agentId
     );
 
     return Scaffold(

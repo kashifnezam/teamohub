@@ -1,12 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 
+import '../../product/models/product_model.dart';
+import '../../product/repositories/product_repository.dart';
+import '../models/agent_client_request_model.dart';
 import '../models/agent_model.dart';
+import '../models/agent_request_model.dart';
 import '../repositories/agent_dashboard_repository.dart';
 
 class AgentDashboardController extends GetxController {
   final AgentDashboardRepository _repository =
       AgentDashboardRepository.instance;
+
+  final ProductRepository _productRepository =
+  ProductRepository();
 
   final RxBool isLoading = true.obs;
 
@@ -17,14 +24,15 @@ class AgentDashboardController extends GetxController {
   final RxInt clientRequests = 0.obs;
   final RxDouble commissionEarned = 0.0.obs;
 
-  final RxList<QueryDocumentSnapshot<Map<String, dynamic>>> recentRequests =
-      <QueryDocumentSnapshot<Map<String, dynamic>>>[].obs;
+  final RxList<AgentClientRequestModel> recentRequests =
+      <AgentClientRequestModel>[].obs;
 
   final RxList<QueryDocumentSnapshot<Map<String, dynamic>>>
   promotionRequests =
       <QueryDocumentSnapshot<Map<String, dynamic>>>[].obs;
 
-  final RxList<QueryDocumentSnapshot<Map<String, dynamic>>> activities =
+  final RxList<QueryDocumentSnapshot<Map<String, dynamic>>>
+  activities =
       <QueryDocumentSnapshot<Map<String, dynamic>>>[].obs;
 
   @override
@@ -36,23 +44,19 @@ class AgentDashboardController extends GetxController {
   Future<void> _loadDashboard() async {
     isLoading.value = true;
 
-    agent.value = await _repository.getAgent();
+    try {
+      agent.value = await _repository.getAgent();
 
-    _listenPendingRequests();
-
-    _listenActivePromotions();
-
-    _listenClientRequests();
-
-    _listenCommission();
-
-    _listenRecentRequests();
-
-    _listenPromotionRequests();
-
-    _listenActivities();
-
-    isLoading.value = false;
+      _listenPendingRequests();
+      _listenActivePromotions();
+      _listenClientRequests();
+      _listenCommission();
+      _listenRecentRequests();
+      _listenPromotionRequests();
+      _listenActivities();
+    } finally {
+      isLoading.value = false;
+    }
   }
 
   Future<void> refreshDashboard() async {
@@ -61,24 +65,24 @@ class AgentDashboardController extends GetxController {
 
   void _listenPendingRequests() {
     _repository.pendingRequestCount().listen(
-          (value) {
-        pendingRequests.value = value;
+          (count) {
+        pendingRequests.value = count;
       },
     );
   }
 
   void _listenActivePromotions() {
     _repository.activePromotionCount().listen(
-          (value) {
-        activePromotions.value = value;
+          (count) {
+        activePromotions.value = count;
       },
     );
   }
 
   void _listenClientRequests() {
     _repository.clientRequestCount().listen(
-          (value) {
-        clientRequests.value = value;
+          (count) {
+        clientRequests.value = count;
       },
     );
   }
@@ -93,10 +97,38 @@ class AgentDashboardController extends GetxController {
 
   void _listenRecentRequests() {
     _repository.recentClientRequests().listen(
-          (event) {
-        recentRequests.assignAll(event.docs);
+          (requests) async {
+        final items = await _buildRecentRequests(requests);
+        recentRequests.assignAll(items);
       },
     );
+  }
+
+  Future<List<AgentClientRequestModel>> _buildRecentRequests(
+      List<AgentRequestModel> requests,
+      ) async {
+    final List<AgentClientRequestModel> list = [];
+
+    for (final request in requests) {
+      try {
+        final ProductModel? product =
+        await _productRepository.getProduct(
+          request.productId,
+        );
+
+        if (product == null) continue;
+
+        list.add(
+          AgentClientRequestModel(
+            id: request.id,
+            request: request.toJson(),
+            product: product,
+          ),
+        );
+      } catch (_) {}
+    }
+
+    return list;
   }
 
   void _listenPromotionRequests() {

@@ -1,6 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:teamomarket/app/widgets/custom_widget.dart';
 
+import '../../../../app/routes/app_routes.dart';
+import '../../models/agent_client_request_model.dart';
 import 'agent_section_title.dart';
 
 class AgentRecentClientSection extends StatelessWidget {
@@ -10,7 +13,7 @@ class AgentRecentClientSection extends StatelessWidget {
     this.onViewAll,
   });
 
-  final List<QueryDocumentSnapshot<Map<String, dynamic>>> requests;
+  final List<AgentClientRequestModel> requests;
   final VoidCallback? onViewAll;
 
   @override
@@ -29,10 +32,10 @@ class AgentRecentClientSection extends StatelessWidget {
           _buildEmptyState()
         else
           ...requests.take(5).map(
-                (doc) => Padding(
+                (request) => Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: _ClientRequestCard(
-                data: doc.data(),
+                request: request,
               ),
             ),
           ),
@@ -72,21 +75,23 @@ class AgentRecentClientSection extends StatelessWidget {
 
 class _ClientRequestCard extends StatelessWidget {
   const _ClientRequestCard({
-    required this.data,
+    required this.request,
   });
 
-  final Map<String, dynamic> data;
+  final AgentClientRequestModel request;
 
   @override
   Widget build(BuildContext context) {
+    final product = request.product;
+
     return Material(
       color: Colors.transparent,
       borderRadius: BorderRadius.circular(18),
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
-        onTap: () {},
+        onTap: onTap,
         child: Ink(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(18),
@@ -96,12 +101,14 @@ class _ClientRequestCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-              CircleAvatar(
-                radius: 24,
-                backgroundColor:
-                Colors.blue.withOpacity(.08),
-                child: const Icon(
-                  Icons.person_outline,
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: CustomWidget.getImage(
+                  product.images.isEmpty
+                      ? ""
+                      : product.images.first,
+                  width: 70,
+                  height: 70,
                 ),
               ),
 
@@ -113,10 +120,9 @@ class _ClientRequestCard extends StatelessWidget {
                   CrossAxisAlignment.start,
                   children: [
                     Text(
-                      data["category"] ?? "-",
+                      product.title,
                       maxLines: 1,
-                      overflow:
-                      TextOverflow.ellipsis,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
@@ -126,10 +132,19 @@ class _ClientRequestCard extends StatelessWidget {
                     const SizedBox(height: 4),
 
                     Text(
-                      data["location"] ?? "-",
+                      "₹ ${product.price}",
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.indigo,
+                      ),
+                    ),
+
+                    const SizedBox(height: 4),
+
+                    Text(
+                      "${product.city}, ${product.state}",
                       maxLines: 1,
-                      overflow:
-                      TextOverflow.ellipsis,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         color: Colors.grey.shade600,
                       ),
@@ -140,13 +155,60 @@ class _ClientRequestCard extends StatelessWidget {
 
               const SizedBox(width: 12),
 
-              Chip(
-                label: Text(
-                  data["status"] ?? "",
-                ),
-              ),
+              _StatusChip(request.status),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  void onTap() {
+    Get.toNamed(AppRoutes.agentClientRequests);
+  }
+}
+class _StatusChip extends StatelessWidget {
+  const _StatusChip(this.status);
+
+  final String status;
+
+  @override
+  Widget build(BuildContext context) {
+    Color color;
+
+    switch (status) {
+      case "accepted":
+      case "in_progress":
+        color = Colors.green;
+        break;
+
+      case "completed":
+        color = Colors.blue;
+        break;
+
+      case "rejected":
+        color = Colors.red;
+        break;
+
+      default:
+        color = Colors.orange;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 10,
+        vertical: 5,
+      ),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: .1),
+        borderRadius: BorderRadius.circular(30),
+      ),
+      child: Text(
+        status.toUpperCase(),
+        style: TextStyle(
+          color: color,
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );

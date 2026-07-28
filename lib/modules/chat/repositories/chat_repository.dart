@@ -90,6 +90,98 @@ class ChatRepository {
     return chatId;
   }
 
+  Future<String> getOrCreateAgentChat({
+    required String agentId,
+    required String agentName,
+    String? agentPhoto,
+
+    required String clientId,
+    required String clientName,
+    required String? clientPhoto,
+
+    required String requestId,
+    required String initialMessage,
+  }) async {
+    final ids = [agentId, clientId]..sort();
+
+    final chatId = 'agent_${requestId}_${ids.first}_${ids.last}';
+
+    final docRef = _chats.doc(chatId);
+
+    final doc = await docRef.get();
+
+    if (doc.exists) {
+      return chatId;
+    }
+
+    await _firestore.runTransaction((transaction) async {
+      final snapshot = await transaction.get(docRef);
+
+      if (snapshot.exists) return;
+
+      transaction.set(docRef, {
+        "chatType": "agent",
+
+        "agentId": agentId,
+        "agentRequestId": requestId,
+
+        "buyerId": clientId,
+        "sellerId": agentId,
+
+        "participants": [
+          clientId,
+          agentId,
+        ],
+
+        "title": agentName,
+        "image": agentPhoto ?? "",
+
+        "lastMessage": "",
+        "lastMessageType": MessageType.text.name,
+        "lastMessageTime": FieldValue.serverTimestamp(),
+
+        "createdAt": FieldValue.serverTimestamp(),
+        "updatedAt": FieldValue.serverTimestamp(),
+
+        "unreadCounts": {
+          clientId: 0,
+          agentId: 0,
+        },
+
+        "buyerSnapshot": {
+          "id": clientId,
+          "name": clientName,
+          "photo": clientPhoto,
+        },
+
+        "sellerSnapshot": {
+          "id": agentId,
+          "name": agentName,
+          "photo": agentPhoto,
+        },
+
+        // Empty because this is not a product chat
+        "productId": "",
+        "productSnapshot": {
+          "title": "",
+          "image": "",
+          "price": 0,
+        },
+
+        "isProductAvailable": false,
+      });
+    });
+
+    await sendMessage(
+      chatId: chatId,
+      senderId: clientId,
+      receiverId: agentId,
+      text: initialMessage,
+    );
+
+    return chatId;
+  }
+
   //--------------------------------------------------------------------------
   // Chat List (Realtime)
   //--------------------------------------------------------------------------

@@ -21,7 +21,10 @@ abstract class AppRoutes {
   static const String agentCreateListing = '/agent-create-listing';
   static const String agentListingShare = '/agent-listing-share';
   static const String agentMyListings = '/agent-my-listings';
-
+  static const String agentAnalytics = '/agent-analytics';
+  static const String agentDirectory = '/agent-directory';
+  static const String agentProfile = '/agent-profile';
+  static const String agentHireRequest = "/agent-hire-request";
 
 
   // ---------------- Banner ----------------

@@ -95,8 +95,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
 
-        floatingActionButtonLocation:
-        FloatingActionButtonLocation.centerDocked,
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
         floatingActionButton: const _SellButton(),
 

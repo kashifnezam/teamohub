@@ -465,7 +465,7 @@ class ProfilePage extends GetView<ProfileController> {
                             icon: Icons.support_agent_rounded,
                             title: "Become Agent",
                             subtitle: "Help buyers & earn commission",
-                            onTap: () => Get.toNamed(AppRoutes.agentDashboard),
+                            onTap: () => Get.toNamed(AppRoutes.agentDashboard ),
                           ),
 
                         if (userInfo?['role'] == "agent")

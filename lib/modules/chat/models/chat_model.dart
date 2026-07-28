@@ -4,6 +4,13 @@ import 'message_model.dart';
 
 class ChatModel {
   final String id;
+  final String? chatType; // product | agent
+
+  final String? agentId;
+  final String? agentRequestId;
+
+  final String? title;
+  final String? image;
   final double productPrice;
   final String productId;
   final String productTitle;
@@ -47,6 +54,11 @@ class ChatModel {
     this.isProductAvailable = true,
     required this.createdAt,
     required this.updatedAt,
+    this.chatType,
+    this.agentId,
+    this.agentRequestId,
+    this.title,
+    this.image,
   });
 
   ChatModel copyWith({
@@ -59,6 +71,11 @@ class ChatModel {
   }) {
     return ChatModel(
       id: id,
+      title: title,
+      agentId: agentId,
+      agentRequestId: agentRequestId,
+      chatType: chatType,
+      image: image,
       productId: productId,
       productPrice: productPrice,
       productTitle: productTitle,
@@ -95,6 +112,11 @@ class ChatModel {
 
     return ChatModel(
       id: doc.id,
+      chatType: data['chatType'],
+      agentRequestId: data['agentRequestId'],
+      agentId: data['agentId'],
+      title: data['title'],
+      image: data['image'],
       productId: data['productId'] ?? '',
       productTitle: product['title'] ?? '',
       productImage: product['image'] ?? '',
@@ -143,6 +165,11 @@ class ChatModel {
       'buyerId': buyerId,
       'sellerId': sellerId,
       'productId': productId,
+      'chatType': chatType,
+      'agentRequestId': agentRequestId,
+      'agentId': agentId,
+      'title': title,
+      'image': image,
 
       'lastMessage': lastMessage,
       'lastMessageType': lastMessageType.name,
@@ -186,6 +213,11 @@ class ChatModel {
       : id = '',
         productId = '',
         productTitle = '',
+        chatType = '',
+        agentRequestId= '',
+        agentId= '',
+        title= '',
+        image= '',
         productImage = '',
         productPrice = 0,
         sellerId = '',
@@ -207,6 +239,7 @@ class ChatModel {
     return '''
       ChatModel(
         id: $id,
+        chatType: $chatType
         sellerName: $sellerName,
         productTitle: $productTitle,
         productPrice: $productPrice,

@@ -250,7 +250,46 @@ class ChatController extends GetxController {
     }
   }
 
-  @override
+  Future<void> openAgentChat({required Map<String, dynamic> request}) async {
+    try {
+      isChatsLoading.value = true;
+      CustomAlert.loadAlert("Loading chat...");
+
+      final chatId = await _repository.getOrCreateAgentChat(
+        agentId: request["agentId"],
+        agentName: request["agentName"],
+        agentPhoto: request["agentPhoto"],
+
+        clientId: request["userId"],
+        clientName: request["userName"],
+        clientPhoto: request["userImage"],
+
+        requestId: request["id"],
+
+        initialMessage:
+        "Hi, I need your help regarding my request.",
+      );
+
+      CustomAlert.dismissAlert();
+
+      isChatsLoading.value = false;
+
+      Get.toNamed(
+        AppRoutes.chat,
+        arguments: chatId,
+      );
+    } catch (e) {
+      CustomAlert.dismissAlert();
+
+      isChatsLoading.value = false;
+
+      CustomAlert.errorAlert(
+        title: "Unable to open chat",
+        e.toString(),
+      );
+    }
+  }
+
   @override
   void onClose() {
     _chatSubscription?.cancel();

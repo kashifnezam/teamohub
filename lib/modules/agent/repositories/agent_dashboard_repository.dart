@@ -3,27 +3,36 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../../app/constants/firebase_constants.dart';
 import '../models/agent_model.dart';
+import '../models/agent_request_model.dart';
 
 class AgentDashboardRepository {
   AgentDashboardRepository._();
 
-  static final AgentDashboardRepository instance = AgentDashboardRepository._();
+  static final AgentDashboardRepository instance =
+  AgentDashboardRepository._();
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore =
+      FirebaseFirestore.instance;
+
+  final FirebaseAuth _auth =
+      FirebaseAuth.instance;
 
   String get _uid => _auth.currentUser!.uid;
 
   CollectionReference<Map<String, dynamic>> get _agents =>
       _firestore.collection(FirebaseConstants.agents);
 
-  CollectionReference<Map<String, dynamic>> get _agentRequests => _firestore.collection('agent_requests');
+  CollectionReference<Map<String, dynamic>> get _agentRequests =>
+      _firestore.collection('agent_requests');
 
-  CollectionReference<Map<String, dynamic>> get _promotionRequests => _firestore.collection('promotion_requests');
+  CollectionReference<Map<String, dynamic>> get _promotionRequests =>
+      _firestore.collection('promotion_requests');
 
-  CollectionReference<Map<String, dynamic>> get _agentListings => _firestore.collection('agent_listings');
+  CollectionReference<Map<String, dynamic>> get _agentListings =>
+      _firestore.collection('agent_listings');
 
-  CollectionReference<Map<String, dynamic>> get _activities => _firestore.collection('agent_activities');
+  CollectionReference<Map<String, dynamic>> get _activities =>
+      _firestore.collection('agent_activities');
 
   Future<AgentModel?> getAgent() async {
     final doc = await _agents.doc(_uid).get();
@@ -40,25 +49,28 @@ class AgentDashboardRepository {
         .where('agentId', isEqualTo: _uid)
         .where('status', isEqualTo: 'pending')
         .snapshots()
-        .map((event) => event.size);
+        .map((snapshot) => snapshot.size);
   }
 
   Stream<int> activePromotionCount() {
     return _promotionRequests
         .where('agentId', isEqualTo: _uid)
-        .where('status', whereIn: const [
-      'accepted',
-      'active',
-    ])
+        .where(
+      'status',
+      whereIn: const [
+        'accepted',
+        'active',
+      ],
+    )
         .snapshots()
-        .map((event) => event.size);
+        .map((snapshot) => snapshot.size);
   }
 
   Stream<int> clientRequestCount() {
     return _agentRequests
         .where('agentId', isEqualTo: _uid)
         .snapshots()
-        .map((event) => event.size);
+        .map((snapshot) => snapshot.size);
   }
 
   Stream<double> commissionEarned() {
@@ -80,13 +92,28 @@ class AgentDashboardRepository {
     );
   }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> recentClientRequests() {
+  /// -------------------------------
+  /// Recent Client Requests
+  /// -------------------------------
+
+  Stream<List<AgentRequestModel>> recentClientRequests() {
     return _agentRequests
         .where('agentId', isEqualTo: _uid)
         .orderBy('createdAt', descending: true)
         .limit(5)
-        .snapshots();
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+          .map(
+            (doc) => AgentRequestModel.fromFirestore(doc),
+      )
+          .toList(),
+    );
   }
+
+  /// -------------------------------
+  /// Recent Promotion Requests
+  /// -------------------------------
 
   Stream<QuerySnapshot<Map<String, dynamic>>> recentPromotionRequests() {
     return _promotionRequests
@@ -95,6 +122,10 @@ class AgentDashboardRepository {
         .limit(5)
         .snapshots();
   }
+
+  /// -------------------------------
+  /// Recent Activities
+  /// -------------------------------
 
   Stream<QuerySnapshot<Map<String, dynamic>>> recentActivities() {
     return _activities

@@ -9,11 +9,12 @@ import '../models/sub_category_model.dart';
 
 class SubCategoryPage extends GetView<CategoryController> {
   SubCategoryPage({super.key});
-  final CategoryModel category = Get.arguments;
+  final args = Get.arguments as Map<String, dynamic>;
 
   @override
   Widget build(BuildContext context) {
-
+    final CategoryModel category = args["category"];
+    final String? agentId = args["agentId"];
     return Scaffold(
       backgroundColor: const Color(0xffF8F9FC),
       appBar: AppBar(
@@ -51,8 +52,7 @@ class SubCategoryPage extends GetView<CategoryController> {
             childAspectRatio: .82,
           ),
           itemBuilder: (_, index) {
-            final SubCategoryModel subCategory =
-            controller.subCategories[index];
+            final SubCategoryModel subCategory = controller.subCategories[index];
 
             return InkWell(
               borderRadius: BorderRadius.circular(18),
@@ -67,6 +67,7 @@ class SubCategoryPage extends GetView<CategoryController> {
                   arguments: AddProductArguments(
                     category: category,
                     subCategory: subCategory,
+                    agentId: agentId
                   ),
                 );
               },
@@ -76,7 +77,7 @@ class SubCategoryPage extends GetView<CategoryController> {
                   borderRadius: BorderRadius.circular(18),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(.08),
+                      color: Colors.grey.withValues(alpha: .08),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),

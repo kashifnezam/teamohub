@@ -6,6 +6,7 @@ import 'app/routes/app_pages.dart';
 import 'app/routes/app_routes.dart';
 import 'app/services/network_controller.dart';
 import 'firebase_options.dart';
+import 'modules/notification/bindings/notification_binding.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -22,7 +23,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
+  NotificationBinding().dependencies();
   // FirebaseMessaging.onBackgroundMessage(firebaseBgHandler);
   // await LocalNotificationService.init();
   // await AppBootstrap.init();
