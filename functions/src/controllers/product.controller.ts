@@ -149,11 +149,9 @@ class ProductController {
 
             }
 
-               const relatedProducts =
-                   await firestoreService.getRelatedProducts(product);
+               const relatedProducts = await firestoreService.getRelatedProducts(product);
 
-               const seller =
-                   await firestoreService.getSeller(product.sellerId);
+               const seller = await firestoreService.getSeller(product.sellerId);
 
                const html = renderProductPage(
                    product,

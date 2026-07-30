@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.kashif.teamomart",
+      "sha256_cert_fingerprints": [
+        "38:51:6E:55:7A:4B:85:C5:3E:7A:C2:16:73:03:7E:1E:90:6A:AC:83:5E:F0:0B:4E:97:C6:53:35:BB:20:10:CE"
+      ]
+    }
+  }
+]

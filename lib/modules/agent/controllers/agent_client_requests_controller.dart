@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../../../app/routes/app_routes.dart';
+import '../../../app/utils/custom_alert.dart';
 import '../../product/models/product_model.dart';
 import '../../product/repositories/product_repository.dart';
 import '../models/agent_client_request_model.dart';
@@ -74,8 +76,32 @@ class AgentClientRequestsController extends GetxController {
     return list;
   }
 
-  Future<void> acceptRequest(String requestId) async {
-    await _repository.acceptRequest(requestId);
+  Future<void> acceptRequest({
+    required AgentClientRequestModel request,
+  }) async {
+    CustomAlert.loadAlert(
+      "Accepting request...",
+    );
+
+    try {
+      // await _repository.acceptRequest(
+      //   request.id,
+      // );
+
+      CustomAlert.dismissAlert();
+
+      Get.toNamed(
+        AppRoutes.agentCreateListing,
+        arguments: request,
+      );
+    } catch (e) {
+      CustomAlert.dismissAlert();
+
+      CustomAlert.errorAlert(
+        title: "Failed",
+        e.toString(),
+      );
+    }
   }
 
   Future<void> rejectRequest(String requestId) async {

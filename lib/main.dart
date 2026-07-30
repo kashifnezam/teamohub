@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:get_storage/get_storage.dart';
 import 'app/routes/app_pages.dart';
 import 'app/routes/app_routes.dart';
+import 'app/services/deep_link_service.dart';
 import 'app/services/network_controller.dart';
 import 'firebase_options.dart';
 import 'modules/notification/bindings/notification_binding.dart';
@@ -24,6 +25,8 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   NotificationBinding().dependencies();
+  await DeepLinkService.instance.init();
+
   // FirebaseMessaging.onBackgroundMessage(firebaseBgHandler);
   // await LocalNotificationService.init();
   // await AppBootstrap.init();

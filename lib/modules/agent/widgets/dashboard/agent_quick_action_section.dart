@@ -88,7 +88,7 @@ class AgentQuickActionSection extends StatelessWidget {
                     icon: Icons.inventory_2_outlined,
                     onTap: () {
                       Get.toNamed(
-                        AppRoutes.agentListings,
+                        AppRoutes.agentMyListings,
                       );
                     },
                   ),

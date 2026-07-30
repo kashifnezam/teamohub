@@ -71,7 +71,7 @@ class ImageHelper {
   }
 
   static Future<ImageSource?> _showSourcePicker({
-    String title = "Upload Product Image",
+    String title = "Upload Image",
     String subtitle = "Choose where you'd like to pick your image.",
     String cameraTitle = "Camera",
     String cameraSubtitle = "Take Photo",

@@ -12,17 +12,13 @@ class AgentCreateListingView extends GetView<AgentCreateListingController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xffF6F7FB),
-
       appBar: AppBar(
         elevation: 0,
         centerTitle: false,
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.white,
-        title: const Text(
-          "Create Listing",
-        ),
+        title: const Text("Create Listing"),
       ),
-
       bottomNavigationBar: SafeArea(
         child: Container(
           padding: const EdgeInsets.fromLTRB(
@@ -45,8 +41,7 @@ class AgentCreateListingView extends GetView<AgentCreateListingController> {
                 backgroundColor: AppColors.primary,
                 minimumSize: const Size.fromHeight(56),
                 shape: RoundedRectangleBorder(
-                  borderRadius:
-                  BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(16),
                 ),
               ),
               onPressed: controller.isSaving.value
@@ -57,14 +52,13 @@ class AgentCreateListingView extends GetView<AgentCreateListingController> {
                 );
 
                 try {
-                  await controller
-                      .createListing();
+                  await controller.createListing();
 
                   CustomAlert.dismissAlert();
 
                   CustomAlert.successAlert(
                     title: "Listing Created",
-                    "Your agent listing is ready.",
+                    "Your listing has been created successfully.",
                   );
                 } catch (e) {
                   CustomAlert.dismissAlert();
@@ -77,10 +71,9 @@ class AgentCreateListingView extends GetView<AgentCreateListingController> {
               },
               child: controller.isSaving.value
                   ? const SizedBox(
-                height: 22,
                 width: 22,
-                child:
-                CircularProgressIndicator(
+                height: 22,
+                child: CircularProgressIndicator(
                   strokeWidth: 2,
                   color: Colors.white,
                 ),
@@ -92,7 +85,6 @@ class AgentCreateListingView extends GetView<AgentCreateListingController> {
           ),
         ),
       ),
-
       body: Form(
         key: controller.formKey,
         child: LayoutBuilder(
@@ -104,34 +96,33 @@ class AgentCreateListingView extends GetView<AgentCreateListingController> {
               padding: const EdgeInsets.all(20),
               child: Center(
                 child: ConstrainedBox(
-                  constraints:
-                  const BoxConstraints(
+                  constraints: const BoxConstraints(
                     maxWidth: 1100,
                   ),
                   child: isDesktop
                       ? Row(
                     crossAxisAlignment:
                     CrossAxisAlignment.start,
-                    children: [
+                    children: const [
                       Expanded(
                         flex: 5,
                         child: Column(
-                          children: const [
+                          children: [
                             _ProductPreviewCard(),
                             SizedBox(height: 24),
                             _ListingFormCard(),
                           ],
                         ),
                       ),
-                      const SizedBox(width: 24),
-                      const Expanded(
+                      SizedBox(width: 24),
+                      Expanded(
                         flex: 3,
                         child: _OriginalProductCard(),
                       ),
                     ],
                   )
-                      : Column(
-                    children: const [
+                      : const Column(
+                    children: [
                       _ProductPreviewCard(),
                       SizedBox(height: 24),
                       _OriginalProductCard(),
@@ -150,8 +141,8 @@ class AgentCreateListingView extends GetView<AgentCreateListingController> {
   }
 }
 
-class _ListingFormCard extends GetView<
-    AgentCreateListingController> {
+class _ListingFormCard
+    extends GetView<AgentCreateListingController> {
   const _ListingFormCard();
 
   @override
@@ -160,8 +151,7 @@ class _ListingFormCard extends GetView<
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius:
-        BorderRadius.circular(22),
+        borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
             blurRadius: 18,
@@ -177,14 +167,11 @@ class _ListingFormCard extends GetView<
           Row(
             children: [
               Container(
-                padding:
-                const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: .08),
+                  color: AppColors.primary.withOpacity(.08),
                   borderRadius:
-                  BorderRadius.circular(
-                    12,
-                  ),
+                  BorderRadius.circular(12),
                 ),
                 child: Icon(
                   Icons.edit_note,
@@ -195,8 +182,7 @@ class _ListingFormCard extends GetView<
               Expanded(
                 child: Column(
                   crossAxisAlignment:
-                  CrossAxisAlignment
-                      .start,
+                  CrossAxisAlignment.start,
                   children: [
                     Text(
                       "Listing Details",
@@ -217,9 +203,7 @@ class _ListingFormCard extends GetView<
               ),
             ],
           ),
-
           const SizedBox(height: 30),
-
           TextFormField(
             controller:
             controller.titleController,
@@ -227,18 +211,14 @@ class _ListingFormCard extends GetView<
             TextInputAction.next,
             decoration: InputDecoration(
               labelText: "Listing Title",
-              prefixIcon: const Icon(
-                Icons.title,
-              ),
+              prefixIcon:
+              const Icon(Icons.title),
               filled: true,
               fillColor:
               const Color(0xffF8F9FC),
-              border:
-              OutlineInputBorder(
+              border: OutlineInputBorder(
                 borderRadius:
-                BorderRadius.circular(
-                  16,
-                ),
+                BorderRadius.circular(16),
                 borderSide:
                 BorderSide.none,
               ),
@@ -248,13 +228,47 @@ class _ListingFormCard extends GetView<
                   value.trim().isEmpty) {
                 return "Title is required";
               }
+              return null;
+            },
+          ),
+          const SizedBox(height: 18),
+          TextFormField(
+            controller:
+            controller.priceController,
+            keyboardType:
+            const TextInputType.numberWithOptions(
+              decimal: true,
+            ),
+            decoration: InputDecoration(
+              labelText: "Selling Price",
+              prefixIcon: const Icon(
+                Icons.currency_rupee,
+              ),
+              filled: true,
+              fillColor:
+              const Color(0xffF8F9FC),
+              border: OutlineInputBorder(
+                borderRadius:
+                BorderRadius.circular(16),
+                borderSide:
+                BorderSide.none,
+              ),
+            ),
+            validator: (value) {
+              if (value == null ||
+                  value.trim().isEmpty) {
+                return "Selling price is required";
+              }
+
+              if (double.tryParse(value) ==
+                  null) {
+                return "Enter valid price";
+              }
 
               return null;
             },
           ),
-
           const SizedBox(height: 18),
-
           TextFormField(
             controller: controller
                 .descriptionController,
@@ -263,12 +277,9 @@ class _ListingFormCard extends GetView<
             decoration: InputDecoration(
               labelText: "Description",
               alignLabelWithHint: true,
-              prefixIcon:
-              const Padding(
+              prefixIcon: const Padding(
                 padding:
-                EdgeInsets.only(
-                  bottom: 90,
-                ),
+                EdgeInsets.only(bottom: 90),
                 child: Icon(
                   Icons.description,
                 ),
@@ -276,12 +287,9 @@ class _ListingFormCard extends GetView<
               filled: true,
               fillColor:
               const Color(0xffF8F9FC),
-              border:
-              OutlineInputBorder(
+              border: OutlineInputBorder(
                 borderRadius:
-                BorderRadius.circular(
-                  16,
-                ),
+                BorderRadius.circular(16),
                 borderSide:
                 BorderSide.none,
               ),
@@ -291,30 +299,23 @@ class _ListingFormCard extends GetView<
                   value.trim().isEmpty) {
                 return "Description is required";
               }
-
               return null;
             },
           ),
-
           const SizedBox(height: 18),
-
           TextFormField(
             controller: controller
                 .sellingNotesController,
             minLines: 4,
             maxLines: 6,
             decoration: InputDecoration(
-              labelText:
-              "Selling Notes",
+              labelText: "Selling Notes",
               hintText:
               "Negotiation, urgency, delivery, warranty...",
               alignLabelWithHint: true,
-              prefixIcon:
-              const Padding(
+              prefixIcon: const Padding(
                 padding:
-                EdgeInsets.only(
-                  bottom: 65,
-                ),
+                EdgeInsets.only(bottom: 65),
                 child: Icon(
                   Icons.lightbulb_outline,
                 ),
@@ -322,12 +323,9 @@ class _ListingFormCard extends GetView<
               filled: true,
               fillColor:
               const Color(0xffF8F9FC),
-              border:
-              OutlineInputBorder(
+              border: OutlineInputBorder(
                 borderRadius:
-                BorderRadius.circular(
-                  16,
-                ),
+                BorderRadius.circular(16),
                 borderSide:
                 BorderSide.none,
               ),
@@ -361,27 +359,25 @@ class _ProductPreviewCard
         crossAxisAlignment:
         CrossAxisAlignment.start,
         children: [
-          Obx(() {
-            if (controller.images.isEmpty) {
-              return Container(
-                height: 260,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius:
-                  const BorderRadius.vertical(
-                    top: Radius.circular(22),
-                  ),
+          if (controller.images.isEmpty)
+            Container(
+              height: 260,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius:
+                const BorderRadius.vertical(
+                  top: Radius.circular(22),
                 ),
-                child: Icon(
-                  Icons.image_outlined,
-                  size: 70,
-                  color: Colors.grey.shade400,
-                ),
-              );
-            }
-
-            return ClipRRect(
+              ),
+              child: Icon(
+                Icons.image_outlined,
+                size: 70,
+                color: Colors.grey.shade400,
+              ),
+            )
+          else
+            ClipRRect(
               borderRadius:
               const BorderRadius.vertical(
                 top: Radius.circular(22),
@@ -402,19 +398,17 @@ class _ProductPreviewCard
                   ),
                 ),
               ),
-            );
-          }),
+            ),
 
           Padding(
-            padding: const EdgeInsets.all(20),
+            padding:
+            const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment:
               CrossAxisAlignment.start,
               children: [
                 Text(
-                  controller
-                      .promotion["productTitle"] ??
-                      "Product",
+                  controller.product.title,
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge
@@ -427,31 +421,31 @@ class _ProductPreviewCard
                 const SizedBox(height: 10),
 
                 Text(
-                  "₹${controller.promotion["productPrice"]}",
+                  "₹${controller.product.price}",
                   style: Theme.of(context)
                       .textTheme
                       .headlineSmall
                       ?.copyWith(
-                    color: AppColors.primary,
+                    color:
+                    AppColors.primary,
                     fontWeight:
                     FontWeight.bold,
                   ),
                 ),
 
-                const SizedBox(height: 16),
+                if (controller.images.length >
+                    1) ...[
+                  const SizedBox(height: 18),
 
-                Obx(() {
-                  if (controller.images.length <= 1) {
-                    return const SizedBox();
-                  }
-
-                  return SizedBox(
+                  SizedBox(
                     height: 72,
-                    child: ListView.separated(
+                    child:
+                    ListView.separated(
                       scrollDirection:
                       Axis.horizontal,
                       itemCount:
-                      controller.images.length,
+                      controller.images
+                          .length,
                       separatorBuilder:
                           (_, __) =>
                       const SizedBox(
@@ -489,8 +483,8 @@ class _ProductPreviewCard
                         );
                       },
                     ),
-                  );
-                }),
+                  ),
+                ],
               ],
             ),
           ),
@@ -542,7 +536,9 @@ class _OriginalProductCard
                   color: Colors.orange,
                 ),
               ),
+
               const SizedBox(width: 14),
+
               Expanded(
                 child: Text(
                   "Original Product",
@@ -561,19 +557,20 @@ class _OriginalProductCard
           const SizedBox(height: 24),
 
           _InfoTile(
-            icon: Icons.badge_outlined,
+            icon:
+            Icons.badge_outlined,
             title: "Product ID",
-            value:
-            controller.promotion["productId"],
+            value: controller.product.id,
           ),
 
           const Divider(height: 28),
 
           _InfoTile(
-            icon: Icons.person_outline,
+            icon:
+            Icons.person_outline,
             title: "Seller",
-            value:
-            controller.promotion["sellerName"],
+            value: controller
+                .product.sellerName,
           ),
 
           const Divider(height: 28),
@@ -581,19 +578,29 @@ class _OriginalProductCard
           _InfoTile(
             icon:
             Icons.payments_outlined,
-            title: "Price",
+            title: "Original Price",
             value:
-            "₹${controller.promotion["productPrice"]}",
+            "₹${controller.product.price}",
           ),
 
           const Divider(height: 28),
 
           _InfoTile(
             icon:
-            Icons.workspace_premium_outlined,
-            title: "Commission",
+            Icons.sell_outlined,
+            title: "Category",
+            value: controller
+                .product.categoryName ??
+                "-",
+          ),
+
+          const Divider(height: 28),
+
+          _InfoTile(
+            icon: Icons.location_on_outlined,
+            title: "Location",
             value:
-            "${controller.promotion["commissionValue"]} ${controller.promotion["commissionType"]}",
+            "${controller.product.city}, ${controller.product.state}",
           ),
         ],
       ),
@@ -664,6 +671,7 @@ class _InfoTile extends StatelessWidget {
   }
 }
 
+
 class _SectionTitle extends StatelessWidget {
   const _SectionTitle({
     required this.icon,
@@ -715,6 +723,7 @@ class _SectionTitle extends StatelessWidget {
 
               if (subtitle != null) ...[
                 const SizedBox(height: 4),
+
                 Text(
                   subtitle!,
                   style: TextStyle(
@@ -731,6 +740,7 @@ class _SectionTitle extends StatelessWidget {
     );
   }
 }
+
 
 class _CardContainer extends StatelessWidget {
   const _CardContainer({

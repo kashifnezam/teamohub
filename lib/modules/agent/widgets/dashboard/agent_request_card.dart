@@ -7,6 +7,8 @@ import 'package:teamomarket/modules/agent/controllers/agent_client_requests_cont
 import 'package:teamomarket/modules/agent/models/agent_client_request_model.dart';
 import 'package:teamomarket/modules/chat/controllers/chat_controller.dart';
 
+import '../../../product/views/product_details_page.dart';
+
 class AgentRequestCard extends GetView<AgentClientRequestsController> {
   const AgentRequestCard({
     super.key,
@@ -223,11 +225,7 @@ class AgentRequestCard extends GetView<AgentClientRequestsController> {
                     Expanded(
                       child: FilledButton.icon(
                         onPressed: () {
-                          Get.toNamed(
-                            AppRoutes.productDetails,
-                            arguments:
-                            request.product,
-                          );
+                          Get.to(()=> ProductDetailsPage(product: request.product));
                         },
                         icon: const Icon(
                           Icons.visibility_outlined,
@@ -251,9 +249,9 @@ class AgentRequestCard extends GetView<AgentClientRequestsController> {
                             backgroundColor:
                             Colors.green,
                           ),
-                          onPressed: () {
-                            controller.acceptRequest(
-                              request.id,
+                          onPressed: () async {
+                            await controller.acceptRequest(
+                              request: request,
                             );
                           },
                           child: const Text(
@@ -288,26 +286,42 @@ class AgentRequestCard extends GetView<AgentClientRequestsController> {
                 if (request.isAccepted) ...[
                   const SizedBox(height: 12),
 
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.icon(
-                      style:
-                      FilledButton.styleFrom(
-                        backgroundColor:
-                        AppColors.primary,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          icon: const Icon(
+                            Icons.inventory_2_outlined,
+                          ),
+                          label: const Text(
+                            "My Listing",
+                          ),
+                          onPressed: () {
+                            Get.toNamed(
+                              AppRoutes.agentMyListings,
+                            );
+                          },
+                        ),
                       ),
-                      onPressed: () {
-                        controller.completeRequest(
-                          request.id,
-                        );
-                      },
-                      icon: const Icon(
-                        Icons.check_circle,
+
+                      const SizedBox(width: 12),
+
+                      Expanded(
+                        child: FilledButton.icon(
+                          icon: const Icon(
+                            Icons.check_circle,
+                          ),
+                          label: const Text(
+                            "Complete",
+                          ),
+                          onPressed: () {
+                            controller.completeRequest(
+                              request.id,
+                            );
+                          },
+                        ),
                       ),
-                      label: const Text(
-                        "Mark Completed",
-                      ),
-                    ),
+                    ],
                   ),
                 ],
               ],

@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:teamomarket/app/constants/app_constants.dart';
 import 'package:teamomarket/app/constants/firebase_constants.dart';
 import '../../../app/services/device_info.dart';
 import '../models/product_model.dart';
@@ -83,9 +82,37 @@ class ProductRepository {
   /// Get Single Product
   ///------------------------------------------------
   Future<ProductModel?> getProduct(String productId) async {
-    final doc = await _products.doc(productId).get();
-    if (!doc.exists) return null;
-    return ProductModel.fromJson(doc.data()!);
+    // Try products collection first
+    final productDoc = await _products.doc(productId).get();
+
+    if (productDoc.exists) {
+      return ProductModel.fromJson(productDoc.data()!);
+    }
+
+    // Fallback to agent_listings
+    final agentDoc = await FirebaseFirestore.instance
+        .collection("agent_listings")
+        .doc(productId)
+        .get();
+
+    if (!agentDoc.exists) {
+      return null;
+    }
+
+    final data = agentDoc.data()!;
+
+    final Map<String, dynamic> snapshot =
+    Map<String, dynamic>.from(data["productSnapshot"] ?? {});
+
+    return ProductModel.fromJson({
+      ...snapshot,
+      "id": agentDoc.id,
+      "title": data["title"],
+      "description": data["description"],
+      "price": data["price"],
+      "images": data["images"],
+      "sellerId": data["sellerId"],
+    });
   }
 
   ///------------------------------------------------

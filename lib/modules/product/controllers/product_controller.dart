@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:teamomarket/app/services/device_info.dart';
 import 'package:teamomarket/app/utils/offline_data.dart';
-import 'package:teamomarket/modules/agent/controllers/agent_hire_request_controller.dart';
 import '../../../app/routes/app_routes.dart';
 import '../../../app/utils/custom_alert.dart';
 import '../../../app/utils/location_utils.dart';

@@ -719,6 +719,53 @@ body{
     font-size: 1.5rem;
     font-weight: 700;
 }
+@media (max-width:768px){
+
+.tm-header{
+    position:sticky;
+    top:0;
+}
+
+.header-container{
+    height:auto;
+    padding:14px 16px;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:14px;
+}
+
+.logo{
+    width:100%;
+}
+
+.logo-icon{
+    width:30px;
+    height:30px;
+}
+
+.logo-text{
+    font-size:20px;
+}
+
+.header-actions{
+    width:100%;
+    display:flex;
+    gap:10px;
+}
+
+.header-btn,
+.header-icon{
+    flex:1;
+    border-radius:10px;
+    font-size:15px;
+}
+
+.header-icon{
+    background:#fff;
+    border:1px solid #ddd;
+}
+
+}
 
 @media(max-width:1000px){
 
@@ -1069,24 +1116,16 @@ async function copyLink(){
 
 async function shareProduct(){
 
-    if(navigator.share){
+    if (navigator.share){
 
-        navigator.share({
-
-            title:"${product.title}",
-
-            text:"Check out this product on TeamoMart",
-
-            url:window.location.href
-
+        await navigator.share({
+            url: window.location.href
         });
 
         return;
-
     }
 
     copyLink();
-
 }
 
 document.getElementById("installBtn").onclick=function(e){

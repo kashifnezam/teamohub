@@ -6,8 +6,7 @@ import '../controllers/category_controller.dart';
 import '../../../app/routes/app_routes.dart';
 
 class CategoriesPage extends GetView<CategoryController> {
-  final args = Get.arguments as Map<String, dynamic>;
-
+  final Map<String, dynamic> args = (Get.arguments as Map<String, dynamic>?) ?? {};
   CategoriesPage({super.key});
 
   @override
