@@ -2,128 +2,178 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../../app/routes/app_routes.dart';
-import 'agent_quick_action_card.dart';
-import 'agent_section_title.dart';
 
 class AgentQuickActionSection extends StatelessWidget {
+  final int pendingRequests;
+  final int activePromotions;
+
   const AgentQuickActionSection({
     super.key,
     required this.pendingRequests,
     required this.activePromotions,
   });
 
-  final int pendingRequests;
-  final int activePromotions;
-
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const AgentSectionTitle(
-          title: "Quick Actions",
+
+        const Text(
+          "Quick Actions",
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
 
-        const SizedBox(height: 18),
+        const SizedBox(height: 16),
 
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final width = constraints.maxWidth;
+        GridView.count(
+          crossAxisCount: 2,
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 14,
+          crossAxisSpacing: 14,
+          childAspectRatio: 1.35,
+          children: [
 
-            int columns;
+            _ActionCard(
+              title: "Client Requests",
+              subtitle: "$pendingRequests Pending",
+              icon: Icons.people_alt_outlined,
+              color: const Color(0xff4F46E5),
+              onTap: () {
+                Get.toNamed(
+                  AppRoutes.agentClientRequests,
+                );
+              },
+            ),
 
-            if (width >= 1200) {
-              columns = 6;
-            } else if (width >= 900) {
-              columns = 5;
-            } else if (width >= 700) {
-              columns = 2;
-            } else {
-              columns = 2;
-            }
+            _ActionCard(
+              title: "Promotions",
+              subtitle: "$activePromotions Active",
+              icon: Icons.campaign_outlined,
+              color: Colors.orange,
+              onTap: () {
+                Get.toNamed(
+                  AppRoutes.agentPromotionRequests,
+                );
+              },
+            ),
 
-            const spacing = 12.0;
+            _ActionCard(
+              title: "My Listings",
+              subtitle: "Manage Products",
+              icon: Icons.inventory_2_outlined,
+              color: Colors.green,
+              onTap: () {
+                Get.toNamed(
+                  AppRoutes.agentMyListings,
+                );
+              },
+            ),
 
-            final itemWidth =
-                (width - ((columns - 1) * spacing)) /
-                    columns;
+            _ActionCard(
+              title: "Profile",
+              subtitle: "Account Settings",
+              icon: Icons.person_outline,
+              color: Colors.pink,
+              onTap: () {
+                Get.toNamed(
+                  AppRoutes.agentProfile,
+                );
+              },
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
 
-            return Wrap(
-              spacing: spacing,
-              runSpacing: spacing,
+class _ActionCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _ActionCard({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(22),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(22),
+        child: Ink(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(
+              color: const Color(0xffE7EAF4),
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: .03),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              crossAxisAlignment:
+              CrossAxisAlignment.start,
               children: [
-                SizedBox(
-                  width: itemWidth,
-                  child: AgentQuickActionCard(
-                    title: "Clients",
-                    icon: Icons.people_alt_outlined,
-                    badge: pendingRequests.toString(),
-                    onTap: () {
-                      Get.toNamed(
-                        AppRoutes.agentClientRequests,
-                      );
-                    },
+
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: .12),
+                    borderRadius:
+                    BorderRadius.circular(14),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: color,
                   ),
                 ),
 
-                SizedBox(
-                  width: itemWidth,
-                  child: AgentQuickActionCard(
-                    title: "Promotions",
-                    icon: Icons.campaign_outlined,
-                    badge:
-                    activePromotions.toString(),
-                    onTap: () {
-                      Get.toNamed(
-                        AppRoutes.agentPromotionRequests,
-                      );
-                    },
+                const Spacer(),
+
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
                   ),
                 ),
 
-                SizedBox(
-                  width: itemWidth,
-                  child: AgentQuickActionCard(
-                    title: "Listings",
-                    icon: Icons.inventory_2_outlined,
-                    onTap: () {
-                      Get.toNamed(
-                        AppRoutes.agentMyListings,
-                      );
-                    },
-                  ),
-                ),
+                const SizedBox(height: 4),
 
-                SizedBox(
-                  width: itemWidth,
-                  child: AgentQuickActionCard(
-                    title: "Analytics",
-                    icon: Icons.analytics_outlined,
-                    onTap: () {
-                      Get.toNamed(
-                        AppRoutes.agentAnalytics,
-                      );
-                    },
-                  ),
-                ),
-
-                SizedBox(
-                  width: itemWidth,
-                  child: AgentQuickActionCard(
-                    title: "Chats",
-                    icon: Icons.chat_bubble_outline,
-                    onTap: () {
-                      Get.toNamed(
-                        AppRoutes.chat,
-                      );
-                    },
+                Text(
+                  subtitle,
+                  style: const TextStyle(
+                    color: Colors.grey,
+                    fontSize: 12,
                   ),
                 ),
               ],
-            );
-          },
+            ),
+          ),
         ),
-      ],
+      ),
     );
   }
 }

@@ -266,12 +266,6 @@ body{
 
 }
 
-.gallery-column{
-
-    min-height:600px;
-
-}
-
 .info-column{
 
     min-height:600px;
@@ -811,9 +805,6 @@ grid-template-columns:1fr;
 .product-info-card{
 
     position:static;
-
-    margin-top:24px;
-
     padding:24px;
 
 }

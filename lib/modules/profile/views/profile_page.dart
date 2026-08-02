@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teamomarket/app/routes/app_routes.dart';
+import '../../../app/theme/app_colors.dart';
 import '../../../app/utils/offline_data.dart';
 import '../../../app/widgets/custom_widget.dart';
 import '../../auth/controllers/auth_controller.dart';
@@ -284,44 +285,118 @@ class ProfilePage extends GetView<ProfileController> {
                                       ),
                                     ],
 
-                                    const SizedBox(height: 18),
+                                    // const SizedBox(height: 18),
+                                    //
+                                    // Container(
+                                    //   padding: const EdgeInsets.symmetric(
+                                    //     horizontal: 18,
+                                    //     vertical: 8,
+                                    //   ),
+                                    //   decoration: BoxDecoration(
+                                    //     color: Theme.of(context)
+                                    //         .colorScheme
+                                    //         .primary
+                                    //         .withValues(alpha: .08),
+                                    //     borderRadius: BorderRadius.circular(30),
+                                    //   ),
+                                    //   child: Row(
+                                    //     mainAxisSize: MainAxisSize.min,
+                                    //     children: [
+                                    //
+                                    //       Icon(
+                                    //         Icons.workspace_premium_outlined,
+                                    //         size: 18,
+                                    //         color:
+                                    //         Theme.of(context).colorScheme.primary,
+                                    //       ),
+                                    //
+                                    //       const SizedBox(width: 8),
+                                    //
+                                    //       Text(
+                                    //         user.role.toUpperCase(),
+                                    //         style: TextStyle(
+                                    //           fontWeight: FontWeight.w600,
+                                    //           color: Theme.of(context)
+                                    //               .colorScheme
+                                    //               .primary,
+                                    //         ),
+                                    //       ),
+                                    //     ],
+                                    //   ),
+                                    // ),
+                                    const SizedBox(height: 12),
 
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 18,
-                                        vertical: 8,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary
-                                            .withValues(alpha: .08),
-                                        borderRadius: BorderRadius.circular(30),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-
-                                          Icon(
-                                            Icons.workspace_premium_outlined,
-                                            size: 18,
-                                            color:
-                                            Theme.of(context).colorScheme.primary,
-                                          ),
-
-                                          const SizedBox(width: 8),
-
-                                          Text(
-                                            user.role.toUpperCase(),
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w600,
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .primary,
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        FilledButton.icon(
+                                          style: FilledButton.styleFrom(
+                                            backgroundColor: AppColors.primary,
+                                            foregroundColor: Colors.white,
+                                            elevation: 0,
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 18,
+                                              vertical: 10,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(30),
                                             ),
                                           ),
-                                        ],
-                                      ),
+                                          onPressed: () {
+                                            if (controller.isVerifiedAgent.value) {
+                                              Get.toNamed(AppRoutes.agentMain);
+                                            } else {
+                                              Get.toNamed(AppRoutes.agent);
+                                            }
+                                          },
+                                          icon: Icon(
+                                            controller.isVerifiedAgent.value
+                                                ? Icons.dashboard_customize_outlined
+                                                : Icons.support_agent,
+                                            size: 18,
+                                          ),
+                                          label: Text(
+                                            controller.isVerifiedAgent.value
+                                                ? "Agent Dashboard"
+                                                : "Become Agent",
+                                          ),
+                                        ),
+
+                                        const SizedBox(width: 8),
+
+                                        if (!controller.isVerifiedAgent.value)
+                                        Material(
+                                          color: AppColors.primary.withValues(alpha: .12),
+                                          shape: const CircleBorder(),
+                                          child: InkWell(
+                                            customBorder: const CircleBorder(),
+                                            onTap: () {
+                                              Get.dialog(
+                                                AlertDialog(
+                                                  title: const Text("Teamo Agent"),
+                                                  content: const Text(
+                                                    "Become a Teamo Agent and earn commission by helping buyers discover and purchase products in your local area.",
+                                                  ),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: Get.back,
+                                                      child: const Text("Close"),
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                            child: const Padding(
+                                              padding: EdgeInsets.all(10),
+                                              child: Icon(
+                                                Icons.info_outline,
+                                                size: 20,
+                                                color: AppColors.primary,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
@@ -337,65 +412,7 @@ class ProfilePage extends GetView<ProfileController> {
 
               const SizedBox(height: 20),
 
-              //====================================================
-              // Location Card
-              //====================================================
 
-            /*  Card(
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius:
-                  BorderRadius.circular(16),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment:
-                    CrossAxisAlignment.start,
-                    children: [
-
-                      const Row(
-                        children: [
-                          Icon(Icons.location_on_outlined),
-                          SizedBox(width: 8),
-                          Text(
-                            "Location",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight:
-                              FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      _locationTile(
-                        "Country",
-                        user.country,
-                      ),
-
-                      _locationTile(
-                        "State",
-                        user.state,
-                      ),
-
-                      _locationTile(
-                        "City",
-                        user.city,
-                      ),
-
-                      _locationTile(
-                        "Area",
-                        user.area,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 20),*/
               //====================================================
               // Quick Actions
               //====================================================
@@ -465,7 +482,7 @@ class ProfilePage extends GetView<ProfileController> {
                             icon: Icons.support_agent_rounded,
                             title: "Become Agent",
                             subtitle: "Help buyers & earn commission",
-                            onTap: () => Get.toNamed(AppRoutes.agentDashboard ),
+                            onTap: () => Get.toNamed(AppRoutes.agentMain),
                           ),
 
                         if (userInfo?['role'] == "agent")
@@ -517,16 +534,16 @@ class ProfilePage extends GetView<ProfileController> {
                           _accountTile(
                             icon: Icons.edit_outlined,
                             title: "Edit Profile",
-                            onTap: () => null,
+                            onTap: () => Get.toNamed(AppRoutes.editProfile),
                           ),
 
-                          const Divider(height: 1),
-
-                          _accountTile(
-                            icon: Icons.location_on_outlined,
-                            title: "Change Location",
-                            onTap: () => null,
-                          ),
+                          // const Divider(height: 1),
+                          //
+                          // _accountTile(
+                          //   icon: Icons.location_on_outlined,
+                          //   title: "Change Location",
+                          //   onTap: () => null,
+                          // ),
 
                           const Divider(height: 1),
 

@@ -250,8 +250,9 @@ class AgentRequestCard extends GetView<AgentClientRequestsController> {
                             Colors.green,
                           ),
                           onPressed: () async {
-                            await controller.acceptRequest(
-                              request: request,
+                            Get.toNamed(
+                              AppRoutes.agentCreateListing,
+                              arguments: request,
                             );
                           },
                           child: const Text(

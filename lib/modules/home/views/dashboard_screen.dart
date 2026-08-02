@@ -11,6 +11,7 @@ import '../../../app/routes/middlewares/auth_helper.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/utils/custom_alert.dart';
 import '../../chat/views/chat_list_page.dart';
+import '../../location/controllers/location_controller.dart';
 import '../../location/views/location_bottom_sheet.dart';
 import 'home_page.dart';
 
@@ -219,9 +220,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _checkLocation() async {
+    final locationController = Get.find<LocationController>();
+
+    // Already have a saved location
+    if (locationController.currentLocation.value != null) {
+      return;
+    }
+
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+
     final permission = await Geolocator.checkPermission();
 
+    // GPS OFF or permission missing
     if (!serviceEnabled ||
         permission == LocationPermission.denied ||
         permission == LocationPermission.deniedForever) {
@@ -237,8 +247,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       return;
     }
 
-    // Permission already granted.
-    // Fetch current location here.
+    // Permission already granted
+    await locationController.getCurrentLocation();
   }
 }
 

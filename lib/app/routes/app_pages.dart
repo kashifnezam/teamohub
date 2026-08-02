@@ -13,19 +13,19 @@ import '../../modules/agent/bindings/agent_analytics_binding.dart';
 import '../../modules/agent/bindings/agent_binding.dart';
 import '../../modules/agent/bindings/agent_client_requests_binding.dart';
 import '../../modules/agent/bindings/agent_create_listing_binding.dart';
-import '../../modules/agent/bindings/agent_dashboard_binding.dart';
 import '../../modules/agent/bindings/agent_directory_binding.dart';
 import '../../modules/agent/bindings/agent_hire_request_binding.dart';
 import '../../modules/agent/bindings/agent_listing_share_binding.dart';
 import '../../modules/agent/bindings/agent_my_listings_binding.dart';
 import '../../modules/agent/bindings/agent_profile_binding.dart';
 import '../../modules/agent/bindings/agent_promotion_requests_binding.dart';
+import '../../modules/agent/bindings/agent_main_binding.dart';
 import '../../modules/agent/views/agent_directory_view.dart';
 import '../../modules/agent/views/agent_hire_request_view.dart';
+import '../../modules/agent/views/agent_main_view.dart';
 import '../../modules/agent/views/agent_profile_view.dart';
 import '../../modules/agent/views/analytics/agent_analytics_view.dart';
 import '../../modules/agent/views/become_agent_view.dart';
-import '../../modules/agent/views/dashboard/agent_dashboard_view.dart';
 import '../../modules/agent/views/listings/agent_create_listing_view.dart';
 import '../../modules/agent/views/listings/agent_listing_share_view.dart';
 import '../../modules/agent/views/listings/agent_my_listings_view.dart';
@@ -45,6 +45,7 @@ import '../../modules/chat/views/chats_page.dart';
 import '../../modules/location/bindings/location_binding.dart';
 import '../../modules/location/views/location_picker_page.dart';
 import '../../modules/product/views/add_product_page.dart';
+import '../../modules/profile/views/edit_profile_view.dart';
 import '../../modules/splash/views/splashscreen.dart';
 import 'app_routes.dart';
 import 'middlewares/auth_guard.dart';
@@ -137,6 +138,13 @@ class AppPages {
     ),
 
     GetPage(
+      name: AppRoutes.editProfile,
+      page: () => const EditProfileView(),
+      binding: ProfileBinding(),
+      middlewares: [AuthGuard()],
+    ),
+
+    GetPage(
       name: AppRoutes.myAds,
       page: () => const MyAdsPage(),
       binding: MyAdsBinding(),
@@ -170,12 +178,6 @@ class AppPages {
       name: AppRoutes.agent,
       page: () => const BecomeAgentView(),
       binding: AgentBinding(),
-    ),
-
-    GetPage(
-      name: AppRoutes.agentDashboard,
-      page: () => const AgentDashboardView(),
-      binding: AgentDashboardBinding(),
     ),
 
     GetPage(
@@ -222,7 +224,7 @@ class AppPages {
 
     GetPage(
       name: AppRoutes.agentProfile,
-      page: () => const AgentProfileView(),
+      page: () => AgentProfileView(),
       binding: AgentProfileBinding(),
     ),
 
@@ -230,6 +232,12 @@ class AppPages {
       name: AppRoutes.agentHireRequest,
       page: () => const AgentHireRequestView(),
       binding: AgentHireRequestBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.agentMain,
+      page: () => const AgentMainView(),
+      binding: AgentMainBinding(),
     ),
   ];
 }

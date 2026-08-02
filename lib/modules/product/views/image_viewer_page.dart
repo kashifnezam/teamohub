@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:photo_view/photo_view_gallery.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import 'package:teamomarket/modules/product/controllers/product_controller.dart';
 
 import '../../../app/theme/app_colors.dart';
 import '../../favourite/controllers/favourite_controller.dart';
@@ -126,7 +127,9 @@ class _ImageViewerPageState extends State<ImageViewerPage> {
 
                     _circleButton(
                       icon: Icons.share_outlined,
-                      onTap: () {},
+                      onTap: () {
+                        Get.find<ProductController>().shareProduct(widget.productId);
+                      },
                     ),
 
                   ],

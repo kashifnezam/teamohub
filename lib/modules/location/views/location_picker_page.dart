@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 
 import '../../product/controllers/product_controller.dart';
 import '../controllers/location_controller.dart';
+import '../models/city_model.dart';
+import '../models/country_model.dart';
 import '../models/location_result.dart';
 import '../models/state_model.dart';
 import '../widgets/current_location_tile.dart';
@@ -86,17 +88,61 @@ class LocationPickerPage extends StatelessWidget {
 
         CurrentLocationTile(
           onTap: () async {
-            await productController.useCurrentLocation();
+            final result = await controller.getCurrentLocation();
 
-            Get.back();
+            if (result == null) return;
+
+            productController.setLocation(
+              countryValue: result.country.name,
+              stateValue: result.state.name,
+              cityValue: result.city.name,
+              latitudeValue: result.city.latitude ?? 0,
+              longitudeValue: result.city.longitude ?? 0,
+            );
+
+            Get.back(result: result);
           },
         ),
+        LocationTile(
+          title: "All India",
+          icon: Icons.public,
+          onTap: () async {
+            const location = LocationResult(
+              country: CountryModel(
+                id: "in",
+                name: "India",
+                code: "91",
+                phoneCode: "+91",
+                flag: "",
+              ),
+              state: StateModel(
+                id: "",
+                name: "India", countryId: '', code: '',
+              ),
+              city: CityModel(
+                id: "",
+                name: "All in India", countryId: '', stateId: '',
+              ),
+            );
+
+            await controller.saveRecent(location);
+
+            productController.setLocation(
+              countryValue: "India",
+              stateValue: "",
+              cityValue: "",
+            );
+
+            Get.back(result: location);
+          },
+        ),
+
+        const Divider(height: 1),
 
         if (controller.recentLocations.isNotEmpty)
 
           RecentSection(
-            locations:
-            controller.recentLocations,
+            locations: controller.recentLocations,
             onTap: _onRecentTap,
           ),
 
@@ -125,7 +171,9 @@ class LocationPickerPage extends StatelessWidget {
 // Recent Location
 //----------------------------------------------------------
 
-  void _onRecentTap(LocationResult location,) {
+  Future<void> _onRecentTap(LocationResult location) async {
+    await controller.saveRecent(location);
+
     controller.selectedCountry.value = location.country;
     controller.selectedState.value = location.state;
     controller.selectedCity.value = location.city;
@@ -138,9 +186,7 @@ class LocationPickerPage extends StatelessWidget {
       longitudeValue: location.city.longitude ?? 0,
     );
 
-    Get.back(
-      result: location,
-    );
+    Get.back(result: location);
   }
 
   //----------------------------------------------------------

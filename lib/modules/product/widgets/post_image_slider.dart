@@ -7,6 +7,7 @@ import '../../../app/theme/app_colors.dart';
 import '../../../../../modules/product/models/product_model.dart';
 import '../../../app/widgets/custom_widget.dart';
 import '../../favourite/controllers/favourite_controller.dart';
+import '../controllers/product_controller.dart';
 import '../models/product_image_model.dart';
 import '../views/image_viewer_page.dart';
 
@@ -147,7 +148,10 @@ class _PostImageSliderState extends State<PostImageSlider> {
                 if(!widget.isPreview)
                 _circleButton(
                   icon: Icons.share_outlined,
-                  onTap: () {},
+                  onTap: () {
+                    Get.find<ProductController>().shareProduct(widget.product!.id);
+
+                  },
                 ),
 
               ],

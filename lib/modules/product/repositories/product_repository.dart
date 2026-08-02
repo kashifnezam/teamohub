@@ -2,7 +2,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:teamomarket/app/constants/firebase_constants.dart';
 import '../../../app/services/device_info.dart';
 import '../models/product_model.dart';
+import '../models/product_pagination.dart';
 import '../models/product_query.dart';
+
+class ProductPageResult {
+  final List<ProductModel> products;
+  final ProductPagination pagination;
+
+  const ProductPageResult({
+    required this.products,
+    required this.pagination,
+  });
+}
 
 class ProductRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -34,31 +45,170 @@ class ProductRepository {
   ///------------------------------------------------
   /// Get All Products
   ///------------------------------------------------
-/*  final CollectionReference<Map<String, dynamic>> _products =
-  FirebaseFirestore.instance.collection("products");*/
 
   static const int pageSize = 20;
 
-  Future<(List<ProductModel>, DocumentSnapshot?)> getProducts({
-    DocumentSnapshot? lastDocument,
+  Future<ProductPageResult> getProducts({
+    required ProductPagination pagination,
+    String? city,
+    String? state,
   }) async {
-    Query<Map<String, dynamic>> query = _products
+    final List<ProductModel> products = [];
+    final Set<String> loadedIds = {};
+
+    Query<Map<String, dynamic>> baseQuery = _products
         .where("isDeleted", isEqualTo: false)
         .where("status", isEqualTo: ProductStatus.active.name)
-        .orderBy("publishedAt", descending: true)
-        .limit(pageSize);
+        .orderBy("publishedAt", descending: true);
 
-    if (lastDocument != null) {
-      query = query.startAfterDocument(lastDocument);
+    ProductPagination current = pagination;
+
+    while (products.length < pageSize &&
+        current.stage != ProductPaginationStage.completed) {
+      Query<Map<String, dynamic>> query;
+
+      switch (current.stage) {
+        case ProductPaginationStage.city:
+          if (city == null || city.isEmpty) {
+            current = current.copyWith(
+              stage: ProductPaginationStage.state,
+            );
+            continue;
+          }
+
+          query = baseQuery.where("city", isEqualTo: city);
+
+          if (current.cityLastDocument != null) {
+            query = query.startAfterDocument(current.cityLastDocument!);
+          }
+
+          break;
+
+        case ProductPaginationStage.state:
+          if (state == null || state.isEmpty) {
+            current = current.copyWith(
+              stage: ProductPaginationStage.global,
+            );
+            continue;
+          }
+
+          query = baseQuery.where("state", isEqualTo: state);
+
+          if (current.stateLastDocument != null) {
+            query = query.startAfterDocument(current.stateLastDocument!);
+          }
+
+          break;
+
+        case ProductPaginationStage.global:
+          query = baseQuery;
+
+          if (current.globalLastDocument != null) {
+            query = query.startAfterDocument(current.globalLastDocument!);
+          }
+
+          break;
+
+        case ProductPaginationStage.completed:
+          return ProductPageResult(
+            products: products,
+            pagination: current,
+          );
+      }
+
+      final snapshot = await query.limit(pageSize).get();
+
+      if (snapshot.docs.isEmpty) {
+        switch (current.stage) {
+          case ProductPaginationStage.city:
+            current = current.copyWith(
+              stage: ProductPaginationStage.state,
+            );
+            break;
+
+          case ProductPaginationStage.state:
+            current = current.copyWith(
+              stage: ProductPaginationStage.global,
+            );
+            break;
+
+          case ProductPaginationStage.global:
+            current = current.copyWith(
+              stage: ProductPaginationStage.completed,
+            );
+            break;
+
+          case ProductPaginationStage.completed:
+            break;
+        }
+
+        continue;
+      }
+
+      switch (current.stage) {
+        case ProductPaginationStage.city:
+          current = current.copyWith(
+            cityLastDocument: snapshot.docs.last,
+          );
+          break;
+
+        case ProductPaginationStage.state:
+          current = current.copyWith(
+            stateLastDocument: snapshot.docs.last,
+          );
+          break;
+
+        case ProductPaginationStage.global:
+          current = current.copyWith(
+            globalLastDocument: snapshot.docs.last,
+          );
+          break;
+
+        case ProductPaginationStage.completed:
+          break;
+      }
+
+      for (final doc in snapshot.docs) {
+        final product = ProductModel.fromJson(doc.data());
+
+        if (loadedIds.add(product.id)) {
+          products.add(product);
+
+          if (products.length >= pageSize) {
+            break;
+          }
+        }
+      }
+
+      if (snapshot.docs.length < pageSize) {
+        switch (current.stage) {
+          case ProductPaginationStage.city:
+            current = current.copyWith(
+              stage: ProductPaginationStage.state,
+            );
+            break;
+
+          case ProductPaginationStage.state:
+            current = current.copyWith(
+              stage: ProductPaginationStage.global,
+            );
+            break;
+
+          case ProductPaginationStage.global:
+            current = current.copyWith(
+              stage: ProductPaginationStage.completed,
+            );
+            break;
+
+          case ProductPaginationStage.completed:
+            break;
+        }
+      }
     }
 
-    final snapshot = await query.get();
-
-    return (
-    snapshot.docs
-        .map((e) => ProductModel.fromJson(e.data()))
-        .toList(),
-    snapshot.docs.isNotEmpty ? snapshot.docs.last : null,
+    return ProductPageResult(
+      products: products,
+      pagination: current,
     );
   }
 
@@ -380,4 +530,20 @@ class ProductRepository {
       });
     });
   }
+
+  Future<void> increaseShareCount(String productId) async {
+    await _products.doc(productId).update({
+      'shares': FieldValue.increment(1),
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  Future<void> updateLastShared(String productId) async {
+    await _products.doc(productId)
+        .update({
+        'lastSharedAt': FieldValue.serverTimestamp(),
+      },
+    );
+  }
+
 }

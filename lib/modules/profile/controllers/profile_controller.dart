@@ -4,10 +4,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
-import '../../../app/routes/app_routes.dart';
 import '../../../app/utils/custom_alert.dart';
-import '../../../app/utils/offline_data.dart';
 import '../../../app/widgets/custom_widget.dart';
 import '../../auth/models/user_model.dart';
 import '../repository/profile_repository.dart';
@@ -18,10 +15,11 @@ class ProfileController extends GetxController {
   final Rx<File?> selectedProfileImage = Rx<File?>(null);
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  final Rxn<UserModel> user = Rxn<UserModel>();
+  Rxn<UserModel> user = Rxn<UserModel>();
 
   final RxBool isLoading = true.obs;
   final RxBool isUploadingImage = false.obs;
+  final RxBool isVerifiedAgent = false.obs;
 
   StreamSubscription<UserModel>? _userSubscription;
 
@@ -39,7 +37,7 @@ class ProfileController extends GetxController {
     super.onClose();
   }
 
-  void loadProfile() {
+  Future<void> loadProfile() async {
     if (uid.isEmpty) {
       isLoading(false);
       return;
@@ -47,6 +45,9 @@ class ProfileController extends GetxController {
 
     isLoading(true);
 
+    isVerifiedAgent.value = await _repository.isVerifiedAgent(uid);
+
+    _userSubscription?.cancel();
     _userSubscription?.cancel();
 
     _userSubscription = _repository.streamUser(uid).listen(

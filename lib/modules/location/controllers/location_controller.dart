@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import '../../../app/services/location_api_service.dart';
@@ -6,6 +7,7 @@ import '../models/city_model.dart';
 import '../models/country_model.dart';
 import '../models/location_result.dart';
 import '../models/state_model.dart';
+import '../services/current_location_service.dart';
 import '../services/recent_location_service.dart';
 
 class LocationController extends GetxController {
@@ -71,6 +73,7 @@ class LocationController extends GetxController {
 //----------------------------------------------------------
 
   final RecentLocationService _recentService = RecentLocationService.instance;
+  final CurrentLocationService _currentService = CurrentLocationService.instance;
 
   //----------------------------------------------------------
   // Selected
@@ -87,6 +90,7 @@ class LocationController extends GetxController {
   final RxString area = "".obs;
 
   final LocationApiService _service = LocationApiService();
+  final Rxn<LocationResult> currentLocation = Rxn<LocationResult>();
 
   @override
   void onInit() {
@@ -102,41 +106,80 @@ class LocationController extends GetxController {
     );
 
     loadStates("India");
+    loadCurrentLocation();
     loadRecent();
   }
-
   bool get hasRecentLocations => recentLocations.isNotEmpty;
   bool get hasStates => filteredStates.isNotEmpty;
   bool get hasCities => filteredCities.isNotEmpty;
   bool get isSearching => stateSearching.value || citySearching.value;
 
-  Future<void> saveRecent(
-      LocationResult result,
-      ) async {
-    
+  Future<void> saveRecent(LocationResult result) async {
+    await _currentService.save(result);
+    currentLocation.value = result;
     await _recentService.saveRecent(result);
-
     loadRecent();
+  }
+
+  void loadCurrentLocation() {
+    currentLocation.value = _currentService.get();
   }
 
   void loadRecent() {
     recentLocations.assignAll(
       _recentService.getRecent(),
     );
+
+    if (currentLocation.value == null && recentLocations.isNotEmpty) {
+      currentLocation.value = recentLocations.first;
+    }
   }
-  Future<void> getCurrentLocation() async {
+
+  Future<LocationResult?> getCurrentLocation() async {
     final position = await Geolocator.getCurrentPosition(
-      locationSettings: AndroidSettings(accuracy: LocationAccuracy.high),
-    ).then((position) {
-      print(position.latitude);
-      print(position.longitude);
-    });
+      locationSettings: AndroidSettings(
+        accuracy: LocationAccuracy.high,
+      ),
+    );
 
+    final places = await placemarkFromCoordinates(
+      position.latitude,
+      position.longitude,
+    );
 
-    // TODO:
-    // Reverse geocode the coordinates into
-    // Country, State and City.
+    if (places.isEmpty) return null;
+
+    final place = places.first;
+
+    final result = LocationResult(
+      country: CountryModel(
+        id: "",
+        name: place.country ?? "",
+        code: "",
+        phoneCode: "",
+        flag: "",
+      ),
+      state: StateModel(
+        id: "",
+        name: place.administrativeArea ?? "",
+        countryId: '',
+        code: '',
+      ),
+      city: CityModel(
+        id: "",
+        name: place.locality ?? place.subAdministrativeArea ?? "",
+        latitude: position.latitude,
+        longitude: position.longitude,
+        countryId: '',
+        stateId: '',
+      ),
+    );
+
+    await saveRecent(result);
+
+    return result;
   }
+
   Future<void> checkLocationStatus() async {
     isServiceEnabled.value = await Geolocator.isLocationServiceEnabled();
     permission.value = await Geolocator.checkPermission();
@@ -148,8 +191,10 @@ class LocationController extends GetxController {
     switch (permission) {
       case LocationPermission.whileInUse:
       case LocationPermission.always:
-        getCurrentLocation();
-        Get.back();
+      final result = await getCurrentLocation();
+      if (result != null) {
+        Get.back(result: result);
+      }
         break;
 
       case LocationPermission.denied:
@@ -500,11 +545,15 @@ class LocationController extends GetxController {
   //----------------------------------------------------------
 
   Future<void> clearRecent() async {
-
     await _recentService.clear();
 
     recentLocations.clear();
+  }
 
+  Future<void> clearCurrentLocation() async {
+    await _currentService.clear();
+
+    currentLocation.value = null;
   }
 //----------------------------------------------------------
 // Reset

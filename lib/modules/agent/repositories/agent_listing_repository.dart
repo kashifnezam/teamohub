@@ -157,35 +157,26 @@ class AgentListingRepository {
     return AgentListingModel.fromFirestore(doc);
   }
 
-  Future<void> markSold(
-      String listingId,
-      ) async {
-    await _collection.doc(listingId).update({
-      "dealStatus": "completed",
-      "completedAt":
-      FieldValue.serverTimestamp(),
-      "updatedAt":
-      FieldValue.serverTimestamp(),
+  Future<void> markSold(String productId) async {
+    await _products.doc(productId).update({
+      // "dealStatus": "completed",
+      "status": "sold",
+      "completedAt": FieldValue.serverTimestamp(),
+      "updatedAt": FieldValue.serverTimestamp(),
     });
   }
 
-  Future<void> deactivate(
-      String listingId,
-      ) async {
-    await _collection.doc(listingId).update({
+  Future<void> deactivate(String productId) async {
+    await _products.doc(productId).update({
       "status": "inactive",
-      "updatedAt":
-      FieldValue.serverTimestamp(),
+      "updatedAt": FieldValue.serverTimestamp(),
     });
   }
 
-  Future<void> activate(
-      String listingId,
-      ) async {
-    await _collection.doc(listingId).update({
+  Future<void> activate(String productId) async {
+    await _products.doc(productId).update({
       "status": "active",
-      "updatedAt":
-      FieldValue.serverTimestamp(),
+      "updatedAt": FieldValue.serverTimestamp(),
     });
   }
 

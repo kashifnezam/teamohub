@@ -387,7 +387,6 @@ class MyAdsPage extends GetView<MyAdsController> {
   //--------------------------------------------------
 
   Widget _statusBadge(String status) {
-    print(status);
     Color color;
 
     switch (status.toLowerCase()) {

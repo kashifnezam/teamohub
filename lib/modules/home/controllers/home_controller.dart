@@ -1,8 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
+import '../../location/controllers/location_controller.dart';
+import '../../location/models/location_result.dart';
 import '../../product/models/product_model.dart';
+import '../../product/models/product_pagination.dart';
 import '../../product/repositories/product_repository.dart';
 
 class HomeController extends GetxController {
@@ -14,9 +16,11 @@ class HomeController extends GetxController {
   final isLoadingMore = false.obs;
   final hasMore = true.obs;
 
-  DocumentSnapshot? _lastDocument;
+  final pagination = const ProductPagination().obs;
 
   final ScrollController scrollController = ScrollController();
+
+  final locationController = Get.find<LocationController>();
 
   @override
   void onInit() {
@@ -24,55 +28,69 @@ class HomeController extends GetxController {
 
     fetchProducts();
 
+    ever<LocationResult?>(
+      locationController.currentLocation,
+          (_) {
+        fetchProducts();
+      },
+    );
+
     scrollController.addListener(() {
       if (scrollController.position.pixels >=
           scrollController.position.maxScrollExtent - 300 &&
+          !isLoading.value &&
           !isLoadingMore.value &&
-          hasMore.value &&
-          !isLoading.value) {
+          hasMore.value) {
         loadMore();
       }
     });
   }
 
+  LocationResult? get currentLocation => locationController.currentLocation.value;
+
   Future<void> fetchProducts() async {
     try {
       isLoading.value = true;
 
-      _lastDocument = null;
+      products.clear();
+
+      pagination.value = const ProductPagination();
+
       hasMore.value = true;
 
-      final (items, lastDoc) =
-      await _repository.getProducts();
+      final result = await _repository.getProducts(
+        pagination: pagination.value,
+        city: currentLocation?.city.name,
+        state: currentLocation?.state.name,
+      );
 
-      products.assignAll(items);
+      pagination.value = result.pagination;
 
-      _lastDocument = lastDoc;
+      products.assignAll(result.products);
 
-      if (items.length < ProductRepository.pageSize) {
-        hasMore.value = false;
-      }
+      hasMore.value = !result.pagination.isCompleted;
     } finally {
       isLoading.value = false;
     }
   }
 
   Future<void> loadMore() async {
+    if (isLoadingMore.value || !hasMore.value) return;
+
     try {
       isLoadingMore.value = true;
 
-      final (items, lastDoc) =
-      await _repository.getProducts(
-        lastDocument: _lastDocument,
+      final result = await _repository.getProducts(
+        pagination: pagination.value,
+        city: currentLocation?.city.name,
+        state: currentLocation?.state.name,
       );
 
-      products.addAll(items);
+      pagination.value = result.pagination;
 
-      _lastDocument = lastDoc;
+      products.addAll(result.products);
 
-      if (items.length < ProductRepository.pageSize) {
-        hasMore.value = false;
-      }
+      hasMore.value = !result.pagination.isCompleted;
     } finally {
       isLoadingMore.value = false;
     }

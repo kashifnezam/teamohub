@@ -1,19 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:teamomarket/app/constants/firebase_constants.dart';
 
 class AgentListingShareRepository {
   AgentListingShareRepository._();
 
-  static final AgentListingShareRepository instance =
-  AgentListingShareRepository._();
+  static final AgentListingShareRepository instance = AgentListingShareRepository._();
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   String get _uid => _auth.currentUser!.uid;
 
-  CollectionReference<Map<String, dynamic>> get _agentListings =>
-      _firestore.collection('agent_listings');
+  CollectionReference<Map<String, dynamic>> get _agentListings => _firestore.collection('agent_listings');
+  CollectionReference<Map<String, dynamic>> get _productRef => _firestore.collection(FirebaseConstants.products);
 
   Future<DocumentSnapshot<Map<String, dynamic>>> getListing(
       String listingId,
@@ -22,37 +22,19 @@ class AgentListingShareRepository {
   }
 
   Future<void> increaseShareCount(
-      String listingId,
+      String productId,
       ) async {
-    await _agentListings.doc(listingId).update({
-      'shareCount': FieldValue.increment(1),
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
-  }
-
-  Future<void> increaseViewCount(
-      String listingId,
-      ) async {
-    await _agentListings.doc(listingId).update({
-      'viewCount': FieldValue.increment(1),
+    await _productRef.doc(productId).update({
+      'shares': FieldValue.increment(1),
       'updatedAt': FieldValue.serverTimestamp(),
     });
   }
 
   Future<void> increaseEnquiryCount(
-      String listingId,
+      String productId,
       ) async {
-    await _agentListings.doc(listingId).update({
-      'enquiryCount': FieldValue.increment(1),
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
-  }
-
-  Future<void> increaseChatCount(
-      String listingId,
-      ) async {
-    await _agentListings.doc(listingId).update({
-      'chatCount': FieldValue.increment(1),
+    await _agentListings.doc(productId).update({
+      'chats': FieldValue.increment(1),
       'updatedAt': FieldValue.serverTimestamp(),
     });
   }

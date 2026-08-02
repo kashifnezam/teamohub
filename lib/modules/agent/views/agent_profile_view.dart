@@ -6,15 +6,16 @@ import '../../../app/routes/app_routes.dart';
 import '../../../app/theme/app_colors.dart';
 import '../controllers/agent_profile_controller.dart';
 
-class AgentProfileView
-    extends GetView<AgentProfileController> {
+class AgentProfileView extends GetView<AgentProfileController> {
   const AgentProfileView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final bool showHireButton = Get.parameters["showHireButton"] != "false";
     return Scaffold(
       appBar: AppBar(
         title: const Text("Agent Profile"),
+        actions: [ if(!showHireButton) IconButton(onPressed: () => Get.toNamed(AppRoutes.agent), icon: Icon(Icons.edit))],
       ),
       backgroundColor: const Color(0xffF7F8FC),
       body: Obx(() {
@@ -144,7 +145,7 @@ class AgentProfileView
               ),
 
               const SizedBox(height: 32),
-
+              if(showHireButton)
               SizedBox(
                 width: double.infinity,
                 child: FilledButton.icon(

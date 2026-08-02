@@ -3,7 +3,6 @@ import 'agent_location_model.dart';
 
 class AgentModel {
   final String uid;
-  final bool isAgent;
   final String agentStatus;
   final String? rejectedReason;
   final String agentName;
@@ -29,7 +28,6 @@ class AgentModel {
 
   const AgentModel({
     required this.uid,
-    required this.isAgent,
     required this.agentStatus,
     this.rejectedReason,
     required this.agentName,
@@ -52,7 +50,6 @@ class AgentModel {
   factory AgentModel.empty(String uid) {
     return AgentModel(
       uid: uid,
-      isAgent: false,
       agentStatus: '',
       rejectedReason: '',
       agentName: '',
@@ -80,7 +77,6 @@ class AgentModel {
       ) {
     return AgentModel(
       uid: uid,
-      isAgent: map['isAgent'] ?? false,
       agentStatus: map['agentStatus'] ?? '',
       rejectedReason: map['rejectedReason'] ?? '',
       agentName: map['agentName'] ?? '',
@@ -117,7 +113,6 @@ class AgentModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'isAgent': isAgent,
       'agentStatus': agentStatus,
       'rejectedReason': rejectedReason,
       'agentName': agentName,
@@ -165,7 +160,6 @@ class AgentModel {
   }) {
     return AgentModel(
       uid: uid ?? this.uid,
-      isAgent: isAgent ?? this.isAgent,
       agentStatus: agentStatus ?? this.agentStatus,
       rejectedReason: rejectedReason ?? this.rejectedReason,
       agentName: agentName ?? this.agentName,

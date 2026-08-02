@@ -11,7 +11,7 @@ class AgentListingShareController extends GetxController {
 
   final RxBool isLoading = false.obs;
 
-  late final String listingId;
+  late final String productId;
 
   late final String shareUrl;
 
@@ -19,9 +19,9 @@ class AgentListingShareController extends GetxController {
   void onInit() {
     super.onInit();
 
-    listingId = Get.arguments;
+    productId = Get.arguments;
 
-    shareUrl = "https://teamomart.web.app/p/$listingId";
+    shareUrl = "https://teamomart.web.app/p/$productId";
   }
 
   Future<void> shareListing() async {
@@ -31,7 +31,7 @@ class AgentListingShareController extends GetxController {
       await SharePlus.instance.share(
           ShareParams(text: shareUrl, subject: "TeamoMart Listing")
       );
-      await _repository.increaseShareCount(listingId);
+      await _repository.increaseShareCount(productId);
       await _repository.updateLastShared();
     } finally {
       isLoading.value = false;
@@ -51,7 +51,7 @@ class AgentListingShareController extends GetxController {
 
   Future<void> openChat() async {
     await _repository.increaseEnquiryCount(
-      listingId,
+      productId,
     );
 
     Get.back(result: true);

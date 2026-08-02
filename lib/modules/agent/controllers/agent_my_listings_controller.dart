@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:get/get.dart';
+import 'package:teamomarket/app/utils/custom_alert.dart';
 
 import '../models/agent_product_listing_model.dart';
 import '../repositories/agent_listing_repository.dart';
 
 class AgentMyListingsController extends GetxController {
-  final AgentListingRepository _repository =
-      AgentListingRepository.instance;
+  final AgentListingRepository _repository = AgentListingRepository.instance;
 
   final isLoading = true.obs;
 
@@ -41,22 +41,22 @@ class AgentMyListingsController extends GetxController {
     loadListings();
   }
 
-  Future<void> markSold(
-      AgentProductListingModel item,
-      ) async {
-    await _repository.markSold(item.listing.id);
+  Future<void> markSold(AgentProductListingModel item) async {
+    CustomAlert.loadAlert("Updating...");
+    await _repository.markSold(item.listing.agentProductId);
+    CustomAlert.dismissAlert();
   }
 
-  Future<void> activate(
-      AgentProductListingModel item,
-      ) async {
-    await _repository.activate(item.listing.id);
+  Future<void> activate(AgentProductListingModel item) async {
+    CustomAlert.loadAlert("Updating...");
+    await _repository.activate(item.listing.agentProductId);
+    CustomAlert.dismissAlert();
   }
 
-  Future<void> deactivate(
-      AgentProductListingModel item,
-      ) async {
-    await _repository.deactivate(item.listing.id);
+  Future<void> deactivate(AgentProductListingModel item) async {
+    CustomAlert.loadAlert("Updating...");
+    await _repository.deactivate(item.listing.agentProductId);
+    CustomAlert.dismissAlert();
   }
 
   @override

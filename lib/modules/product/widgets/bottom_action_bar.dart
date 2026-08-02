@@ -109,7 +109,7 @@ class BottomActionBar extends StatelessWidget {
             // Call
             //------------------------------------------------
 
-            Expanded(
+           /* Expanded(
               child: SizedBox(
                 height: 52,
                 child: OutlinedButton.icon(
@@ -138,7 +138,7 @@ class BottomActionBar extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
+            ),*/
 
           ],
         ),

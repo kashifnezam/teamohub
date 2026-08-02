@@ -21,72 +21,6 @@ class AuthService {
   final CollectionReference members =
       FirebaseFirestore.instance.collection('members');
 
-  /// Check if username exists in any member document
-  Future<bool> isUsernameAvailable(String username) async {
-    try {
-      // Query members where 'username' equals the input (case-sensitive)
-      final query = await members
-          .where('username', isEqualTo: username.toLowerCase())
-          .limit(1)
-          .get();
-      return query.docs.isEmpty; // Available if no documents found
-    } catch (e) {
-      CustomAlert.errorAlert('Error checking username: $e');
-      return false; // Assume unavailable if error occurs
-    }
-  }
-
-
-  /// Register with username (instead of email)
-  Future<UserCredential> registerWithUsername({
-    required String username,
-    required String password,
-    required Map<String, dynamic> userData,
-  }) async {
-    try {
-      // Create email-like string using username
-      final authEmail = '$username@${AppConstants.authDomain}';
-      // Define this constant in your AppConstants
-
-      // Create auth user
-      final userCredential = await _auth.createUserWithEmailAndPassword(
-        email: authEmail,
-        password: password,
-      );
-      await _firestore.collection('members').doc(userCredential.user!.uid).set({
-        'uid': userCredential.user!.uid,
-        'usr': username,
-        "cBy": DeviceInfo.userUID,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-      // Store user data
-      await _firestore
-          .collection('users')
-          .doc(userCredential.user!.uid)
-          .set(userData);
-
-      return userCredential;
-    } on FirebaseAuthException catch (e) {
-      throw _handleAuthError(e);
-    }
-  }
-
-  /// Login with username
-  Future<UserCredential> loginWithUsername({
-    required String username,
-    required String password,
-  }) async {
-    try {
-      final authEmail = '$username@${AppConstants.authDomain}';
-      return await _auth.signInWithEmailAndPassword(
-        email: authEmail,
-        password: password,
-      );
-    } on FirebaseAuthException catch (e) {
-      throw _handleAuthError(e);
-    }
-  }
-
   Future<void> signUp({
     required String fullName,
     required String mobile,
@@ -158,6 +92,7 @@ class AuthService {
     );
     return await getUserData(userCredential.user!.uid);
   }
+
 
   Future<UserModel> getUserData(String uid) async {
     final doc = await _firestore.collection(FirebaseConstants.users).doc(uid).get();

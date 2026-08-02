@@ -42,5 +42,33 @@ class ProfileRepository {
     });
   }
 
-  Future<void> deleteAccountPlaceholder() async {}
+  Future<void> updateProfile({required UserModel user}) async {
+    final data = user.copyWith(
+      updatedAt: DateTime.now(),
+    ).toFirestore();
+
+    await FirebaseFirestore.instance
+        .collection(FirebaseConstants.users)
+        .doc(user.id)
+        .update(data);
+  }
+
+  Future<bool> isVerifiedAgent(String uid) async {
+    final doc = await FirebaseFirestore.instance
+        .collection(FirebaseConstants.agents)
+        .doc(uid)
+        .get();
+
+    if (!doc.exists) {
+      return false;
+    }
+
+    final data = doc.data();
+
+    if (data == null) {
+      return false;
+    }
+
+    return data["agentStatus"] == "verified";
+  }
 }

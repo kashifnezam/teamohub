@@ -74,7 +74,6 @@ class AgentCreateListingController extends GetxController {
           title: titleController.text.trim(),
           description: descriptionController.text.trim(),
           price: price);
-        AppConstants.log.i(prodId);
       final listingId = await _repository.createListing(
         agentProductId: prodId,
         requestId: request.id,

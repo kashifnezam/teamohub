@@ -16,7 +16,6 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("Home build");
     final condition = product.attributes["condition"];
     return Card(
       elevation: 1,

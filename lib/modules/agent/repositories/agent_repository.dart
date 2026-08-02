@@ -103,7 +103,6 @@ class AgentRepository {
     final updated = agent.copyWith(
       uid: _auth.currentUser!.uid,
       isAgent: true,
-      agentStatus: "pending",
       profileImage: imageUrl,
       verificationFileUrl: verificationUrl,
     );

@@ -5,6 +5,7 @@ import 'package:teamomarket/modules/product/models/product_model.dart';
 import '../../../../app/routes/app_routes.dart';
 import '../../../../app/utils/custom_alert.dart';
 import '../../../../app/widgets/custom_widget.dart';
+import '../../../product/views/product_details_page.dart';
 import '../../controllers/agent_my_listings_controller.dart';
 import '../../models/agent_listing_model.dart';
 import '../../models/agent_product_listing_model.dart';
@@ -14,7 +15,6 @@ class AgentMyListingsView extends GetView<AgentMyListingsController> {
 
   @override
   Widget build(BuildContext context) {
-    print(controller.listings);
     return Scaffold(
       backgroundColor: const Color(0xffF7F8FC),
       appBar: AppBar(
@@ -141,21 +141,6 @@ class _ListingCard extends GetView<AgentMyListingsController> {
                         child: _StatusBadge(product.status),
                       ),
 
-                      Positioned(
-                        top: 14,
-                        right: 14,
-                        child: Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(.95),
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.visibility_outlined,
-                            color: Colors.indigo,
-                          ),
-                        ),
-                      ),
                     ],
                   ),
 
@@ -283,13 +268,13 @@ class _ListingCard extends GetView<AgentMyListingsController> {
                       value: product.chats,
                       color: Colors.green,
                     ),
-                    _MetricDivider(),
-                    _MetricItem(
-                      icon: Icons.share_outlined,
-                      title: "Shares",
-                      value: product.shares,
-                      color: Colors.orange,
-                    ),
+                    // _MetricDivider(),
+                    // _MetricItem(
+                    //   icon: Icons.share_outlined,
+                    //   title: "Shares",
+                    //   value: product.shares,
+                    //   color: Colors.orange,
+                    // ),
                     _MetricDivider(),
                     _MetricItem(
                       icon: Icons.favorite_border,
@@ -324,15 +309,12 @@ class _ListingCard extends GetView<AgentMyListingsController> {
                         ),
                       ),
                       onPressed: () {
-                        Get.toNamed(
-                          AppRoutes.productDetails,
-                          arguments: product,
-                        );
+                        Get.to(()=> ProductDetailsPage(product: product));
                       },
                     ),
                   ),
 
-                  const SizedBox(width: 12),
+                 /* const SizedBox(width: 12),
 
                   Expanded(
                     child: OutlinedButton(
@@ -351,7 +333,7 @@ class _ListingCard extends GetView<AgentMyListingsController> {
                       child: const Icon(Icons.edit_outlined),
                     ),
                   ),
-
+*/
                   const SizedBox(width: 12),
 
                   Expanded(
@@ -411,20 +393,20 @@ class _ListingCard extends GetView<AgentMyListingsController> {
                 },
               ),
 
-              _ActionTile(
-                icon: Icons.edit_outlined,
-                title: "Edit Listing",
-                onTap: () {
-                  Get.back();
+              // _ActionTile(
+              //   icon: Icons.edit_outlined,
+              //   title: "Edit Listing",
+              //   onTap: () {
+              //     Get.back();
+              //
+              //     Get.toNamed(
+              //       AppRoutes.agentCreateListing,
+              //       arguments: listing,
+              //     );
+              //   },
+              // ),
 
-                  Get.toNamed(
-                    AppRoutes.agentCreateListing,
-                    arguments: listing,
-                  );
-                },
-              ),
-
-              if (listing.isAvailable)
+              if (item.product.status != ProductStatus.sold)
 
                 _ActionTile(
                   icon: Icons.check_circle_outline,
@@ -433,19 +415,19 @@ class _ListingCard extends GetView<AgentMyListingsController> {
                   onTap: () async {
                     Get.back();
 
-                    final confirm =
-                    await CustomAlert.confirmAlert(
+                    final confirm = await CustomAlert.confirmAlert(
                       title: "Complete Deal",
                       "Mark this listing as sold?",
                     );
 
                     if (confirm == true) {
-                      controller.markSold(item);
+                      await controller.markSold(item);
+                      controller.refreshListings();
                     }
                   },
                 ),
 
-              if (listing.isAvailable)
+              if (item.product.isActive)
 
                 _ActionTile(
                   icon: Icons.pause_circle_outline,
@@ -454,27 +436,28 @@ class _ListingCard extends GetView<AgentMyListingsController> {
                   onTap: () async {
                     Get.back();
 
-                    final confirm =
-                    await CustomAlert.confirmAlert(
-                      title: "Deactivate Listing",
+                    final confirm = await CustomAlert.confirmAlert(
+                      title: "Deactivate",
                       "Deactivate this listing?",
                     );
 
                     if (confirm == true) {
-                      controller.deactivate(item);
+                      await controller.deactivate(item);
+                      controller.refreshListings();
                     }
                   },
                 ),
 
-              if (!listing.isAvailable)
+              if (!item.product.isActive)
 
                 _ActionTile(
                   icon: Icons.play_circle_outline,
                   title: "Activate Listing",
                   color: Colors.green,
-                  onTap: () {
+                  onTap: () async {
                     Get.back();
-                    controller.activate(item);
+                    await controller.activate(item);
+                    controller.refreshListings();
                   },
                 ),
 
@@ -507,7 +490,7 @@ class _ActionTile extends StatelessWidget {
     return ListTile(
       leading: CircleAvatar(
         radius: 20,
-        backgroundColor: iconColor.withOpacity(.12),
+        backgroundColor: iconColor.withValues(alpha: .12),
         child: Icon(
           icon,
           color: iconColor,

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:teamomarket/app/services/device_info.dart';
 import 'package:teamomarket/app/utils/offline_data.dart';
 import '../../../app/routes/app_routes.dart';
@@ -12,7 +13,10 @@ import '../../../app/widgets/image_helper.dart';
 import '../../agent/repositories/agent_hire_request_repository.dart';
 import '../../category/models/category_model.dart';
 import '../../category/models/sub_category_model.dart';
+import '../../location/models/city_model.dart';
+import '../../location/models/country_model.dart';
 import '../../location/models/location_result.dart';
+import '../../location/models/state_model.dart';
 import '../models/product_image_model.dart';
 import '../models/product_model.dart';
 import '../repositories/product_repository.dart';
@@ -86,31 +90,31 @@ class ProductController extends GetxController {
     attributes.clear();
   }
 
-  /// ---------------------------------------
-  /// Images
-  /// ---------------------------------------
-
+  Future<void> shareProduct(String productId) async {
+    try {
+      isLoading.value = true;
+      final shareUrl = "https://teamomart.web.app/p/$productId";
+      await SharePlus.instance.share(
+          ShareParams(text: shareUrl, subject: "TeamoMart Listing")
+      );
+      await _repository.increaseShareCount(productId);
+      await _repository.updateLastShared(productId);
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   Future<void> pickLocation() async {
     await useCurrentLocation();
   }
 
-  void setLocationResult(
-      LocationResult location,
-      ) {
+  void setLocationResult(LocationResult location) {
     selectedLocation.value = location;
-
     country.value = location.country.name;
-
     state.value = location.state.name;
-
     city.value = location.city.name;
-
-    latitude.value =
-        location.city.latitude ?? 0;
-
-    longitude.value =
-        location.city.longitude ?? 0;
+    latitude.value = location.city.latitude ?? 0;
+    longitude.value = location.city.longitude ?? 0;
   }
 
   Future<List<String>> uploadImages({
@@ -131,7 +135,7 @@ class ProductController extends GetxController {
     return Future.wait(futures);
   }
 
-  Future<void> useCurrentLocation() async {
+  Future<LocationResult?> useCurrentLocation() async {
     final location = await LocationUtils.getSingleLocation(
       onError: (message) {
         Get.snackbar(
@@ -141,7 +145,7 @@ class ProductController extends GetxController {
       },
     );
 
-    if (location == null) return;
+    if (location == null) return null;
 
     latitude.value = location.latitude;
     longitude.value = location.longitude;
@@ -151,14 +155,34 @@ class ProductController extends GetxController {
       location.longitude,
     );
 
-    if (places.isEmpty) return;
+    if (places.isEmpty) return null;
 
     final place = places.first;
 
+    final result = LocationResult(
+      country: CountryModel(
+        id: "",
+        name: place.country ?? "",
+        code: "",
+        phoneCode: "",
+        flag: "",
+      ),
+      state: StateModel(
+        id: "",
+        name: place.administrativeArea ?? "",
+        countryId: '',
+        code: '',
+      ),
+      city: CityModel(
+        id: "",name: place.locality ?? place.subAdministrativeArea ??"",
+        latitude: location.latitude,
+        longitude: location.longitude, countryId: '', stateId: '',
+      ),
+    );
+
     setLocation(
       countryValue: place.country ?? "",
-      stateValue:
-      place.administrativeArea ?? "",
+      stateValue: place.administrativeArea ?? "",
       cityValue: place.locality ??
           place.subAdministrativeArea ??
           "",
@@ -167,6 +191,7 @@ class ProductController extends GetxController {
       latitudeValue: location.latitude,
       longitudeValue: location.longitude,
     );
+    return result;
   }
 
   void initialize({required CategoryModel category, SubCategoryModel? subCategory, String? agentId}) {
@@ -366,7 +391,6 @@ class ProductController extends GetxController {
 
   Future<void> publishProduct() async {
     if (!validateForm()) return;
-    print(agentId);
     try {
       isLoading.value = true;
       CustomAlert.loadAlert("Uploading product...");

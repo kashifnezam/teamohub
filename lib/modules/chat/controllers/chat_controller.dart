@@ -217,6 +217,8 @@ class ChatController extends GetxController {
         );
         return;
       }
+      // final confirmAlert = await CustomAlert.confirmAlert("Deal with precaution", title: "Fraud Alert", confirmText: "Chat");
+      // if(!confirmAlert) return;
       isChatsLoading.value = true;
       CustomAlert.loadAlert("Loading chat..");
       final chatId = await _repository.getOrCreateChat(

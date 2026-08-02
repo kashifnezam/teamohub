@@ -18,7 +18,9 @@ class AuthenticationView extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.light,
 
-      body: LayoutBuilder(
+      body: Stack(
+          children: [
+          LayoutBuilder(
         builder: (context, constraints) {
 
           final bool isDesktop = constraints.maxWidth > 900;
@@ -74,8 +76,37 @@ class AuthenticationView extends StatelessWidget {
           );
 
         },
-      ),
-    );
+          ),
+
+            SafeArea(
+              child: Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    top: 16,
+                    right: 16,
+                  ),
+                  child: Material(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(30),
+                    elevation: 2,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(30),
+                      onTap: () {
+                        Get.offAllNamed(AppRoutes.splash);
+                      },
+                      child:  Icon(
+                        Icons.cancel,
+                        size: 21,
+                        color: AppColors.grey,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+      ),    );
   }
 
   //-------------------------------------------------------------

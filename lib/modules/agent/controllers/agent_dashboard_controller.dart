@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 
@@ -9,155 +11,127 @@ import '../models/agent_request_model.dart';
 import '../repositories/agent_dashboard_repository.dart';
 
 class AgentDashboardController extends GetxController {
-  final AgentDashboardRepository _repository =
-      AgentDashboardRepository.instance;
-
-  final ProductRepository _productRepository =
-  ProductRepository();
-
-  final RxBool isLoading = true.obs;
-
-  final Rxn<AgentModel> agent = Rxn<AgentModel>();
-
-  final RxInt pendingRequests = 0.obs;
-  final RxInt activePromotions = 0.obs;
-  final RxInt clientRequests = 0.obs;
-  final RxDouble commissionEarned = 0.0.obs;
-
-  final RxList<AgentClientRequestModel> recentRequests =
-      <AgentClientRequestModel>[].obs;
-
-  final RxList<QueryDocumentSnapshot<Map<String, dynamic>>>
-  promotionRequests =
-      <QueryDocumentSnapshot<Map<String, dynamic>>>[].obs;
-
-  final RxList<QueryDocumentSnapshot<Map<String, dynamic>>>
-  activities =
-      <QueryDocumentSnapshot<Map<String, dynamic>>>[].obs;
+  final AgentDashboardRepository _repository = AgentDashboardRepository.instance;
+  final ProductRepository _productRepository = ProductRepository();
+  final isLoading = true.obs;
+  final agent = Rxn<AgentModel>();
+  final pendingRequests = 0.obs;
+  final activePromotions = 0.obs;
+  final clientRequests = 0.obs;
+  final commissionEarned = 0.0.obs;
+  final recentRequests = <AgentClientRequestModel>[].obs;
+  final promotionRequests = <QueryDocumentSnapshot<Map<String, dynamic>>>[].obs;
+  final activities =<QueryDocumentSnapshot<Map<String, dynamic>>>[].obs;
+  final List<StreamSubscription> _subscriptions = [];
 
   @override
   void onInit() {
     super.onInit();
-    _loadDashboard();
+    _initialize();
   }
 
-  Future<void> _loadDashboard() async {
+  @override
+  void onClose() {
+    for (final subscription in _subscriptions) {
+      subscription.cancel();
+    }
+    super.onClose();
+  }
+
+  Future<void> _initialize() async {
     isLoading.value = true;
 
     try {
       agent.value = await _repository.getAgent();
 
-      _listenPendingRequests();
-      _listenActivePromotions();
-      _listenClientRequests();
-      _listenCommission();
-      _listenRecentRequests();
-      _listenPromotionRequests();
-      _listenActivities();
+      _listenStreams();
     } finally {
       isLoading.value = false;
     }
   }
 
   Future<void> refreshDashboard() async {
-    await _loadDashboard();
+    agent.value = await _repository.getAgent();
   }
 
-  void _listenPendingRequests() {
-    _repository.pendingRequestCount().listen(
-          (count) {
-        pendingRequests.value = count;
-      },
-    );
+  void _listenStreams() {
+    _subscriptions.addAll([
+      _repository
+          .pendingRequestCount()
+          .listen((value) => pendingRequests.value = value),
+
+      _repository
+          .activePromotionCount()
+          .listen((value) => activePromotions.value = value),
+
+      _repository
+          .clientRequestCount()
+          .listen((value) => clientRequests.value = value),
+
+      _repository
+          .commissionEarned()
+          .listen((value) => commissionEarned.value = value),
+
+      _repository
+          .recentPromotionRequests()
+          .listen((event) {
+        promotionRequests.assignAll(event.docs);
+      }),
+
+      _repository
+          .recentActivities()
+          .listen((event) {
+        activities.assignAll(event.docs);
+      }),
+
+      _repository
+          .recentClientRequests()
+          .asyncMap(_buildRecentRequests)
+          .listen(recentRequests.assignAll),
+    ]);
   }
 
-  void _listenActivePromotions() {
-    _repository.activePromotionCount().listen(
-          (count) {
-        activePromotions.value = count;
-      },
-    );
-  }
-
-  void _listenClientRequests() {
-    _repository.clientRequestCount().listen(
-          (count) {
-        clientRequests.value = count;
-      },
-    );
-  }
-
-  void _listenCommission() {
-    _repository.commissionEarned().listen(
-          (value) {
-        commissionEarned.value = value;
-      },
-    );
-  }
-
-  void _listenRecentRequests() {
-    _repository.recentClientRequests().listen(
-          (requests) async {
-        final items = await _buildRecentRequests(requests);
-        recentRequests.assignAll(items);
-      },
-    );
-  }
-
-  Future<List<AgentClientRequestModel>> _buildRecentRequests(
+  Future<List<AgentClientRequestModel>>
+  _buildRecentRequests(
       List<AgentRequestModel> requests,
       ) async {
-    final List<AgentClientRequestModel> list = [];
+    final futures = requests.map(
+          (request) async {
+        try {
+          final ProductModel? product =
+          await _productRepository.getProduct(
+            request.productId,
+          );
 
-    for (final request in requests) {
-      try {
-        final ProductModel? product =
-        await _productRepository.getProduct(
-          request.productId,
-        );
+          if (product == null) {
+            return null;
+          }
 
-        if (product == null) continue;
-
-        list.add(
-          AgentClientRequestModel(
+          return AgentClientRequestModel(
             id: request.id,
             request: request.toJson(),
             product: product,
-          ),
-        );
-      } catch (_) {}
-    }
-
-    return list;
-  }
-
-  void _listenPromotionRequests() {
-    _repository.recentPromotionRequests().listen(
-          (event) {
-        promotionRequests.assignAll(event.docs);
+          );
+        } catch (_) {
+          return null;
+        }
       },
     );
-  }
 
-  void _listenActivities() {
-    _repository.recentActivities().listen(
-          (event) {
-        activities.assignAll(event.docs);
-      },
-    );
+    final results = await Future.wait(futures);
+
+    return results
+        .whereType<AgentClientRequestModel>()
+        .toList();
   }
 
   String get greeting {
     final hour = DateTime.now().hour;
 
-    if (hour < 12) {
-      return 'Good Morning';
-    }
+    if (hour < 12) return "Good Morning";
 
-    if (hour < 17) {
-      return 'Good Afternoon';
-    }
+    if (hour < 17) return "Good Afternoon";
 
-    return 'Good Evening';
+    return "Good Evening";
   }
 }

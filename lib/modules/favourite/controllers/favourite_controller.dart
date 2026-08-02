@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:teamomarket/app/constants/app_constants.dart';
 import 'package:teamomarket/app/utils/offline_data.dart';
 
 import '../../../app/routes/middlewares/auth_helper.dart';
@@ -54,9 +55,8 @@ class FavouriteController extends GetxController {
       } else {
         favouriteIds.remove(productId);
       }
-      CustomAlert.errorAlert(
-        title: "Something went wrong",
-        e.toString(),
+      AppConstants.log..e(
+        "title: Something went wrong, "+e.toString(),
       );
     } finally {
       loading.value = false;

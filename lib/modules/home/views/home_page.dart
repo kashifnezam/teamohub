@@ -4,7 +4,6 @@ import 'package:teamomarket/app/theme/app_colors.dart';
 import 'package:teamomarket/modules/banner/controllers/banner_management_controller.dart';
 import '../../../app/routes/app_routes.dart';
 import '../../../app/routes/middlewares/auth_helper.dart';
-import '../../product/widgets/product_card.dart';
 import '../../product/widgets/post_card_shimmer.dart';
 import '../../product/widgets/product_tile.dart';
 import '../controllers/home_controller.dart';
@@ -113,28 +112,36 @@ class HomePage extends GetView<HomeController> {
 
                                  const SizedBox(width: 6),
 
-                                 Column(
-                                   crossAxisAlignment:
-                                   CrossAxisAlignment.start,
-                                   children: const [
+                                 SizedBox(
+                                   width: 100, // adjust as needed
+                                   child: Obx(() {
+                                     final location = controller.currentLocation;
 
-                                     Text(
-                                       "Patna",
-                                       style: TextStyle(
-                                         fontSize: 14,
-                                         fontWeight: FontWeight.w700,
-                                       ),
-                                     ),
-
-                                     Text(
-                                       "Bihar",
-                                       style: TextStyle(
-                                         fontSize: 11,
-                                         color: Colors.grey,
-                                       ),
-                                     ),
-
-                                   ],
+                                     return Column(
+                                       crossAxisAlignment: CrossAxisAlignment.start,
+                                       mainAxisSize: MainAxisSize.min,
+                                       children: [
+                                         Text(
+                                           location?.city.name ?? "Select City",
+                                           maxLines: 1,
+                                           overflow: TextOverflow.ellipsis,
+                                           style: const TextStyle(
+                                             fontSize: 14,
+                                             fontWeight: FontWeight.w700,
+                                           ),
+                                         ),
+                                         Text(
+                                           location?.state.name ?? "Choose location",
+                                           maxLines: 1,
+                                           overflow: TextOverflow.ellipsis,
+                                           style: const TextStyle(
+                                             fontSize: 11,
+                                             color: Colors.grey,
+                                           ),
+                                         ),
+                                       ],
+                                     );
+                                   }),
                                  ),
 
                                  const Icon(

@@ -79,84 +79,159 @@ class _PromotionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final status =
+    (data["status"] ?? "pending").toString();
+
     return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(18),
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
       child: InkWell(
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(20),
         onTap: () {},
         child: Ink(
-          padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: Colors.grey.shade200,
+              color: const Color(0xffE8EAF3),
             ),
-          ),
-          child: Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  data["image"] ?? "",
-                  width: 70,
-                  height: 70,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) {
-                    return Container(
-                      width: 70,
-                      height: 70,
-                      color: Colors.grey.shade100,
-                      child: const Icon(
-                        Icons.image_not_supported_outlined,
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-              const SizedBox(width: 14),
-
-              Expanded(
-                child: Column(
-                  crossAxisAlignment:
-                  CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      data["title"] ?? "-",
-                      maxLines: 2,
-                      overflow:
-                      TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-
-                    const SizedBox(height: 6),
-
-                    Text(
-                      data["sellerName"] ?? "-",
-                      maxLines: 1,
-                      overflow:
-                      TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(width: 12),
-
-              Chip(
-                label: Text(
-                  data["status"] ?? "",
-                ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: .03),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
               ),
             ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              crossAxisAlignment:
+              CrossAxisAlignment.start,
+              children: [
+
+                /// Image
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(14),
+                  child: Image.network(
+                    data["image"] ?? "",
+                    width: 64,
+                    height: 64,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) {
+                      return Container(
+                        width: 64,
+                        height: 64,
+                        color: const Color(0xffF3F4F6),
+                        child: const Icon(
+                          Icons.image_outlined,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                const SizedBox(width: 14),
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                    children: [
+
+                      Text(
+                        data["title"] ?? "-",
+                        maxLines: 2,
+                        overflow:
+                        TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 15,
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      Text(
+                        data["sellerName"] ?? "-",
+                        maxLines: 1,
+                        overflow:
+                        TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 13,
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      _PromotionStatusChip(
+                        status: status,
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(width: 10),
+
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  color: Colors.grey,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PromotionStatusChip extends StatelessWidget {
+  final String status;
+
+  const _PromotionStatusChip({
+    required this.status,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    Color color;
+
+    switch (status.toLowerCase()) {
+      case "approved":
+        color = Colors.green;
+        break;
+
+      case "completed":
+        color = Colors.blue;
+        break;
+
+      case "rejected":
+        color = Colors.red;
+        break;
+
+      default:
+        color = Colors.orange;
+    }
+
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 5,
+        ),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: .10),
+          borderRadius:
+          BorderRadius.circular(30),
+        ),
+        child: Text(
+          status.toUpperCase(),
+          style: TextStyle(
+            color: color,
+            fontWeight: FontWeight.bold,
+            fontSize: 11,
           ),
         ),
       ),

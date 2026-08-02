@@ -14,7 +14,7 @@ abstract class AppRoutes {
 
   // ---------------- Agent ----------------
   static const agent = '/agent';
-  static const String agentDashboard = '/agent-dashboard';
+  static const String agentMain = '/agent-main';
   static const String agentClientRequests = '/agent-client-requests';
   static const String agentPromotionRequests = '/agent-promotion-requests';
   static const String agentCreateListing = '/agent-create-listing';

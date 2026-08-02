@@ -208,7 +208,6 @@ class AgentController extends GetxController {
     try {
       final data = await _repository.getAgentDetails();
       if (data == null) return;
-      if (!data.isAgent) return;
       agent.value = data;
       populateForm(data);
     } catch (_) {}
@@ -315,10 +314,8 @@ class AgentController extends GetxController {
       isLoading.value = true;
 
       CustomAlert.loadAlert("Submitting...");
-
       final model = AgentModel(
         uid: agent.value?.uid ?? '',
-        isAgent: true,
         agentStatus: agent.value?.agentStatus ?? "pending",
         agentName: nameController.text.trim(),
         phone: phoneController.text.trim(),
