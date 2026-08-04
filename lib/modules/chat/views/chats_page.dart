@@ -3,9 +3,7 @@ import 'package:get/get.dart';
 import 'package:teamomarket/app/utils/offline_data.dart';
 import 'package:teamomarket/app/utils/time-utils.dart';
 import 'package:teamomarket/modules/product/controllers/product_controller.dart';
-import 'package:teamomarket/modules/product/models/product_model.dart';
-import 'package:teamomarket/modules/product/views/product_details_page.dart';
-import '../../../app/constants/app_constants.dart';
+import '../../../app/routes/app_routes.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/utils/custom_alert.dart';
 import '../../../app/widgets/custom_widget.dart';
@@ -38,6 +36,7 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Obx((){
       final chat = controller.currentChat.value;
+      final isAgent = chat?.chatType == "agent";
       final isSeller = chat?.sellerId == controller.currentUserId;
       final displayName = isSeller ? chat?.buyerName : chat?.sellerName;
       final displayPhoto = isSeller ? chat?.buyerPhoto : chat?.sellerPhoto;
@@ -121,7 +120,70 @@ class _ChatPageState extends State<ChatPage> {
             //------------------------------------------------------------------
             // Product Card
             //------------------------------------------------------------------
+            if(isAgent)
+              Container(
+                margin: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const CircleAvatar(
+                        backgroundColor: Color(0xFFE8EEF9),
+                        child: Icon(
+                          Icons.support_agent_rounded,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      title: const Text(
+                        "Agent Assistance",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      subtitle: const Text(
+                        "This conversation is with your assigned TeamoMart Agent.",
+                      ),
+                    ),
 
+                    const Divider(height: 1),
+
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextButton.icon(
+                            onPressed: () {
+                              Get.toNamed(
+                                AppRoutes.agentProfile,
+                                arguments: chat.sellerId,
+                              );
+                            },
+                            icon: const Icon(Icons.person_outline),
+                            label: const Text("View Profile"),
+                          ),
+                        ),
+                        Container(
+                          width: 1,
+                          height: 40,
+                          color: Colors.grey.shade200,
+                        ),
+                        // Expanded(
+                        //   child: TextButton.icon(
+                        //     onPressed: () {
+                        //       // TODO: Open request details
+                        //     },
+                        //     icon: const Icon(Icons.assignment_outlined),
+                        //     label: const Text("Request"),
+                        //   ),
+                        // ),
+                      ],
+                    ),
+                  ],
+                ),
+              )
+            else
             Container(
               margin: const EdgeInsets.fromLTRB(
                 12,
@@ -139,7 +201,6 @@ class _ChatPageState extends State<ChatPage> {
                 borderRadius:
                 BorderRadius.circular(18),
                 onTap: () async {
-                  // TODO
                 await ProductController().getProductDetail(chat.productId);
 
                 },
@@ -463,7 +524,7 @@ class _ChatPageState extends State<ChatPage> {
                         ),
                         onPressed: () async {
                           await controller.sendMessage(
-                            receiverId: chat.sellerId,
+                            receiverId: receiverId!,
                           );
                         },
                         child: const Icon(

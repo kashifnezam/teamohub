@@ -278,9 +278,6 @@ class HomePage extends GetView<HomeController> {
              child: HomeAgentHelpCard(),
            ),
 
-           const SliverToBoxAdapter(
-             child: SizedBox(height: 24),
-           ),
 
            // Products come here
            const SliverToBoxAdapter(

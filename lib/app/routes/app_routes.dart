@@ -75,6 +75,11 @@ abstract class AppRoutes {
 
   static const notifications = '/notifications';
 
+  // ---------------- Refer and Earn ----------------
+
+  static const refer = '/refer';
+  static const referralOnboarding = "/referral-onboarding";
+
   // ---------------- Settings ----------------
 
   static const settings = '/settings';

@@ -9,6 +9,8 @@ import 'package:teamomarket/modules/product/views/product_preview_page.dart';
 import 'package:teamomarket/modules/product/views/product_search_page.dart';
 import 'package:teamomarket/modules/profile/bindings/profile_binding.dart';
 import 'package:teamomarket/modules/profile/views/profile_page.dart';
+import 'package:teamomarket/modules/refer/binding/refer_binding.dart';
+import 'package:teamomarket/modules/refer/views/refer_view.dart';
 import '../../modules/agent/bindings/agent_analytics_binding.dart';
 import '../../modules/agent/bindings/agent_binding.dart';
 import '../../modules/agent/bindings/agent_client_requests_binding.dart';
@@ -46,6 +48,7 @@ import '../../modules/location/bindings/location_binding.dart';
 import '../../modules/location/views/location_picker_page.dart';
 import '../../modules/product/views/add_product_page.dart';
 import '../../modules/profile/views/edit_profile_view.dart';
+import '../../modules/refer/views/referral_onboarding_view.dart';
 import '../../modules/splash/views/splashscreen.dart';
 import 'app_routes.dart';
 import 'middlewares/auth_guard.dart';
@@ -239,5 +242,17 @@ class AppPages {
       page: () => const AgentMainView(),
       binding: AgentMainBinding(),
     ),
+    GetPage(
+      name: AppRoutes.refer,
+      page: () => const ReferView(),
+      binding: ReferBinding()
+    ),
+
+    GetPage(
+      name: AppRoutes.referralOnboarding,
+      page: () => ReferralOnboardingView(),
+      binding: ReferBinding()
+    ),
+
   ];
 }

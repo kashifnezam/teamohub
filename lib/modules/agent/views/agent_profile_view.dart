@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:teamomarket/app/utils/offline_data.dart';
 import 'package:teamomarket/app/widgets/custom_widget.dart';
 
 import '../../../app/routes/app_routes.dart';
@@ -11,11 +12,10 @@ class AgentProfileView extends GetView<AgentProfileController> {
 
   @override
   Widget build(BuildContext context) {
-    final bool showHireButton = Get.parameters["showHireButton"] != "false";
+    // final bool showHireButton = Get.parameters["showHireButton"] != "false";
     return Scaffold(
       appBar: AppBar(
         title: const Text("Agent Profile"),
-        actions: [ if(!showHireButton) IconButton(onPressed: () => Get.toNamed(AppRoutes.agent), icon: Icon(Icons.edit))],
       ),
       backgroundColor: const Color(0xffF7F8FC),
       body: Obx(() {
@@ -24,6 +24,7 @@ class AgentProfileView extends GetView<AgentProfileController> {
         }
 
         final agent = controller.agent.value!;
+        final isMyProfile = agent.uid == userInfo?['id'];
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -145,24 +146,21 @@ class AgentProfileView extends GetView<AgentProfileController> {
               ),
 
               const SizedBox(height: 32),
-              if(showHireButton)
               SizedBox(
                 width: double.infinity,
                 child: FilledButton.icon(
-                  icon: const Icon(
-                    Icons.handshake,
+                  icon: Icon(
+                    isMyProfile ? Icons.edit : Icons.handshake,
                   ),
-                  label: const Text(
-                    "Hire Agent",
+                  label: Text(
+                    isMyProfile ? "Edit Profile" : "Hire Agent",
                   ),
-                  onPressed: () {
-                    Get.toNamed(
-                      AppRoutes.agentHireRequest,
-                      arguments: agent,
-                    );
-                  },
+                  onPressed: () => Get.toNamed(
+                    isMyProfile ? AppRoutes.agent : AppRoutes.agentHireRequest,
+                    arguments: isMyProfile ? null : agent,
+                  ),
                 ),
-              ),
+              )
             ],
           ),
         );

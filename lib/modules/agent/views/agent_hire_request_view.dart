@@ -66,6 +66,7 @@ class AgentHireRequestView
             onTap: () {
               controller.buyProduct();
             },
+            enabled: false,
           ),
 
           const SizedBox(height: 16),
@@ -79,6 +80,7 @@ class AgentHireRequestView
             onTap: () {
               controller.promoteProduct();
             },
+            enabled: false,
           ),
         ],
       ),
@@ -104,7 +106,7 @@ class _AgentCard extends StatelessWidget {
           BoxShadow(
             blurRadius: 12,
             offset: const Offset(0, 4),
-            color: Colors.black.withOpacity(.04),
+            color: Colors.black.withValues(alpha: .04),
           ),
         ],
       ),
@@ -113,14 +115,12 @@ class _AgentCard extends StatelessWidget {
           CircleAvatar(
             radius: 34,
             backgroundColor:
-            AppColors.primary.withOpacity(.1),
+            AppColors.primary.withValues(alpha: .1),
             backgroundImage:
-            agent.profileImage != null &&
-                agent.profileImage.isNotEmpty
+            agent.profileImage.isNotEmpty
                 ? NetworkImage(agent.profileImage)
                 : null,
-            child: agent.profileImage == null ||
-                agent.profileImage.isEmpty
+            child: agent.profileImage.isEmpty
                 ? Icon(
               Icons.person,
               color: AppColors.primary,
@@ -201,6 +201,7 @@ class _ActionCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.onTap,
+    this.enabled = true,
   });
 
   final IconData icon;
@@ -208,6 +209,7 @@ class _ActionCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final VoidCallback onTap;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -216,62 +218,89 @@ class _ActionCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(20),
       child: InkWell(
         borderRadius: BorderRadius.circular(20),
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(18),
-          child: Row(
-            children: [
-              Container(
-                width: 58,
-                height: 58,
-                decoration: BoxDecoration(
-                  color: color.withOpacity(.1),
-                  borderRadius:
-                  BorderRadius.circular(16),
+        onTap: enabled ? onTap : null,
+        child: Opacity(
+          opacity: enabled ? 1 : .55,
+          child: Padding(
+            padding: const EdgeInsets.all(18),
+            child: Row(
+              children: [
+                Container(
+                  width: 58,
+                  height: 58,
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: .10),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: color,
+                    size: 30,
+                  ),
                 ),
-                child: Icon(
-                  icon,
-                  color: color,
-                  size: 30,
-                ),
-              ),
 
-              const SizedBox(width: 18),
+                const SizedBox(width: 18),
 
-              Expanded(
-                child: Column(
-                  crossAxisAlignment:
-                  CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 17,
-                        fontWeight:
-                        FontWeight.bold,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              title,
+                              style: const TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+
+                          if (!enabled)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.orange.shade100,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                "Coming Soon",
+                                style: TextStyle(
+                                  color: Colors.orange.shade800,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
-                    ),
 
-                    const SizedBox(height: 6),
+                      const SizedBox(height: 6),
 
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        color:
-                        Colors.grey.shade600,
-                        height: 1.4,
+                      Text(
+                        subtitle,
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          height: 1.4,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
 
-              Icon(
-                Icons.arrow_forward_ios_rounded,
-                color: Colors.grey.shade400,
-                size: 18,
-              ),
-            ],
+                Icon(
+                  enabled
+                      ? Icons.arrow_forward_ios_rounded
+                      : Icons.lock_outline_rounded,
+                  color: Colors.grey.shade400,
+                  size: 18,
+                ),
+              ],
+            ),
           ),
         ),
       ),

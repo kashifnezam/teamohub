@@ -17,7 +17,13 @@ class NotificationRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> initialize() async {
-    await _messaging.requestPermission();
+    final settings = await _messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    print("Notification Permission: ${settings.authorizationStatus}");
 
     await _saveToken();
 

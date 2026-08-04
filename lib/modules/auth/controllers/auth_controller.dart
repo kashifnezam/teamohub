@@ -33,6 +33,14 @@ class AuthController extends GetxController {
     if (isLoggingOut.value) return;
     CustomAlert.loadAlert("Logging out...");
     isLoggingOut.value = true;
+    Get.deleteAll(force: true);
+    print(22222222);
+    print(22222222);
+    print(22222222);
+    print(22222222);
+    print(22222222);
+    print(22222222);
+    print(22222222);
     try {
       await AuthService.logout();
       CustomAlert.dismissAlert();
@@ -53,14 +61,18 @@ class AuthController extends GetxController {
   }
 
   Future<void> login(String email, String password) async {
+    print(88888888);
     try {
       isLoading(true);
       errorMessage('');
 
       final user = await _authService.login(email, password);
       await _deviceService.updateDeviceInfo(user.id);
-
-      Get.offAll(() => const SplashScreen());
+      if (!user.hasUsedReferral) {
+        Get.offAllNamed(AppRoutes.referralOnboarding);
+      } else {
+        Get.offAll(() => const SplashScreen());
+      }
 
     } on FirebaseAuthException catch (e) {
       AppConstants.log.i(e.code);
@@ -97,36 +109,6 @@ class AuthController extends GetxController {
 
       default:
         return "Login failed. Please try again.";
-    }
-  }
-
-  Future<void> signUp({
-    required String fullName,
-    required String mobile,
-    required String email,
-    required String password,
-    required String accountType,
-  }) async {
-    try {
-      isLoading(true);
-      errorMessage('');
-
-      await _authService.signUp(
-        fullName: fullName,
-        mobile: mobile,
-        email: email,
-        password: password,
-      );
-
-      CustomAlert.successAlert(
-        'Account created. Please verify your email.',
-      );
-      Get.back(); // Return to login screen
-    } catch (e) {
-      errorMessage(e.toString());
-      CustomAlert.errorAlert(e.toString());
-    } finally {
-      isLoading(false);
     }
   }
 

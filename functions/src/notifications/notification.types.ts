@@ -1,10 +1,15 @@
 export interface NotificationPayload {
-  title: string;
-  body: string;
+  uid?: string;
 
-  token: string;
+  token?: string;
+
+  title: string;
+
+  body: string;
 
   imageUrl?: string;
 
   data?: Record<string, string>;
+
+  saveHistory?: boolean;
 }

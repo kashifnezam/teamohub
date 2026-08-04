@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:teamomarket/app/constants/app_constants.dart';
 import 'package:teamomarket/app/routes/app_routes.dart';
 import '../../../app/theme/app_colors.dart';
 import '../../../app/widgets/custom_widget.dart';
@@ -13,7 +12,7 @@ class ChatListPage extends GetView<ChatController> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         backgroundColor: Colors.grey.shade100,
 
@@ -26,6 +25,7 @@ class ChatListPage extends GetView<ChatController> {
                 tabs: [
                   chatTab("Buying", controller.buyingUnreadCount),
                   chatTab("Selling", controller.sellingUnreadCount),
+                  chatTab("Agent", controller.agentUnreadCount),
                 ],
               ),
             ),
@@ -43,6 +43,7 @@ class ChatListPage extends GetView<ChatController> {
             children: [
               _chatList(controller.buyingChats),
               _chatList(controller.sellingChats),
+              _chatList(controller.agentChats),
             ],
           );
         }),
@@ -63,6 +64,7 @@ class ChatListPage extends GetView<ChatController> {
       separatorBuilder: (_, __) => const SizedBox(height: 10),
       itemBuilder: (_, index) {
         final chat = chats[index];
+        final isAgent = chat.chatType == "agent";
         final isSeller = chat.sellerId == controller.currentUserId;
 
         final displayName = isSeller ? chat.buyerName : chat.sellerName;
@@ -86,9 +88,9 @@ class ChatListPage extends GetView<ChatController> {
             child: Row(
               children: [
 
-                // Seller Photo
+                // Seller/buyer Photo
                 displayPhoto != null && displayPhoto.isNotEmpty
-                    ?  CustomWidget.getImage(chat.productImage)
+                    ?  CustomWidget.getImage(displayPhoto)
                     : const CircleAvatar(
                   radius: 24,
                   backgroundColor: Color(0xFFE0E0E0),
@@ -117,6 +119,7 @@ class ChatListPage extends GetView<ChatController> {
 
                       const SizedBox(height: 3),
 
+                      if(!isAgent)
                       Text(
                         chat.productTitle,
                         maxLines: 1,
@@ -179,6 +182,7 @@ class ChatListPage extends GetView<ChatController> {
 
                 const SizedBox(width: 10),
 
+                if(!isAgent)
                 ClipRRect(
                     borderRadius:
                     BorderRadius.circular(8),

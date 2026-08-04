@@ -1,17 +1,16 @@
 import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teamomarket/app/constants/app_constants.dart';
+import 'package:teamomarket/app/utils/offline_data.dart';
 import '../../../app/utils/custom_alert.dart';
+import '../../product/controllers/product_controller.dart';
 import '../../product/models/product_model.dart';
 import '../repository/my_ads_repository.dart';
 
 class MyAdsController extends GetxController {
   final MyAdsRepository _repository = MyAdsRepository.instance;
-
-  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   final RxBool isLoading = true.obs;
 
@@ -24,7 +23,7 @@ class MyAdsController extends GetxController {
 
   StreamSubscription<List<ProductModel>>? _subscription;
 
-  String get uid => _auth.currentUser?.uid ?? "";
+  String get uid => userInfo?['id'];
 
   @override
   void onInit() {
@@ -111,7 +110,7 @@ class MyAdsController extends GetxController {
 
       await _repository.updateStatus(
         productId: product.id,
-        status: "Sold",
+        status: ProductStatus.sold.name,
       );
 
       CustomAlert.dismissAlert();
@@ -182,8 +181,7 @@ class MyAdsController extends GetxController {
   }
 
   void shareProduct(ProductModel product) {
-    // TODO:
-    // Share product using share_plus
+    Get.find<ProductController>().shareProduct(product.id);
   }
 
   int get totalAds => products.length;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../app/routes/app_routes.dart';
+import '../../../app/routes/middlewares/auth_helper.dart';
 import '../../../app/theme/app_colors.dart';
 
 class HomeAgentHelpCard extends StatelessWidget {
@@ -13,7 +14,11 @@ class HomeAgentHelpCard extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         borderRadius: BorderRadius.circular(18),
-        onTap: () {
+        onTap: () async {
+          if (!await AuthHelper.requireLogin(
+          message: "Login to post your ad.",
+          )) return;
+
           Get.toNamed(AppRoutes.agentDirectory);
         },
         child: Ink(
@@ -25,7 +30,7 @@ class HomeAgentHelpCard extends StatelessWidget {
             color: const Color(0xffEEF4FF),
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
-              color: AppColors.primary.withOpacity(.12),
+              color: AppColors.primary.withValues(alpha: .12),
             ),
           ),
           child: Row(

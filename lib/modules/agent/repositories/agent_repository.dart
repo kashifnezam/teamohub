@@ -134,4 +134,19 @@ class AgentRepository {
 
     return await ref.getDownloadURL();
   }
+
+  Future<AgentModel?> getAgentById(String agentId) async {
+    if (agentId.trim().isEmpty) return null;
+
+    final doc = await _users.doc(agentId).get();
+
+    if (!doc.exists || doc.data() == null) {
+      return null;
+    }
+
+    return AgentModel.fromMap(
+      doc.data()!,
+      doc.id,
+    );
+  }
 }

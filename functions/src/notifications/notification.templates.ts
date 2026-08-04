@@ -13,12 +13,15 @@ export class NotificationTemplates {
     };
   }
 
-  static chat(name: string) {
-    return {
-      title: name,
-      body: "You received a new message.",
-    };
-  }
+    static chatMessage(
+      senderName: string,
+      message: string,
+    ) {
+      return {
+        title: senderName,
+        body: message,
+      };
+    }
 
   static review(name: string) {
     return {

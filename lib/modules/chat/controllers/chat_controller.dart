@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teamomarket/app/utils/offline_data.dart';
+import 'package:teamomarket/modules/agent/controllers/agent_controller.dart';
+import 'package:teamomarket/modules/agent/repositories/agent_repository.dart';
 import '../../../app/routes/app_routes.dart';
 import '../../../app/utils/custom_alert.dart';
 import '../../product/models/product_model.dart';
@@ -34,13 +36,39 @@ class ChatController extends GetxController {
   }
 
   String get currentUserId => userInfo?['id'] ?? '';
-  List<ChatModel> get buyingChats => chats.where((e) => e.buyerId == currentUserId).toList();
-  List<ChatModel> get sellingChats => chats.where((e) => e.sellerId == currentUserId).toList();
-  bool get hasUnreadBuying => buyingChats.any((e) => e.unreadCount > 0);
-  bool get hasUnreadSelling => sellingChats.any((e) => e.unreadCount > 0);
-  int get buyingUnreadCount => buyingChats.fold(0, (sum, e) => sum + e.unreadCount);
-  int get sellingUnreadCount => sellingChats.fold(0, (sum, e) => sum + e.unreadCount);
-  int get totalUnreadCount => chats.fold(0, (sum, chat) => sum + chat.unreadCount);
+  List<ChatModel> get buyingChats => chats
+      .where((e) => e.chatType != "agent" && e.buyerId == currentUserId)
+      .toList();
+
+  List<ChatModel> get sellingChats => chats
+      .where((e) => e.chatType != "agent" && e.sellerId == currentUserId)
+      .toList();
+
+  List<ChatModel> get agentChats => chats
+      .where((e) => e.chatType == "agent")
+      .toList();
+
+  bool get hasUnreadBuying =>
+      buyingChats.any((e) => e.unreadCount > 0);
+
+  bool get hasUnreadSelling =>
+      sellingChats.any((e) => e.unreadCount > 0);
+
+  bool get hasUnreadAgent =>
+      agentChats.any((e) => e.unreadCount > 0);
+
+  int get buyingUnreadCount =>
+      buyingChats.fold(0, (sum, e) => sum + e.unreadCount);
+
+  int get sellingUnreadCount =>
+      sellingChats.fold(0, (sum, e) => sum + e.unreadCount);
+
+  int get agentUnreadCount =>
+      agentChats.fold(0, (sum, e) => sum + e.unreadCount);
+
+  int get totalUnreadCount =>
+      chats.fold(0, (sum, e) => sum + e.unreadCount);
+
   bool get hasUnreadChats => totalUnreadCount > 0;
 
   //--------------------------------------------------------------------------
@@ -256,11 +284,13 @@ class ChatController extends GetxController {
     try {
       isChatsLoading.value = true;
       CustomAlert.loadAlert("Loading chat...");
+      final agent = await AgentRepository.instance.getAgentById(request["agentId"]);
+      if(agent == null) return;
 
       final chatId = await _repository.getOrCreateAgentChat(
-        agentId: request["agentId"],
-        agentName: request["agentName"],
-        agentPhoto: request["agentPhoto"],
+        agentId: agent.uid,
+        agentName: agent.agentName,
+        agentPhoto: agent.profileImage,
 
         clientId: request["userId"],
         clientName: request["userName"],
@@ -268,8 +298,7 @@ class ChatController extends GetxController {
 
         requestId: request["id"],
 
-        initialMessage:
-        "Hi, I need your help regarding my request.",
+        initialMessage: "Thank you for choosing me. Lets have some conversation",
       );
 
       CustomAlert.dismissAlert();

@@ -30,19 +30,10 @@ export const onHireRequestCreated = onDocumentCreated(
       return;
     }
 
-    const token =
-        await NotificationService.instance.getUserToken(agentId);
+    const template = NotificationTemplates.hireRequest(buyerName);
 
-    if (!token) {
-      logger.info(`No FCM token found for agent ${agentId}`);
-      return;
-    }
-
-    const template =
-        NotificationTemplates.hireRequest(buyerName);
-
-    await NotificationService.instance.send({
-      token,
+    await NotificationService.instance.sendToUser({
+      uid: agentId,
       title: template.title,
       body: template.body,
 
@@ -51,7 +42,7 @@ export const onHireRequestCreated = onDocumentCreated(
         requestId: snapshot.id,
         agentId,
       },
-    });
+   });
 
     logger.info(
       `Hire request notification sent to ${agentId}`

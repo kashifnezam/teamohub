@@ -88,7 +88,8 @@ class LocationPickerPage extends StatelessWidget {
 
         CurrentLocationTile(
           onTap: () async {
-            final result = await controller.getCurrentLocation();
+
+            final result = await controller.handleLocationButton();
 
             if (result == null) return;
 

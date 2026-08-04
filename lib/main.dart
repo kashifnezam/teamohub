@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get_storage/get_storage.dart';
@@ -8,14 +9,11 @@ import 'app/services/deep_link_service.dart';
 import 'app/services/network_controller.dart';
 import 'firebase_options.dart';
 import 'modules/notification/bindings/notification_binding.dart';
+import 'modules/notification/services/app_bootstrap.dart';
+import 'modules/notification/services/local_notification_service.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-/*@pragma('vm:entry-point')
-Future<void> firebaseBgHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  AppBootstrap.markDeliveredFromMessage(message);
-}*/
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,24 +22,9 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  NotificationBinding().dependencies();
+  await LocalNotificationService.init();
+  await AppBootstrap.init();
   await DeepLinkService.instance.init();
-
-  // FirebaseMessaging.onBackgroundMessage(firebaseBgHandler);
-  // await LocalNotificationService.init();
-  // await AppBootstrap.init();
-  // Pass all uncaught "fatal" errors from the framework to Crashlytics
-
-  // if (!kIsWeb) {
-  //   FlutterError.onError = (errorDetails) {
-  //     FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
-  //   };
-  // }
-  // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to Crashlytics
-  // PlatformDispatcher.instance.onError = (error, stack) {
-  //   FirebaseCrashlytics.instance.recordError(error, stack, fatal: true);
-  //   return true;
-  // };
 
   runApp(const MyApp());
 }
@@ -52,7 +35,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.put(NetworkController(), permanent: true);
-    // Get.put(AuthController(), permanent: true);
     return GetMaterialApp(
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,

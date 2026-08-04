@@ -47,6 +47,10 @@
       {
         "source": "/p/**",
         "function": "productPage"
+      },
+      {
+        "source": "/delete-account{,/**}",
+        "function": "productPage"
       }
     ]
   }

@@ -185,24 +185,26 @@ class LocationController extends GetxController {
     permission.value = await Geolocator.checkPermission();
   }
 
-  Future<void> handleLocationButton() async {
+  Future<LocationResult?> handleLocationButton() async {
     final permission = await Geolocator.requestPermission();
 
     switch (permission) {
       case LocationPermission.whileInUse:
       case LocationPermission.always:
-      final result = await getCurrentLocation();
-      if (result != null) {
-        Get.back(result: result);
-      }
-        break;
+        final result = await getCurrentLocation();
+
+        if (result != null) {
+          Get.back(result: result);
+        }
+
+        return result;
 
       case LocationPermission.denied:
         Get.snackbar(
           "Permission Required",
           "Please allow location access to use your current location.",
         );
-        break;
+        return null;
 
       case LocationPermission.deniedForever:
         Get.defaultDialog(
@@ -216,12 +218,13 @@ class LocationController extends GetxController {
             await Geolocator.openAppSettings();
           },
         );
-        break;
+        return null;
 
       default:
-        break;
+        return null;
     }
   }
+
   String get buttonText {
     if (!isServiceEnabled.value) return "Turn on location";
 

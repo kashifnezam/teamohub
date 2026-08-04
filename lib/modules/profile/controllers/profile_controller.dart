@@ -67,6 +67,10 @@ class ProfileController extends GetxController {
     );
   }
 
+  Future<void> contactSupport() async {
+    await _repository.contactSupport();
+  }
+
   Future<void> pickProfileImage() async {
     try {
       final File? image = await CustomWidget.imagePickFrom();
@@ -121,10 +125,10 @@ class ProfileController extends GetxController {
 
   Future<void> deleteAccount() async {
     final bool? confirm =
-    await CustomWidget.confirmDialogue(
+    await CustomAlert.confirmAlert(
       title: "Delete Account",
-      content: "This feature will be available soon.\n\nDo you want to continue?",
-      confirm: "Continue",
+      "This feature will be available soon.\n\nDo you want to continue?",
+      confirmText: "Continue",
     );
 
     if (confirm != true) return;

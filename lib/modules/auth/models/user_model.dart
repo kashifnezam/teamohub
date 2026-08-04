@@ -16,12 +16,19 @@
     /// buyer | seller | agent | admin
     final String role;
 
-    final String country;
-    final String state;
-    final String city;
+    final String? country;
+    final String? state;
+    final String? city;
     final String? area;
     final String? address;
     final String? pincode;
+
+    final String referralCode;
+    final int rewardPoints;
+    final String? referredBy;
+    final bool hasUsedReferral;
+    final int successfulReferrals;
+    final int totalRewardEarned;
 
     final bool isVerified;
     final bool isBlocked;
@@ -38,12 +45,20 @@
       this.dob,
       this.gender,
       required this.role,
-      required this.country,
-      required this.state,
-      required this.city,
+      this.country,
+      this.state,
+      this.city,
       this.area,
       this.address,
       this.pincode,
+
+      this.referralCode = '',
+      this.rewardPoints = 0,
+      this.referredBy,
+      this.hasUsedReferral = false,
+      this.successfulReferrals = 0,
+      this.totalRewardEarned = 0,
+
       this.isVerified = false,
       this.isBlocked = false,
       required this.createdAt,
@@ -164,6 +179,14 @@
         'area': area,
         'address': address,
         'pincode': pincode,
+
+        'referralCode': referralCode,
+        'rewardPoints': rewardPoints,
+        'referredBy': referredBy,
+        'hasUsedReferral': hasUsedReferral,
+        'successfulReferrals': successfulReferrals,
+        'totalRewardEarned': totalRewardEarned,
+
         'isVerified': isVerified,
         'isBlocked': isBlocked,
         'createdAt': createdAt.millisecondsSinceEpoch,
@@ -205,6 +228,14 @@
         area: map['area'],
         address: map['address'],
         pincode: map['pincode'],
+
+        referralCode: map['referralCode'] ?? '',
+        rewardPoints: map['rewardPoints'] ?? 0,
+        referredBy: map['referredBy'],
+        hasUsedReferral: map['hasUsedReferral'] ?? false,
+        successfulReferrals: map['successfulReferrals'] ?? 0,
+        totalRewardEarned: map['totalRewardEarned'] ?? 0,
+
         isVerified: map['isVerified'] ?? false,
         isBlocked: map['isBlocked'] ?? false,
         createdAt: parse(map['createdAt']),

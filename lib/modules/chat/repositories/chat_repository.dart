@@ -174,8 +174,8 @@ class ChatRepository {
 
     await sendMessage(
       chatId: chatId,
-      senderId: clientId,
-      receiverId: agentId,
+      senderId: agentId,
+      receiverId: clientId,
       text: initialMessage,
     );
 

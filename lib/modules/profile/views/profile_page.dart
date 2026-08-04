@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teamomarket/app/routes/app_routes.dart';
 import '../../../app/theme/app_colors.dart';
+import '../../../app/utils/custom_alert.dart';
 import '../../../app/utils/offline_data.dart';
 import '../../../app/widgets/custom_widget.dart';
 import '../../auth/controllers/auth_controller.dart';
 import '../controllers/profile_controller.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePage extends GetView<ProfileController> {
   const ProfilePage({super.key});
@@ -16,11 +18,6 @@ class ProfilePage extends GetView<ProfileController> {
     return SafeArea(
       child: Scaffold(
           backgroundColor: Colors.grey.shade100,
-          // appBar: AppBar(
-          //   elevation: 0,
-          //   centerTitle: true,
-          //   title: const Text("Profile"),
-          // ),
           body: Obx(() {
             if (controller.isLoading.value) {
               return Center(
@@ -476,15 +473,6 @@ class ProfilePage extends GetView<ProfileController> {
                           onTap: () => Get.toNamed(AppRoutes.favourites),
                         ),
 
-                        if (userInfo?['role'] != "agent")
-                          _actionCard(
-                            context: context,
-                            icon: Icons.support_agent_rounded,
-                            title: "Become Agent",
-                            subtitle: "Help buyers & earn commission",
-                            onTap: () => Get.toNamed(AppRoutes.agentMain),
-                          ),
-
                         if (userInfo?['role'] == "agent")
                           _actionCard(
                             context: context,
@@ -493,18 +481,11 @@ class ProfilePage extends GetView<ProfileController> {
                             subtitle: "Manage your agent profile",
                             onTap: () => Get.toNamed(AppRoutes.agent),
                           ),
-
-                        // _actionCard(
-                        //   context: context,
-                        //   icon: Icons.notifications_none_rounded,
-                        //   title: "Notifications",
-                        //   subtitle: "Latest updates",
-                        //   onTap: controller.openNotifications,
-                        // ),
                       ],
                     ),
 
                     const SizedBox(height: 24),
+
 
                     //====================================================
                     // Account
@@ -545,28 +526,48 @@ class ProfilePage extends GetView<ProfileController> {
                           //   onTap: () => null,
                           // ),
 
+                          // const Divider(height: 1),
+                          //
+                          // _accountTile(
+                          //   icon: Icons.privacy_tip_outlined,
+                          //   title: "Privacy Policy",
+                          //   onTap: () => null,
+                          // ),
+                          //
+                          // const Divider(height: 1),
+                          //
+                          // _accountTile(
+                          //   icon: Icons.description_outlined,
+                          //   title: "Terms & Conditions",
+                          //   onTap: () => null,
+                          // ),
+
                           const Divider(height: 1),
 
                           _accountTile(
-                            icon: Icons.privacy_tip_outlined,
-                            title: "Privacy Policy",
-                            onTap: () => null,
+                            icon: Icons.card_giftcard_rounded,
+                            title: "Refer & Earn",
+                            subtitle: "Invite friends • Earn 10 Points",
+                            iconColor: Colors.deepPurple,
+                            onTap: () => Get.toNamed(AppRoutes.refer),
                           ),
 
                           const Divider(height: 1),
 
-                          _accountTile(
-                            icon: Icons.description_outlined,
-                            title: "Terms & Conditions",
-                            onTap: () => null,
-                          ),
-
-                          const Divider(height: 1),
-
-                          _accountTile(
-                            icon: Icons.help_outline_rounded,
-                            title: "Help & Support",
-                            onTap: () => null,
+                          ListTile(
+                            leading: const Icon(Icons.email_outlined),
+                            title: const Text("Email Support"),
+                            trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 18),
+                            onTap: () async {
+                              try {
+                                await controller.contactSupport();
+                              } catch (e) {
+                                print(e);
+                                CustomAlert.errorAlert(
+                                  e.toString(),
+                                );
+                              }
+                            },
                           ),
 
                           const Divider(height: 1),
@@ -578,10 +579,10 @@ class ProfilePage extends GetView<ProfileController> {
                             iconColor: Colors.red,
                             onTap: () async {
                               final bool? confirm =
-                              await CustomWidget.confirmDialogue(
-                                title: "Logout",
-                                content:"Are you sure you want to logout?",
-                                confirm: "Logout",
+                              await CustomAlert.confirmAlert(
+                               title: "Logout",
+                                "Are you sure you want to logout?",
+                                confirmText: "Logout",
                               );
 
                               if (confirm == true) {
@@ -719,6 +720,7 @@ class ProfilePage extends GetView<ProfileController> {
   Widget _accountTile({
     required IconData icon,
     required String title,
+    String? subtitle,
     required VoidCallback onTap,
     Color? iconColor,
     Color? textColor,
@@ -731,6 +733,15 @@ class ProfilePage extends GetView<ProfileController> {
       title: Text(
         title,
         style: TextStyle(color: textColor),
+      ),
+      subtitle: subtitle == null
+          ? null
+          : Text(
+        subtitle,
+        style: TextStyle(
+          color: Colors.grey.shade600,
+          fontSize: 12,
+        ),
       ),
       trailing: const Icon(Icons.chevron_right_rounded),
       onTap: onTap,

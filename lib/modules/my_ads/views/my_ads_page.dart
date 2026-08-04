@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:teamomarket/modules/product/controllers/product_controller.dart';
 import '../../../app/routes/app_routes.dart';
+import '../../../app/utils/custom_alert.dart';
 import '../../../app/widgets/custom_widget.dart';
 import '../../product/models/product_model.dart';
 import '../controllers/my_ads_controller.dart';
@@ -299,7 +300,16 @@ class MyAdsPage extends GetView<MyAdsController> {
                       ),
                       const SizedBox(height: 8),
 
-                      _statusBadge(product.status.name),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          _statusBadge(product.status.name),
+
+                          if (product.agentId != null && product.agentId!.isNotEmpty)
+                            _agentAdsBadge(),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -328,10 +338,10 @@ class MyAdsPage extends GetView<MyAdsController> {
                         break;
 
                       case "delete":
-                        CustomWidget.confirmDialogue(
+                        CustomAlert.confirmAlert(
                           title: "Delete Product",
-                          content: "Delete this product permanently?",
-                          confirm: "Delete",
+                          "Delete this product permanently?",
+                          confirmText: "Delete",
                         ).then((ok) {
                           if (ok == true) {
                             controller.deleteProduct(product);
@@ -341,14 +351,16 @@ class MyAdsPage extends GetView<MyAdsController> {
                     }
                   },
                   itemBuilder: (_) => [
-                    const PopupMenuItem(
-                      value: "edit",
-                      child: Text("Edit"),
-                    ),
+                    // const PopupMenuItem(
+                    //   value: "edit",
+                    //   child: Text("Edit"),
+                    // ),
+                    if (product.status.name.toLowerCase() == "active")
                     const PopupMenuItem(
                       value: "share",
                       child: Text("Share"),
                     ),
+                    if (product.status.name.toLowerCase() == "active" )
                     const PopupMenuItem(
                       value: "sold",
                       child: Text("Mark Sold"),
@@ -427,38 +439,35 @@ class MyAdsPage extends GetView<MyAdsController> {
     );
   }
 
-  //--------------------------------------------------
-  // Statistics Card
-  //--------------------------------------------------
-
-  Widget _statCard(
-      BuildContext context, {
-        required String title,
-        required String value,
-        required IconData icon,
-      }) {
+  Widget _agentAdsBadge() {
     return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
+      padding: const EdgeInsets.symmetric(
+        horizontal: 10,
+        vertical: 3,
       ),
-      child: Column(
+      decoration: BoxDecoration(
+        color: Colors.indigo.withValues(alpha: .12),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 24, color: Theme.of(context).colorScheme.primary),
-
-          const SizedBox(height: 12),
-
-          Text(
-            value,
-            style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          Icon(
+            Icons.support_agent,
+            size: 14,
+            color: Colors.indigo,
           ),
-
-          const SizedBox(height: 4),
-
-          Text(title, style: TextStyle(color: Colors.grey.shade600)),
+          SizedBox(width: 4),
+          Text(
+            "Agent Ad",
+            style: TextStyle(
+              color: Colors.indigo,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
   }
+
 }

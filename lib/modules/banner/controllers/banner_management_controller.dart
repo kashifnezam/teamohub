@@ -1,8 +1,10 @@
 import 'package:get/get.dart';
 import 'package:teamomarket/modules/banner/repository/banner_repository.dart';
+import 'package:teamomarket/modules/product/controllers/product_controller.dart';
 
 import '../../../app/utils/custom_alert.dart';
 import '../models/banner_model.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class BannerManagementController extends GetxController {
   final BannerRepository _repository = BannerRepository();
@@ -85,15 +87,30 @@ class BannerManagementController extends GetxController {
         break;
 
       case "product":
-      // TODO: Navigate to product details
+       if(banner.actionValue != null && banner.actionValue!.isNotEmpty)
+         Get.find<ProductController>().getProductDetail(banner.actionValue!);
         break;
 
       case "url":
+        if (banner.actionValue != null && banner.actionValue!.isNotEmpty) {
+          _launchExternalUrl(banner.actionValue!);
+        }
       // TODO: Launch external URL
         break;
 
       default:
         break;
+    }
+  }
+
+  Future<void> _launchExternalUrl(String url) async {
+    final uri = Uri.parse(url);
+
+    if (!await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    )) {
+      throw Exception('Could not launch $url');
     }
   }
 }

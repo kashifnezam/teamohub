@@ -489,8 +489,9 @@ class ProductController extends GetxController {
     CustomAlert.loadAlert("Loading Product Details...");
     ProductModel? product = await _repository.getProduct(productId);
     CustomAlert.dismissAlert();
-    if(product != null && (product.status != ProductStatus.active || product.isDeleted)) CustomAlert.errorAlert("Product is either sold, deleted or inactive", title: "Not Available");
-    else Get.to(() => ProductDetailsPage(product: product)) ;
+   /* if(product != null && (product.status != ProductStatus.active || product.isDeleted)) CustomAlert.errorAlert("Product is either sold, deleted or inactive", title: "Not Available");
+    else*/
+    Get.to(() => ProductDetailsPage(product: product)) ;
     return product;
   }
 

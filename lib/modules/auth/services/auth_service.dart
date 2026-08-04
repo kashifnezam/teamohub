@@ -54,14 +54,6 @@ class AuthService {
         // Every user can buy & sell
         role: "user",
 
-        // Can be updated later from profile
-        country: "",
-        state: "",
-        city: "",
-        area: null,
-        address: null,
-        pincode: null,
-
         isVerified: false,
         isBlocked: false,
 
@@ -90,6 +82,16 @@ class AuthService {
       email: email,
       password: password,
     );
+    // await userCredential.user!.reload();
+    //
+    // final firebaseUser = FirebaseAuth.instance.currentUser!;
+    //
+    // if (!firebaseUser.emailVerified) {
+    //   await FirebaseAuth.instance.signOut();
+    //
+    //   throw "Please verify your email before logging in.";
+    // }
+
     return await getUserData(userCredential.user!.uid);
   }
 
@@ -142,13 +144,13 @@ class AuthService {
       try {
         if(kIsWeb){
           await FirebaseFirestore.instance
-              .collection("user")
+              .collection(FirebaseConstants.users)
               .doc(uid)
               .update({"fcmTokenWeb": FieldValue.delete()});
         }
         else{
           await FirebaseFirestore.instance
-              .collection("user")
+              .collection(FirebaseConstants.users)
               .doc(uid)
               .update({"fcmToken": FieldValue.delete()});
         }

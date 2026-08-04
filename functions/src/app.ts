@@ -4,6 +4,7 @@ import helmet from "helmet";
 import compression from "compression";
 import morgan from "morgan";
 import productRoutes from "./routes/product.routes";
+import deleteAccountRoute from "./routes/deleteAccount.route";
 
 const app=express();
 
@@ -26,6 +27,8 @@ app.use(morgan("combined"));
 app.use(express.json());
 
 app.use("/",productRoutes);
+app.use("/", deleteAccountRoute);
+
 
 app.get("/",(_,res)=>{
 

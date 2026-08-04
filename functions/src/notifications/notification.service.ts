@@ -3,6 +3,7 @@ import * as admin from "firebase-admin";
 import {
   USERS_COLLECTION,
   USER_FCM_TOKEN,
+  USER_NOTIFICATION_COLLECTION,
 } from "./notification.constants";
 
 import { NotificationPayload } from "./notification.types";
@@ -12,7 +13,6 @@ export class NotificationService {
 
   static get instance(): NotificationService {
     this._instance ??= new NotificationService();
-
     return this._instance;
   }
 
@@ -22,6 +22,9 @@ export class NotificationService {
 
   private messaging = admin.messaging();
 
+  /* -------------------------------------------------------------------------- */
+  /*                               USER TOKEN                                   */
+  /* -------------------------------------------------------------------------- */
 
   async getUserToken(uid: string): Promise<string | null> {
     const doc = await this.firestore
@@ -33,19 +36,35 @@ export class NotificationService {
       return null;
     }
 
-    const token = doc.get(USER_FCM_TOKEN);
-
-    if (!token) {
-      return null;
-    }
-
-    return token;
+    return doc.get(USER_FCM_TOKEN) ?? null;
   }
 
-  async send(payload: NotificationPayload): Promise<void> {
+  /* -------------------------------------------------------------------------- */
+  /*                            SEND TO SINGLE USER                             */
+  /* -------------------------------------------------------------------------- */
+
+  async sendToUser(payload: NotificationPayload): Promise<void> {
+    let token: string | undefined;
+
+    if (payload.token) {
+      token = payload.token;
+    }
+    if (!token) {
+      if (!payload.uid) return;
+
+        const userToken = await this.getUserToken(payload.uid);
+
+        if (!userToken) {
+          return;
+        }
+
+        token = userToken;
+        if (!token) return;
+    }
+
     try {
       await this.messaging.send({
-        token: payload.token,
+        token,
 
         notification: {
           title: payload.title,
@@ -56,6 +75,9 @@ export class NotificationService {
 
         android: {
           priority: "high",
+          notification: {
+            imageUrl: payload.imageUrl,
+          },
         },
 
         apns: {
@@ -63,6 +85,9 @@ export class NotificationService {
             aps: {
               sound: "default",
             },
+          },
+          fcmOptions: {
+            imageUrl: payload.imageUrl,
           },
         },
 
@@ -72,27 +97,94 @@ export class NotificationService {
           },
         },
       });
+
+      if (payload.uid && payload.saveHistory !== false) {
+        await this.saveNotification(
+          payload.uid,
+          payload.title,
+          payload.body,
+          payload.imageUrl,
+          payload.data,
+        );
+      }
     } catch (e: any) {
       console.error(e);
 
       if (
-        e.code ===
-          "messaging/registration-token-not-registered" ||
-        e.code ===
-          "messaging/invalid-registration-token"
+        e.code === "messaging/registration-token-not-registered" ||
+        e.code === "messaging/invalid-registration-token"
       ) {
-        console.log(
-          "Removing invalid token..."
-        );
-
-        await this.removeToken(payload.token);
+        await this.removeToken(token);
       }
     }
   }
 
-  private async removeToken(
-    token: string,
+  /* -------------------------------------------------------------------------- */
+  /*                             SEND TO MULTIPLE                               */
+  /* -------------------------------------------------------------------------- */
+
+  async sendToUsers(
+    uids: string[],
+    title: string,
+    body: string,
+    data?: Record<string, string>,
   ): Promise<void> {
+    const tokens = (
+      await Promise.all(
+        uids.map((uid) => this.getUserToken(uid)),
+      )
+    ).filter(Boolean) as string[];
+
+    if (!tokens.length) {
+      return;
+    }
+
+    await this.messaging.sendEachForMulticast({
+      tokens,
+
+      notification: {
+        title,
+        body,
+      },
+
+      data: data ?? {},
+
+      android: {
+        priority: "high",
+      },
+    });
+  }
+
+  /* -------------------------------------------------------------------------- */
+  /*                          SAVE NOTIFICATION                                 */
+  /* -------------------------------------------------------------------------- */
+
+  async saveNotification(
+    uid: string,
+    title: string,
+    body: string,
+    imageUrl?: string,
+    data?: Record<string, string>,
+  ): Promise<void> {
+    await this.firestore
+      .collection(USERS_COLLECTION)
+      .doc(uid)
+      .collection(USER_NOTIFICATION_COLLECTION)
+      .add({
+        title,
+        body,
+        imageUrl: imageUrl ?? null,
+        data: data ?? {},
+        read: false,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+  }
+
+  /* -------------------------------------------------------------------------- */
+  /*                          REMOVE INVALID TOKEN                              */
+  /* -------------------------------------------------------------------------- */
+
+  private async removeToken(token: string): Promise<void> {
     const snapshot = await this.firestore
       .collection(USERS_COLLECTION)
       .where(USER_FCM_TOKEN, "==", token)
@@ -104,12 +196,12 @@ export class NotificationService {
 
     const batch = this.firestore.batch();
 
-for (const finalDoc of snapshot.docs){
-    batch.update(finalDoc.ref, {
+    snapshot.docs.forEach((doc) => {
+      batch.update(doc.ref, {
         [USER_FCM_TOKEN]:
-            admin.firestore.FieldValue.delete(),
+          admin.firestore.FieldValue.delete(),
       });
-    }
+    });
 
     await batch.commit();
   }
